@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebHooks.Gitee", "WebHooks.Gitee\WebHooks.Gitee.csproj", "{8EF75AF1-46DA-41BD-B517-A90DE0BD69A4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebHooks.Models", "WebHooks.Models\WebHooks.Models.csproj", "{B072B1E7-D292-4CAD-BD42-9A1858D839F4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebHooks.GiteeTests", "WebHooks.GiteeTests\WebHooks.GiteeTests.csproj", "{3441975A-6F9B-42EC-B64A-C032467982BB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8EF75AF1-46DA-41BD-B517-A90DE0BD69A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EF75AF1-46DA-41BD-B517-A90DE0BD69A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EF75AF1-46DA-41BD-B517-A90DE0BD69A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EF75AF1-46DA-41BD-B517-A90DE0BD69A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B072B1E7-D292-4CAD-BD42-9A1858D839F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B072B1E7-D292-4CAD-BD42-9A1858D839F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B072B1E7-D292-4CAD-BD42-9A1858D839F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B072B1E7-D292-4CAD-BD42-9A1858D839F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3441975A-6F9B-42EC-B64A-C032467982BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3441975A-6F9B-42EC-B64A-C032467982BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3441975A-6F9B-42EC-B64A-C032467982BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3441975A-6F9B-42EC-B64A-C032467982BB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {09193658-FCCE-403F-B81C-B7CDE8C8B4F9}
+	EndGlobalSection
+EndGlobal
