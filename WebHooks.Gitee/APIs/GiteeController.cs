@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Cryptography;
 using System.Text;
+using WebHooks.Gitee.Events;
 using WebHooks.Models.Gitee;
 
 namespace WebHooks.Gitee.APIs
@@ -10,10 +11,34 @@ namespace WebHooks.Gitee.APIs
     [ApiController]
     public class GiteeController : ControllerBase
     {
-        [HttpPost("push")]
-        public async Task<IActionResult> OnPushAsync(PushWebHook webhook)
-        {
+        private ILogger<GiteeController> _logger;
 
+        public GiteeController(ILogger<GiteeController> logger)
+        {
+            _logger = logger;
+        }
+
+        [HttpPost("push")]
+        public IActionResult OnPushAsync(PushWebHook webhook)
+        {
+            var (xGiteeToken, xGiteeTimestamp, xGiteeEvent) = ParseGiteeHeader(HttpContext);
+
+            if(!CheckToken(xGiteeTimestamp, xGiteeToken, ""))
+            {
+                _logger.LogError($"签名校验失败！token:{xGiteeToken}，timestamp:{xGiteeTimestamp}，secret:{""}");
+            }
+
+            try
+            {
+                // 触发事件，传入webhook信息
+                EventCenter.Instance.OnGiteePushed(this, new PushEventArgs(webhook, xGiteeEvent));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"触发事件失败，event:{xGiteeEvent}");
+            }
+
+            return Ok();
         }
 
         /// <summary>
@@ -23,9 +48,6 @@ namespace WebHooks.Gitee.APIs
         /// <returns></returns>
         private bool ValidateWebHook(HttpContext httpContext, PushWebHook webhook)
         {
-            var (xGiteeToken, xGiteeTimestamp, xGiteeEvent) = ParseGiteeHeader(HttpContext);
-
-            // 校验Gitee Token
 
         }
 
@@ -87,6 +109,21 @@ namespace WebHooks.Gitee.APIs
             }
 
             return new Tuple<string, string, string>(xGiteeToken, xGiteeTimestamp, xGiteeEvent);
+        }
+        
+        /// <summary>
+        /// 校验签名
+        /// </summary>
+        /// <param name="xGiteeTimestamp"></param>
+        /// <param name="xGiteeToken"></param>
+        /// <returns></returns>
+        private bool CheckToken(string xGiteeTimestamp, string xGiteeToken, string secret)
+        {
+            var calcTokenBytes = Helpers.GiteeHelper.CalcGiteeSign(xGiteeTimestamp, secret);
+
+            var calcToken = Convert.ToBase64String(calcTokenBytes);
+
+            return calcToken == xGiteeToken;
         }
     }
 }

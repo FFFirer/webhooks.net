@@ -13,7 +13,7 @@ namespace WebHooks.Gitee.Helpers
         /// <return>
         /// sign
         /// </return>
-        public static string CalcGiteeSign(string timestamp, string secret)
+        public static byte[] CalcGiteeSign(string timestamp, string secret)
         {
             ValidateTimestamp(timestamp);
 
@@ -30,7 +30,7 @@ namespace WebHooks.Gitee.Helpers
                 sign = hmacSHA256.ComputeHash(plainBytes);
             }
 
-            return Convert.ToBase64String(sign);
+            return sign;
         }
 
         const long MinDiffTime = -1 * 60 * 60 * 1000;
@@ -57,7 +57,7 @@ namespace WebHooks.Gitee.Helpers
 
             if(diff.TotalMilliseconds > MaxDiffTime  || diff.Hours < MinDiffTime)
             {
-                throw new InvalidDataException(% "时间戳已过期");
+                throw new InvalidDataException("时间戳已过期");
             }
 
             return true;
