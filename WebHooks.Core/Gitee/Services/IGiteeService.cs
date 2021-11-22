@@ -9,6 +9,6 @@ namespace WebHooks.Core.Gitee.Services
 {
     public interface IGiteeService
     {
-        void HandlePushEvent(PushWebHook webHook);
+        Task HandlePushEventAsync(string configKey, string xGiteeToken, string xGiteeTimestamp, string xGiteeEvent, PushWebHook webHook);
     }
 }

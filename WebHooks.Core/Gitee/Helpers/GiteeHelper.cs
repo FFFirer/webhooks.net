@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace WebHooks.Gitee.Helpers
+namespace WebHooks.Core.Gitee.Helpers
 {
     public class GiteeHelper
     {

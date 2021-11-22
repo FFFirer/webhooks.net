@@ -1,8 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.Security.Cryptography;
-using System.Text;
-using WebHooks.Gitee.Events;
+﻿using Microsoft.AspNetCore.Mvc;
+using WebHooks.Core.Gitee.Services;
 using WebHooks.Models.Gitee;
 
 namespace WebHooks.Gitee.APIs
@@ -11,44 +8,24 @@ namespace WebHooks.Gitee.APIs
     [ApiController]
     public class GiteeController : ControllerBase
     {
-        private ILogger<GiteeController> _logger;
+        private readonly ILogger<GiteeController> _logger;
+        private readonly IGiteeService _giteeService;
 
-        public GiteeController(ILogger<GiteeController> logger)
+        public GiteeController(ILogger<GiteeController> logger
+            , IGiteeService giteeService)
         {
             _logger = logger;
+            _giteeService = giteeService;
         }
 
-        [HttpPost("push")]
-        public IActionResult OnPushAsync(PushWebHook webhook)
+        [HttpPost("push/[repoKey]")]
+        public IActionResult OnPushAsync(string repoKey, PushWebHook webhook)
         {
             var (xGiteeToken, xGiteeTimestamp, xGiteeEvent) = ParseGiteeHeader(HttpContext);
 
-            if(!CheckToken(xGiteeTimestamp, xGiteeToken, ""))
-            {
-                _logger.LogError($"签名校验失败！token:{xGiteeToken}，timestamp:{xGiteeTimestamp}，secret:{""}");
-            }
-
-            try
-            {
-                // 触发事件，传入webhook信息
-                EventCenter.Instance.OnGiteePushed(this, new PushEventArgs(webhook, xGiteeEvent));
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"触发事件失败，event:{xGiteeEvent}");
-            }
+            _giteeService.HandlePushEventAsync(repoKey, xGiteeToken, xGiteeTimestamp, xGiteeEvent, webhook);
 
             return Ok();
-        }
-
-        /// <summary>
-        /// 校验webhook请求
-        /// </summary>
-        /// <param name="webhook"></param>
-        /// <returns></returns>
-        private bool ValidateWebHook(HttpContext httpContext, PushWebHook webhook)
-        {
-
         }
 
         /// <summary>
@@ -109,21 +86,6 @@ namespace WebHooks.Gitee.APIs
             }
 
             return new Tuple<string, string, string>(xGiteeToken, xGiteeTimestamp, xGiteeEvent);
-        }
-        
-        /// <summary>
-        /// 校验签名
-        /// </summary>
-        /// <param name="xGiteeTimestamp"></param>
-        /// <param name="xGiteeToken"></param>
-        /// <returns></returns>
-        private bool CheckToken(string xGiteeTimestamp, string xGiteeToken, string secret)
-        {
-            var calcTokenBytes = Helpers.GiteeHelper.CalcGiteeSign(xGiteeTimestamp, secret);
-
-            var calcToken = Convert.ToBase64String(calcTokenBytes);
-
-            return calcToken == xGiteeToken;
         }
     }
 }

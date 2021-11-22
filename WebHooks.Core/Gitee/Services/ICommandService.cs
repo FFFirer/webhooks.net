@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WebHooks.Models.Gitee.Options;
 
 namespace WebHooks.Core.Gitee.Services
 {
@@ -20,5 +21,12 @@ namespace WebHooks.Core.Gitee.Services
         /// </summary>
         /// <param name="event"></param>
         void RunShellScripts(string @event);
+
+        /// <summary>
+        /// 跑关于Push钩子的命令行
+        /// </summary>
+        /// <param name="option"></param>
+        /// <returns></returns>
+        Task RunScripts(PushWebHookOption option);
     }
 }

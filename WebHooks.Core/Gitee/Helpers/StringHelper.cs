@@ -1,4 +1,4 @@
-﻿namespace WebHooks.Gitee.Helpers
+﻿namespace WebHooks.Core.Gitee.Helpers
 {
     public static class StringHelper
     {
