@@ -1,6 +1,8 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using PowershellPreSearch;
+using System.Globalization;
 using System.Management.Automation;
+using System.Management.Automation.Host;
 using System.Management.Automation.Runspaces;
 
 Console.WriteLine("Start use powershell!");
@@ -27,42 +29,60 @@ var initialState = InitialSessionState.CreateDefault();
 
 initialState.ExecutionPolicy = Microsoft.PowerShell.ExecutionPolicy.RemoteSigned;
 
-using (var runspace = RunspaceFactory.CreateRunspace(initialState))
+System.Threading.Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo("en-US");
+
+var myProgram = new MyProgram();
+var myHost = new MyHost(myProgram);
+
+using (var runspace = RunspaceFactory.CreateRunspace(myHost, initialState))
 {
     runspace.Open();
 
-    var ps = PowerShell.Create();
+    //var ps = PowerShell.Create();
 
     var pipeline = runspace.CreatePipeline();
 
-    ps.Runspace = runspace;
-    ps.AddCommand("cd").AddArgument(runOption.WorkingDirectory);
+    pipeline.Commands.AddScript($"cd '{runOption.WorkingDirectory}'");
+
+    //ps.Runspace = runspace;
+    //ps.AddCommand("cd").AddArgument(runOption.WorkingDirectory);
 
     foreach (var script in runOption.Scripts)
     {
-        ps.AddScript(script);
-    }
-
-    var results = ps.Invoke();
-
-    Console.WriteLine("执行结果");
-    foreach (var result in results)
-    {
-        Console.WriteLine(result);
-    }
-
-    if (ps.HadErrors)
-    {
-        Console.WriteLine("执行失败，存在错误");
-        foreach (var error in ps.Streams.Error)
+        if (script.Contains("Write-Host"))
         {
-            Console.WriteLine(error);
+            pipeline.Commands.Add("Write-Output '脚本中存在Write-Host命令，可能会导致RemoteException错误'");
         }
+
+        pipeline.Commands.AddScript(script);
     }
-    else
+
+    for (int i = 0; i < pipeline.Commands.Count; i++)
     {
-        // 执行成功，输出
-        Console.WriteLine("执行成功！");
+        pipeline.Commands[i].MergeMyResults(PipelineResultTypes.Error, PipelineResultTypes.Output);
+    }
+
+    //pipeline.Commands.AddScript(@"out-default");
+
+    try
+    {
+        var results = pipeline.Invoke();
+
+        Console.WriteLine("执行结果");
+        foreach (var result in results)
+        {
+            Console.WriteLine(result);
+        }
+
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine(ex.ToString());
+    }
+
+    if (myProgram.ShouldExit)
+    {
+        Console.WriteLine($"Exit Code: {myProgram.ExitCode}");
     }
 
     runspace.Close();
