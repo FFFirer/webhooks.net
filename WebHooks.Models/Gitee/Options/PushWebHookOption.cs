@@ -3,36 +3,34 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WebHooks.Models.Common;
 
 namespace WebHooks.Models.Gitee.Options
 {
-    public class PushWebHookOption
+    public class PushWebHookOption : PlatformOption
     {
-        public const string Platform = "Gitee";
+        private const string _platform = "Gitee";
+
+        public override string Platform { get => _platform; }
 
         /// <summary>
-        /// 仓库名称
+        /// 设置在Gitee的密码
         /// </summary>
-        public string Repository { get; set; } = string.Empty;
+        public string Secret { get; set; } = string.Empty;
 
         /// <summary>
-        /// 密钥，和配置在Gitee端的密钥保持一致
+        /// 针对的分支
         /// </summary>
-        public string Secret { get; set; } = string.Empty ;
+        public string Branch { get; set; } = "master";
 
         /// <summary>
-        /// 使用的命令行程序
+        /// 标识勾子的Id
         /// </summary>
-        public string Application { get; set; } = string.Empty ;
+        public string HookId { get; set; } = string.Empty;
 
         /// <summary>
-        /// 要执行的脚本
+        /// 构建步骤
         /// </summary>
-        public List<string> Scripts { get; set; } = new List<string>();
-
-        /// <summary>
-        /// 环境变量
-        /// </summary>
-        public Dictionary<string, string> EnvironmentVariables { get; set; } = new Dictionary<string, string>();
+        public List<BuildStep> Steps { get; set; } = new List<BuildStep>();
     }
 }

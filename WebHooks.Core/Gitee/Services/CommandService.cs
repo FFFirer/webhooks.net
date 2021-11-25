@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -10,28 +11,21 @@ namespace WebHooks.Core.Gitee.Services
 {
     public class CommandService : ICommandService
     {
-        
+        private readonly ILogger _logger;   
+
+        public CommandService(ILoggerFactory loggerFactory)
+        {
+            _logger = loggerFactory.CreateLogger<CommandService>();
+        }
 
         public List<string> GetShellScripts(string @event)
         {
             throw new NotImplementedException();
         }
 
-        public Task RunScripts(PushWebHookOption option)
+        public async Task RunScripts(PushWebHookOption option)
         {
-            // 生成临时目录，一样的配置一样的目录
-            var process = new Process();
-            process.StartInfo.FileName = option.Application;
-            process.StartInfo.UseShellExecute = false;
-            process.StartInfo.CreateNoWindow = true;
-            process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            process.StartInfo.RedirectStandardOutput = true;
-            process.StartInfo.RedirectStandardError = true;
-            process.StartInfo.RedirectStandardInput = true;
-
-            
-
-            return Task.CompletedTask; 
+             
         }
 
         public void RunShellScripts(string @event)

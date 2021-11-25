@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Management.Automation;
 using System.Management.Automation.Host;
 using System.Management.Automation.Runspaces;
+using System.Runtime.InteropServices;
 
 Console.WriteLine("Start use powershell!");
 
@@ -27,7 +28,12 @@ if (!dirInfo.Exists)
 
 var initialState = InitialSessionState.CreateDefault();
 
-initialState.ExecutionPolicy = Microsoft.PowerShell.ExecutionPolicy.RemoteSigned;
+if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+{
+    // 判断windows环境
+    // 如果是windows需要添加执行脚本权限
+    initialState.ExecutionPolicy = Microsoft.PowerShell.ExecutionPolicy.RemoteSigned;
+}
 
 System.Threading.Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo("en-US");
 

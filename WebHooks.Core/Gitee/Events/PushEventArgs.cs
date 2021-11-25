@@ -1,4 +1,5 @@
 ﻿using WebHooks.Core.Gitee;
+using WebHooks.Models.Gitee;
 
 namespace WebHooks.Core.Gitee.Events
 {
