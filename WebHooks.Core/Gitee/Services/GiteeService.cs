@@ -12,11 +12,11 @@ namespace WebHooks.Core.Gitee.Services
     public class GiteeService : IGiteeService
     {
         private readonly ILogger _logger;
-        private readonly IOptionsSnapshot<PushWebHookOption> _pushWebHookOptionsAccessor;
+        private readonly IOptionsSnapshot<GiteeWebHookOption> _pushWebHookOptionsAccessor;
         private readonly ICommandService _commandService;
 
         public GiteeService(ILogger<GiteeService> logger
-            , IOptionsSnapshot<PushWebHookOption> pushWebHookOptionAccessor
+            , IOptionsSnapshot<GiteeWebHookOption> pushWebHookOptionAccessor
             , ICommandService commandService)
         {
             _logger = logger;
@@ -54,15 +54,16 @@ namespace WebHooks.Core.Gitee.Services
             var shell = PowershellClient.Create(_logger);
 
             // 拉取代码操作
-            var commands = new PSCommand();
-
-            commands.AddStatement()
+            var pullBranch = (PowerShell shell) =>
+            {
+                shell.AddStatement()
                 .AddCommand("Git-Pull-Branch")
                 .AddParameter("Directory", runDictionary)
                 .AddParameter("RepoUrl", webHook?.Repository?.CloneUrl)
                 .AddParameter("Branch", GetBranch(webHook));
+            };
 
-            var (exitCode, results) = await shell.InvokeAsync(commands);
+            var (exitCode, results) = await shell.InvokeAsync(pullBranch);
 
             if (exitCode != 0)
             {
@@ -75,14 +76,17 @@ namespace WebHooks.Core.Gitee.Services
             {
                 var stepCommands = new PSCommand();
 
-                foreach (var script in step.Scripts)
+                var executeScripts = (PowerShell shell) =>
                 {
-                    stepCommands.AddCommand(script);
-                }
+                    foreach (var script in step.Scripts)
+                    {
+                        shell.AddCommand(script);
+                    }
+                };
+                
+                var (stepExitCode, stepResults) = await shell.InvokeAsync(executeScripts);
 
-                var (stepExitCode, stepResults) = await shell.InvokeAsync(commands);
-
-                if(stepExitCode != 0)
+                if (stepExitCode != 0)
                 {
                     _logger.LogWarning($"执行步骤时出错, {string.Join("\r\n", stepResults.Select(a => a.ToString()).ToList())}");
 

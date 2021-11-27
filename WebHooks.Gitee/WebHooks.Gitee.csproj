@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="NSwag.AspNetCore" Version="13.14.7" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\WebHooks.Core\WebHooks.Core.csproj" />
     <ProjectReference Include="..\WebHooks.Models\WebHooks.Models.csproj" />
   </ItemGroup>

@@ -18,8 +18,8 @@ namespace WebHooks.Gitee.APIs
             _giteeService = giteeService;
         }
 
-        [HttpPost("push/[repoKey]")]
-        public IActionResult OnPushAsync(string repoKey, PushWebHook webhook)
+        [HttpPost("push/{repoKey}")]
+        public IActionResult OnPushAsync([FromRoute]string repoKey, PushWebHook webhook)
         {
             var (xGiteeToken, xGiteeTimestamp, xGiteeEvent) = ParseGiteeHeader(HttpContext);
 

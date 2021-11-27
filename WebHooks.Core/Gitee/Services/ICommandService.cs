@@ -27,6 +27,6 @@ namespace WebHooks.Core.Gitee.Services
         /// </summary>
         /// <param name="option"></param>
         /// <returns></returns>
-        Task RunScripts(PushWebHookOption option);
+        Task RunScripts(GiteeWebHookOption option);
     }
 }

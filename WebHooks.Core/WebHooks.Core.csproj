@@ -27,4 +27,10 @@
     <ProjectReference Include="..\WebHooks.Models\WebHooks.Models.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="scripts\Git-Helper\Git-Helper.psm1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

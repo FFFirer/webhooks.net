@@ -9,6 +9,15 @@ namespace WebHooks.Core.Gitee.Services
 {
     public interface IGiteeService
     {
+        /// <summary>
+        /// 处理推送事件
+        /// </summary>
+        /// <param name="configKey">配置Key</param>
+        /// <param name="xGiteeToken">Gitee Token</param>
+        /// <param name="xGiteeTimestamp">Gitee Timestamp</param>
+        /// <param name="xGiteeEvent">Gitee Event</param>
+        /// <param name="webHook">Gitee WebHook</param>
+        /// <returns></returns>
         Task HandlePushEventAsync(string configKey, string xGiteeToken, string xGiteeTimestamp, string xGiteeEvent, PushWebHook webHook);
     }
 }

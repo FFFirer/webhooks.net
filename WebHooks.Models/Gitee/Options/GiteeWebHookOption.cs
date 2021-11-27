@@ -7,9 +7,9 @@ using WebHooks.Models.Common;
 
 namespace WebHooks.Models.Gitee.Options
 {
-    public class PushWebHookOption : PlatformOption
+    public class GiteeWebHookOption : PlatformOption
     {
-        private const string _platform = "Gitee";
+        public const string _platform = "Gitee";
 
         public override string Platform { get => _platform; }
 

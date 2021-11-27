@@ -126,3 +126,4 @@ function Get-GitBranch {
     #>
 
 }
+Export-ModuleMember -Function Get-GitBranch

@@ -37,6 +37,8 @@ namespace WebHooks.Core.Commands
 
             System.Threading.Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("zh-cn");
 
+            PreLoadCommands(initialState);
+
             _runspace = RunspaceFactory.CreateRunspace(_host, initialState);
 
             _powershell = PowerShell.Create();
@@ -46,7 +48,8 @@ namespace WebHooks.Core.Commands
 
         public void Dispose()
         {
-            
+            _powershell?.Dispose();
+            _runspace.Dispose();
         }
 
         public static PowershellClient Create(ILogger logger)
@@ -56,19 +59,54 @@ namespace WebHooks.Core.Commands
 
         private Runspace _runspace { get; set; }
 
-        private PowerShell _powershell { get; set; }
+        private PowerShell? _powershell { get; set; }
 
         private WebHooksHost _host { get; set; }
 
         private WebHooksProgram _program { get; set; }
 
-        public async Task<Tuple<int, PSDataCollection<PSObject>>> InvokeAsync(PSCommand commands)
+        public async Task<Tuple<int, PSDataCollection<PSObject>>> InvokeAsync(Action<PowerShell> addCommands)
         {
-            _powershell.Commands = commands;
+            var results = new PSDataCollection<PSObject>();
 
-            var results = await _powershell.InvokeAsync();
+            var input = new PSDataCollection<PSObject>();
+            var output = new PSDataCollection<PSObject>();
 
-            _powershell.Commands.Clear();
+            try
+            {
+                if (_powershell == null)
+                {
+                    throw new NullReferenceException($"没有初始化：{nameof(_powershell)}");
+                }
+
+                if(_powershell.Runspace.RunspaceStateInfo.State != RunspaceState.Opened)
+                {
+                    _powershell.Runspace.Open();
+                }
+
+                addCommands(_powershell);
+
+                results = await _powershell.InvokeAsync();
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("命令行意外停止！", ex);
+                throw;
+            }
+            finally
+            {
+                _logger.LogDebug($"命令执行输入\n{string.Join("\n", input)}");
+                _logger.LogDebug($"命令执行结果\n{string.Join("\n", results)}");
+                _logger.LogDebug($"命令执行输出\n{string.Join("\n", output)}");
+                _logger.LogDebug($"命令执行历史\n{_powershell?.HistoryString}");
+
+                if (_powershell != null)
+                {
+                    _powershell.Commands.Clear();
+                }
+            }
+
             return new(_program.ExitCode, results);
         }
 
@@ -78,11 +116,49 @@ namespace WebHooks.Core.Commands
         /// <param name="powershell"></param>
         private void PreLoadCommands(InitialSessionState? initialSessionState)
         {
-            if(initialSessionState == null)
+            if (initialSessionState == null)
             {
-                return;
+                throw new ArgumentNullException(nameof(initialSessionState));
             }
 
+            var contentRootDir = AppDomain.CurrentDomain.BaseDirectory;
+
+            var scriptsDir = Path.Combine(contentRootDir, "scripts");
+
+            if (!Directory.Exists(scriptsDir))
+            {
+                throw new DirectoryNotFoundException(scriptsDir);
+            }
+
+            var initScriptPath = Path.Combine(scriptsDir, "Git-Help.ps1");
+
+            if (!File.Exists(initScriptPath))
+            {
+                throw new FileNotFoundException(initScriptPath);
+            }
+
+            try
+            {
+                var scriptsDirInfo = new DirectoryInfo(scriptsDir);
+
+                var childDirs = scriptsDirInfo.GetDirectories();
+
+                if (childDirs.Any())
+                {
+                    foreach (var childDir in childDirs)
+                    {
+                        _logger.LogInformation($"Import Module: {childDir.FullName}");
+                        initialSessionState.ImportPSModulesFromPath(childDir.FullName);
+                    }
+                }
+
+                //initialSessionState.ImportPSModulesFromPath(initScriptPath);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"导入模块失败！{initScriptPath}", ex);
+                throw;
+            }
         }
     }
 }
