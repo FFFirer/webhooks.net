@@ -26,6 +26,8 @@ builder.Services.AddSwaggerDocument((settings) =>
 builder.Services.AddScoped<IGiteeService, GiteeService>();
 builder.Services.AddScoped<ICommandService, CommandService>();
 
+builder.Host.UseSystemd();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -39,8 +41,11 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-app.UseOpenApi();
-app.UseSwaggerUi3();
+if (!app.Environment.IsProduction())
+{
+    app.UseOpenApi();
+    app.UseSwaggerUi3();
+}
 
 app.UseRouting();
 
