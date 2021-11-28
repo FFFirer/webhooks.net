@@ -11,6 +11,8 @@ namespace WebHooks.Models.Common
     /// </summary>
     public class BuildStep
     {
+        public string Name { get; set; } = string.Empty;
+
         /// <summary>
         /// 环境变量，暂时不启用
         /// </summary>

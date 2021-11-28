@@ -1,0 +1,16 @@
+{
+  "Gitee": {
+    "test": {
+      "Secret": "123456",
+      "Branch": "master",
+      "HookId": "1234567",
+      "Steps": [
+        {
+          "Scripts": [
+            "Write-Output \"Hello world!\""
+          ]
+        }
+      ]
+    }
+  }
+}

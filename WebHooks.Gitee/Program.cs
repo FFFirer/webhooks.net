@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using NLog.Extensions.Logging;
 using WebHooks.Core.Gitee.Services;
 using WebHooks.Models.Gitee.Options;
@@ -15,6 +16,7 @@ builder.Services.AddLogging(option =>
 });
     
 var configManager = new ConfigurationManager();
+configManager.AddJsonFile("webhooks.json");
 
 var repoConfigDict = new Dictionary<string, GiteeWebHookOption>();
 
@@ -22,7 +24,7 @@ configManager.GetSection(GiteeWebHookOption._platform).Bind(repoConfigDict);
 
 foreach (var key in repoConfigDict.Keys)
 {
-    builder.Services.Configure<GiteeWebHookOption>(key, (option) => { option = repoConfigDict[key]; });
+    builder.Services.Configure<GiteeWebHookOption>(key, configManager.GetSection($"{GiteeWebHookOption._platform}:{key}"));
 }
 
 builder.Services.AddSwaggerDocument((settings) =>

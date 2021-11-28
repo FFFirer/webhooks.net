@@ -12,34 +12,36 @@ namespace WebHooks.Core.Gitee.Services
     public class GiteeService : IGiteeService
     {
         private readonly ILogger _logger;
-        private readonly IOptionsSnapshot<GiteeWebHookOption> _pushWebHookOptionsAccessor;
+        private readonly IOptionsSnapshot<GiteeWebHookOption> _giteeOptions;
         private readonly ICommandService _commandService;
 
         public GiteeService(ILogger<GiteeService> logger
-            , IOptionsSnapshot<GiteeWebHookOption> pushWebHookOptionAccessor
+            , IOptionsSnapshot<GiteeWebHookOption> namedGiteeOptions
             , ICommandService commandService)
         {
             _logger = logger;
-            _pushWebHookOptionsAccessor = pushWebHookOptionAccessor;
+            _giteeOptions = namedGiteeOptions;
             _commandService = commandService;
         }
 
         public async Task HandlePushEventAsync(string repoKey, string xGiteeToken, string xGiteeTimestamp, string xGiteeEvent, PushWebHook webHook)
         {
-            _logger.LogInformation($@"Push事件触发，{nameof(xGiteeToken)}:{xGiteeToken}，{nameof(xGiteeTimestamp)}:{xGiteeTimestamp}，{nameof(xGiteeEvent)}:{xGiteeEvent}                            , {nameof(webHook)}: {JsonSerializer.Serialize(webHook)}");
+            _logger.LogInformation($@"Push事件触发，{nameof(xGiteeToken)}:{xGiteeToken}，{nameof(xGiteeTimestamp)}:{xGiteeTimestamp}，{nameof(xGiteeEvent)}:{xGiteeEvent}, {nameof(webHook)}: {JsonSerializer.Serialize(webHook)}");
 
             // 对应仓库的命名配置
-            var option = _pushWebHookOptionsAccessor.Get(repoKey);
+            var option = _giteeOptions.Get(repoKey);
 
-            if (!CheckRequest(xGiteeToken, xGiteeTimestamp, option.Secret))
-            {
-                _logger.LogError($@"请求校验失败");
-                return;
-            }
+            _logger.LogDebug($"配置[{repoKey}], 内容[{JsonSerializer.Serialize(option)}]");
 
             if (option == null)
             {
                 _logger.LogError($@"没有配置对应的构建配置，repo key: {repoKey}");
+                return;
+            }
+
+            if (!CheckRequest(xGiteeToken, xGiteeTimestamp, option.Secret))
+            {
+                _logger.LogError($@"请求校验失败");
                 return;
             }
 
