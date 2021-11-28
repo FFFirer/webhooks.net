@@ -16,7 +16,10 @@ $ExistsInstallPath = Test-Path $InstallPath
 
 if (-not $ExistsInstallPath) {
     Write-Warning "没有找到安装目录：$InstallPath"
-    exit 1
+    
+    New-Item -Path $InstallPath -ItemType Directory
+
+    Write-Debug "新建文件夹：$InstallPath"
 }
 
 Copy-Item -Path "./publish" -Destination $InstallPath -Recurse -ErrorAction Stop
