@@ -1,30 +1,46 @@
 # WebHooks.NET
 
 #### 介绍
-实现Gitee WebHook的接收方，未来也会考虑添加其他平台的WebHook
+
+实现 Gitee WebHook 的接收方，未来也会考虑添加其他平台的 WebHook。
+命令行执行依赖 PowerShell，推荐安装 PowerShell 7.0+ 或 PowerShell Core。
 
 #### 软件架构
-使用.NET 6，分层结构
 
+使用.NET 6，分层结构  
+执行 PowerShell 明令使用的 PowerShell SDK
 
 #### 安装教程
 
-开发中
+```sh
+# bash
+bash ./install.sh
+# powershell
+pwsh ./install.ps1
+```
 
 #### 使用说明
 
-开发中
+配置 webhooks.json
+配置节`Gitee`表示是 Gitee 平台的 WebHook，`test`区分每次的请求，对标请求连接的`/api/webhooks/Gitee/push/{repoKey}`中的 repoKey；Secret 表示 Gitee WebHook 密码或私钥；Branch 表示要操作的分支；Steps 表示要操作的多个步骤，Scripts 表示执行具体脚本（PowerShell）
+
+```json
+{
+  "Gitee": {
+    "test": {
+      "Secret": "123456",
+      "Branch": "master",
+      "HookId": "1234567",
+      "Steps": [
+        {
+          "Scripts": ["Write-Output \"Hello world!\""]
+        }
+      ]
+    }
+  }
+}
+```
 
 #### 参与贡献
 
 开发中
-
-
-#### 特技
-
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
