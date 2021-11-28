@@ -9,7 +9,7 @@ if (-not $ExistsInstallPath) {
     Write-Output "没有找到安装目录：$InstallPath"
 }
 
-Copy-Item -Path "./publish/*" -Destination $InstallPath -Recurse
+Copy-Item -Path "./publish" -Destination $InstallPath -Recurse
 
 Write-Output "开始修改权限"
 chown -R www-data:www-data $InstallPath
