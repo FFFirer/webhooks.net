@@ -22,7 +22,7 @@ if (-not $ExistsInstallPath) {
     Write-Debug "新建文件夹：$InstallPath"
 }
 
-Copy-Item -Path "./publish" -Destination $InstallPath -Recurse -ErrorAction Stop
+Copy-Item -Path "./publish/*" -Destination $InstallPath -Recurse -ErrorAction Stop
 
 Write-Debug "开始修改权限"
 chown -R www-data:www-data $InstallPath
