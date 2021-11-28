@@ -79,7 +79,7 @@ namespace WebHooks.Core.Commands.Tests
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError("", ex);
+                    logger.LogError(ex, "");
 
                     Assert.Fail();
                 }
@@ -125,7 +125,7 @@ namespace WebHooks.Core.Commands.Tests
             }
             catch (Exception ex)
             {
-                logger.LogError($"测试终止, {ex.ToString()}");
+                logger.LogError(ex, "测试终止");
                 Assert.Fail();
             }
         }

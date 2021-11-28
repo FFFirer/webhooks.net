@@ -91,7 +91,7 @@ namespace WebHooks.Core.Commands
             }
             catch (Exception ex)
             {
-                _logger.LogError("命令行意外停止！", ex);
+                _logger.LogError(ex, "命令行意外停止！");
                 throw;
             }
             finally
@@ -156,7 +156,7 @@ namespace WebHooks.Core.Commands
             }
             catch (Exception ex)
             {
-                _logger.LogError($"导入模块失败！{initScriptPath}", ex);
+                _logger.LogError(ex, $"导入模块失败！{initScriptPath}");
                 throw;
             }
         }

@@ -21,9 +21,16 @@ namespace WebHooks.Gitee.APIs
         [HttpPost("push/{repoKey}")]
         public IActionResult OnPushAsync([FromRoute]string repoKey, PushWebHook webhook)
         {
-            var (xGiteeToken, xGiteeTimestamp, xGiteeEvent) = ParseGiteeHeader(HttpContext);
+            try
+            {
+                var (xGiteeToken, xGiteeTimestamp, xGiteeEvent) = ParseGiteeHeader(HttpContext);
 
-            _giteeService.HandlePushEventAsync(repoKey, xGiteeToken, xGiteeTimestamp, xGiteeEvent, webhook);
+                _giteeService.HandlePushEventAsync(repoKey, xGiteeToken, xGiteeTimestamp, xGiteeEvent, webhook);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "处理失败");
+            }
 
             return Ok();
         }
