@@ -1,3 +1,4 @@
+using NLog.Extensions.Logging;
 using WebHooks.Core.Gitee.Services;
 using WebHooks.Models.Gitee.Options;
 
@@ -6,6 +7,13 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 
+// Logging
+builder.Services.AddLogging(option =>
+{
+    option.ClearProviders();
+    option.AddNLog(NLog.LogManager.Configuration);
+});
+    
 var configManager = new ConfigurationManager();
 
 var repoConfigDict = new Dictionary<string, GiteeWebHookOption>();
