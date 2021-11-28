@@ -106,7 +106,16 @@ namespace WebHooks.Core.Gitee.Services
         /// <returns></returns>
         private bool CheckRequest(string xGiteeToken, string xGiteeTimestamp, string secret)
         {
+            if(xGiteeToken == secret)
+            {
+                // 密码校验
+                return true;
+            }
+
+            // 签名校验
             var fact = Convert.ToBase64String(GiteeHelper.CalcGiteeSign(xGiteeTimestamp, secret));
+
+            _logger.LogDebug($"时间戳[{xGiteeTimestamp}], 请求Token[{xGiteeToken}], 私钥[{secret}], 计算出Token[{fact}]");
 
             return xGiteeToken == fact;
         }
