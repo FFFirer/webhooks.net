@@ -1,7 +1,13 @@
 $InstallPath = "/var/www/webhooks-gitee"
 
 # 首先编译发布项目
-dotnet publish "./WebHooks.Gitee.csproj" -c Release -o publish
+try {
+    dotnet publish "./WebHooks.Gitee.csproj" -c Release -o publish
+}
+catch {
+    Write-Output "发布失败，$_"
+    exit 1
+}
 
 $ExistsInstallPath = Test-Path $InstallPath
 
@@ -22,5 +28,6 @@ Write-Output "复制service文件到systemd路径[/etc/systemd/system/]下"
 Copy-Item $InstallServicePath -Destination "/etc/systemd/system/" -ErrorAction Stop
 
 Write-Output "文件复制完成"
+exit 0
 
 
