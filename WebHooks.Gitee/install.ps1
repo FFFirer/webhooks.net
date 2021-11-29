@@ -54,8 +54,10 @@ catch {
     exit 1
 }
 
-Write-Debug "更新文件"
-Copy-Item -Path "./publish/*" -Destination $InstallPath -Force -Recurse -Exclude "./publish/appsetting.*.json", "./publish/webhooks.json" -ErrorAction Stop
+$ExcludeFiles = @("appsetting.*.json", "webhooks.json")
+
+Write-Debug "更新文件，排除文件：$ExcludeFiles"
+Get-ChildItem  -Path "./publish/*" -Recurse -Exclude $ExcludeFiles | Copy-Item -Destination $InstallPath -Force -Recurse  -ErrorAction Stop
 Write-Debug "文件复制完成"
 
 Write-Debug "启动systemd服务 $InstallServiceFile"
