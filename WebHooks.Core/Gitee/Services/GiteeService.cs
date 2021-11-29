@@ -45,7 +45,7 @@ namespace WebHooks.Core.Gitee.Services
                 return;
             }
 
-            var runDictionary = Path.Combine(Environment.CurrentDirectory, "tasks", repoKey);
+            var runDictionary = Path.Combine(Environment.CurrentDirectory, "tasks", option.Platform, repoKey);
             if (!Directory.Exists(runDictionary))
             {
                 Directory.CreateDirectory(runDictionary);   // 创建工作目录
