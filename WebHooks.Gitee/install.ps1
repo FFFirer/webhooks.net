@@ -1,3 +1,10 @@
+[CmdletBinding()]
+param (
+    [Parameter()]
+    [switch]
+    $Update
+)
+
 $VerbosePreference = "Continue"
 $DebugPreference = "Continue"
 
@@ -54,11 +61,17 @@ catch {
     exit 1
 }
 
-$ExcludeFiles = @("appsetting.*.json", "webhooks.json")
+if ($Update) {
+    $ExcludeFiles = @("appsetting.*.json", "webhooks.json", "NLog.config")
 
-Write-Debug "更新文件，排除文件：$ExcludeFiles"
-Get-ChildItem  -Path "./publish/*" -Recurse -Exclude $ExcludeFiles | Copy-Item -Destination $InstallPath -Force -Recurse  -ErrorAction Stop
-Write-Debug "文件复制完成"
+    Write-Debug "更新文件，排除文件：$ExcludeFiles"
+    Get-ChildItem  -Path "./publish/*" -Recurse -Exclude $ExcludeFiles | Copy-Item -Destination $InstallPath -Force -Recurse  -ErrorAction Stop
+    Write-Debug "文件复制完成"
+}
+else {
+    Copy-Item -Path "./publish/*" -Destination $InstallPath -Force -Recurse  -ErrorAction Stop
+}
+
 
 Write-Debug "启动systemd服务 $InstallServiceFile"
 systemctl start $InstallServiceFile

@@ -1,9 +1,11 @@
-$servicePath = "/etc/systemd/system/webhooks.gitee.service"
+[CmdletBinding()]
+param (
+    [Parameter()]
+    [switch]
+    $Update
+)
 
-$ExistsServiceFilePath = Test-Path $servicePath
+$VerbosePreference = "Continue"
+$DebugPreference = "Continue"
 
-if (-not $ExistsServiceFilePath) {
-    Write-Error "未安装服务！";
-    exit 1
-}
-
+Write-Debug "$Update"
