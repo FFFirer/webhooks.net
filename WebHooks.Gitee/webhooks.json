@@ -3,7 +3,7 @@
     "test": {
       "Secret": "123456",
       "Branch": "master",
-      "HookId": "1234567",
+      "OnEvent": ["Push Hook", "Tag Push Hook"],
       "Steps": [
         {
           "Scripts": [

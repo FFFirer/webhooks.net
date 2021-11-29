@@ -45,6 +45,11 @@ namespace WebHooks.Core.Gitee.Services
                 return;
             }
 
+            if (!option.OnEvents.Contains(xGiteeEvent))
+            {
+                _logger.LogWarning($"未满足事件触发条件: {string.Join(",", option.OnEvents)}");
+            }
+
             var runDictionary = Path.Combine(Environment.CurrentDirectory, "tasks", option.Platform, repoKey);
             if (!Directory.Exists(runDictionary))
             {

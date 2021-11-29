@@ -24,9 +24,9 @@ namespace WebHooks.Models.Gitee.Options
         public string Branch { get; set; } = "master";
 
         /// <summary>
-        /// 标识勾子的Id
+        /// 触发事件
         /// </summary>
-        public string HookId { get; set; } = string.Empty;
+        public List<string> OnEvents { get; set; } = new List<string>();
 
         /// <summary>
         /// 构建步骤
