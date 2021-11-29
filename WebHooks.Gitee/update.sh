@@ -1,0 +1,1 @@
+pwsh ./install.ps1 -Update
