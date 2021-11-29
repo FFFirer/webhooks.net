@@ -59,7 +59,7 @@ namespace WebHooks.Core.Gitee.Services
             var pullBranch = (PowerShell shell) =>
             {
                 shell.AddStatement()
-                .AddCommand("Git-Pull-Branch")
+                .AddCommand("Get-GitBranch")
                 .AddParameter("Directory", runDictionary)
                 .AddParameter("RepoUrl", webHook?.Repository?.CloneUrl)
                 .AddParameter("Branch", GetBranch(webHook));
