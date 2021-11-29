@@ -23,9 +23,9 @@ namespace WebHooks.Core.Gitee.Services
             throw new NotImplementedException();
         }
 
-        public async Task RunScripts(GiteeWebHookOption option)
+        public Task RunScripts(GiteeWebHookOption option)
         {
-             
+            throw new NotImplementedException();
         }
 
         public void RunShellScripts(string @event)
