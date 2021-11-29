@@ -82,7 +82,7 @@ namespace WebHooks.Core.Gitee.Services
                 {
                     foreach (var script in step.Scripts)
                     {
-                        shell.AddCommand(script);
+                        shell.AddScript(script);
                     }
                 };
                 
