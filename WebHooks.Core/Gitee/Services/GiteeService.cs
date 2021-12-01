@@ -88,6 +88,7 @@ namespace WebHooks.Core.Gitee.Services
                 {
                     foreach (var script in step.Scripts)
                     {
+                        _logger.LogDebug($"添加脚本：{script}");
                         shell.AddScript(script);
                     }
                 };
