@@ -3,14 +3,15 @@
     "test": {
       "Secret": "123456",
       "Branch": "master",
-      "OnEvent": ["Push Hook", "Tag Push Hook"],
-      "Steps": [
-        {
-          "Scripts": [
-            "Write-Output \"Hello world!\""
-          ]
-        }
-      ]
+      "Events": {
+        "Push Hook": [
+          {
+            "Scripts": [
+              "Write-Output 'Hello world!'"
+            ]
+          }
+        ]
+      }
     }
   }
 }

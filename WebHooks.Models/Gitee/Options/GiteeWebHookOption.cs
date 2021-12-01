@@ -23,14 +23,6 @@ namespace WebHooks.Models.Gitee.Options
         /// </summary>
         public string Branch { get; set; } = "master";
 
-        /// <summary>
-        /// 触发事件
-        /// </summary>
-        public List<string> OnEvents { get; set; } = new List<string>();
-
-        /// <summary>
-        /// 构建步骤
-        /// </summary>
-        public List<BuildStep> Steps { get; set; } = new List<BuildStep>();
+        public Dictionary<string, List<BuildStep>> Events { get; set; } = new Dictionary<string,List<BuildStep>>();
     }
 }

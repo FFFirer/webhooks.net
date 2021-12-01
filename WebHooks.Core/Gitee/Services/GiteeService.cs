@@ -45,9 +45,9 @@ namespace WebHooks.Core.Gitee.Services
                 return;
             }
 
-            if (!option.OnEvents.Contains(xGiteeEvent))
+            if (!option.Events.ContainsKey(xGiteeEvent))
             {
-                _logger.LogWarning($"{xGiteeEvent}, 未配置事件触发条件: {string.Join(",", option.OnEvents)}");
+                _logger.LogWarning($"{xGiteeEvent}, 未配置事件触发条件: {string.Join(",", option.Events.Keys)}");
                 return;
             }
 
@@ -80,7 +80,7 @@ namespace WebHooks.Core.Gitee.Services
             }
 
             // 执行step
-            foreach (var step in option.Steps)
+            foreach (var step in option.Events[xGiteeEvent])
             {
                 var stepCommands = new PSCommand();
 
