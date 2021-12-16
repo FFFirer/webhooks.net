@@ -1,4 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
 using NLog.Extensions.Logging;
 using WebHooks.Core.Gitee.Services;
 using WebHooks.Models.Gitee.Options;
