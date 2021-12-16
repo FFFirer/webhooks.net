@@ -69,7 +69,6 @@ namespace WebHooks.Models.Gitee
         /// 推送的是否是新分支。
         /// </summary>
         [JsonPropertyName("created")]
-        [JsonConverter(typeof(BooleanConverter))]
         public bool Created { get; set; }
 
         /// <summary>
@@ -106,7 +105,6 @@ namespace WebHooks.Models.Gitee
         /// 推送包含的 commit 总数是否大于十二。
         /// </summary>
         [JsonPropertyName("commits_more_than_ten")]
-        [JsonConverter(typeof(BooleanConverter))]
         public bool? CommitsMoreThanTen { get; set; }
 
         /// <summary>
