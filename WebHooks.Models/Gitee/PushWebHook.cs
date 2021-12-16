@@ -99,7 +99,7 @@ namespace WebHooks.Models.Gitee
         /// 推送包含的 commit 总数。
         /// </summary>
         [JsonPropertyName("total_commits_count")]
-        public int TotalCommitsCount { get; set; }
+        public int? TotalCommitsCount { get; set; }
 
         /// <summary>
         /// 推送包含的 commit 总数是否大于十二。
