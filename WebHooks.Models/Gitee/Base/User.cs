@@ -76,7 +76,7 @@ namespace WebHooks.Models.Gitee
         /// git commit 中的时间。eg：2020-01-01T00:00:00+08:00
         /// </summary>
         [JsonPropertyName("time")]
-        public DateTime Time { get; set; }
+        public DateTime? Time { get; set; }
 
         /// <summary>
         /// 用户备注名。eg：Ruby 大神
