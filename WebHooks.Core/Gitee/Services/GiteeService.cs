@@ -90,6 +90,9 @@ namespace WebHooks.Core.Gitee.Services
 
                 var executeScripts = (PowerShell shell) =>
                 {
+                    // 第一步：进入工作目录
+                    shell.AddStatement().AddCommand("Set-Location").AddParameter("Path", runDictionary);
+
                     foreach (var script in step.Scripts)
                     {
                         _logger.LogDebug($"添加脚本：{script}");

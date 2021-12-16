@@ -12,6 +12,7 @@ using System.Management.Automation;
 using Microsoft.Extensions.Logging;
 using WebHooks.Models;
 using System.Reflection;
+using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
 
 namespace WebHooks.Core.Commands.Tests
 {
@@ -37,7 +38,7 @@ namespace WebHooks.Core.Commands.Tests
             var bindingFlags = BindingFlags.NonPublic | BindingFlags.Instance;
             var method = clientType.GetMethod("PreLoadCommands", bindingFlags);
 
-            if(method == null)
+            if (method == null)
             {
                 throw new Exception("没有找到方法！");
             }
@@ -52,7 +53,7 @@ namespace WebHooks.Core.Commands.Tests
                 runspace.Open();
 
                 var powershell = PowerShell.Create(runspace);
-                
+
                 powershell.AddStatement().AddCommand("Get-GitBranch")
                     .AddParameter("Directory", "./")
                     .AddParameter("Branch", "develop")
@@ -85,9 +86,9 @@ namespace WebHooks.Core.Commands.Tests
                 }
             }
 
-           
+
         }
-    
+
         /// <summary>
         /// 测试明亮调用
         /// </summary>
@@ -128,6 +129,57 @@ namespace WebHooks.Core.Commands.Tests
                 logger.LogError(ex, "测试终止");
                 Assert.Fail();
             }
+        }
+
+        [TestMethod()]
+        public void InvokeAsyncTest()
+        {
+            try
+            {
+
+                var scripts = new List<string>()
+                {
+                    "cd D:/Playground/repos/LittleBlog",
+                    "pwd",
+                    "& {./build.ps1 -mode prod -build_docker 0 -api_address / -admin_prefix /admin/}"
+                };
+
+                var executeScripts = (PowerShell shell) =>
+                {
+                    foreach (var script in scripts)
+                    {
+                        shell = shell.AddStatement().AddScript(script);
+                    }
+                };
+
+                var shell = PowershellClient.Create(new TLogger());
+
+                var (stepExitCode, stepResults) = shell.InvokeAsync(executeScripts).Result;
+            }
+            catch (Exception ex)
+            {
+
+                Assert.Fail();
+            }
+
+        }
+    }
+
+    public class TLogger : ILogger
+    {
+        public IDisposable BeginScope<TState>(TState state)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsEnabled(LogLevel logLevel)
+        {
+            return true;
+        }
+
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+        {
+
         }
     }
 }
