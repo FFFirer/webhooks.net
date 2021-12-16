@@ -89,16 +89,22 @@ function Get-GitBranch {
         Write-Output "未指定Tag, 拉取最新代码"
         # 不指定标签
         git pull
+
+        Write-Output "拉取完成！"
     }
     else {
         git pull
 
+        Write-Output "拉取完成！"
+
         # 签出指定标签
         git checkout $Tag
+        Write-Output "签出分支: $Tag"
     }
 
     # 返回原目录
-    #Set-Location $OriginLocation    
+    Write-Output "返回目录: $OriginLocation"
+    Set-Location $OriginLocation    
 
     <#
         .SYNOPIS

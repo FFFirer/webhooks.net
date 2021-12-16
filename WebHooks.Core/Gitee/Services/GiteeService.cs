@@ -73,11 +73,15 @@ namespace WebHooks.Core.Gitee.Services
 
             var (exitCode, results) = await shell.InvokeAsync(pullBranch);
 
+            _logger.LogDebug($"ExitCode: {exitCode}");
+
             if (exitCode != 0)
             {
                 _logger.LogWarning($"检查Git仓库时出错, {string.Join("\r\n", results.Select(a => a.ToString()).ToList())}");
                 return;
             }
+
+            _logger.LogDebug($"触发实现Steps: {string.Join(",", option.Events.Keys)}");
 
             // 执行step
             foreach (var step in option.Events[xGiteeEvent])
@@ -94,6 +98,8 @@ namespace WebHooks.Core.Gitee.Services
                 };
                 
                 var (stepExitCode, stepResults) = await shell.InvokeAsync(executeScripts);
+
+                _logger.LogDebug($"StepExitCode: {stepExitCode}");
 
                 if (stepExitCode != 0)
                 {
