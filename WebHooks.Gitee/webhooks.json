@@ -10,6 +10,18 @@
               "Write-Output 'Hello world!'"
             ]
           }
+        ],
+        "Tag Push Hook": [
+          {
+            "Scripts": [
+              "Write-Output 'STEP 1: Trigger On Tag Push Hook'"
+            ]
+          },
+          {
+            "Scripts": [
+              "Write-Output 'STEP 2: Trigger On Tag Push Hook'"
+            ]
+          }
         ]
       }
     }
