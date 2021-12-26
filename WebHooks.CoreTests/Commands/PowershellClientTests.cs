@@ -158,7 +158,7 @@ namespace WebHooks.Core.Commands.Tests
             }
             catch (Exception ex)
             {
-
+                Logger.LogMessage(ex.ToString());
                 Assert.Fail();
             }
 

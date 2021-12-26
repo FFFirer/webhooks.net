@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebHooks.Core", "WebHooks.C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PowershellPreSearch", "PowershellPreSearch\PowershellPreSearch.csproj", "{810E904E-7BBB-43F4-A27F-BD5FE715B58C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebHooks.CoreTests", "WebHooks.CoreTests\WebHooks.CoreTests.csproj", "{A04DDDDC-EC3B-4CAB-A212-4BE7319FDBF6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebHooks.CoreTests", "WebHooks.CoreTests\WebHooks.CoreTests.csproj", "{A04DDDDC-EC3B-4CAB-A212-4BE7319FDBF6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo01", "Demo01\Demo01.csproj", "{6E5819FA-F39E-4155-8BBC-6926D8A70C68}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{A04DDDDC-EC3B-4CAB-A212-4BE7319FDBF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A04DDDDC-EC3B-4CAB-A212-4BE7319FDBF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A04DDDDC-EC3B-4CAB-A212-4BE7319FDBF6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E5819FA-F39E-4155-8BBC-6926D8A70C68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E5819FA-F39E-4155-8BBC-6926D8A70C68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E5819FA-F39E-4155-8BBC-6926D8A70C68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E5819FA-F39E-4155-8BBC-6926D8A70C68}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

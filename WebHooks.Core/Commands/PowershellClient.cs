@@ -20,6 +20,7 @@ namespace WebHooks.Core.Commands
     /// </summary>
     public class PowershellClient : IShellClient, IDisposable
     {
+        private object runLock = new object();
         private readonly ILogger _logger;
         private PowershellClient(ILogger logger)
         {
@@ -41,14 +42,21 @@ namespace WebHooks.Core.Commands
 
             _runspace = RunspaceFactory.CreateRunspace(_host, initialState);
 
-            _powershell = PowerShell.Create();
+            //_powershell = PowerShell.Create();
 
-            _powershell.Runspace = _runspace;
+            //_powershell.Runspace = _runspace;
         }
 
         public void Dispose()
         {
-            _powershell?.Dispose();
+            lock (runLock)
+            {
+                if(_powershell != null)
+                {
+                    _powershell?.Dispose();
+                    _powershell = null;
+                }
+            }
             _runspace.Dispose();
         }
 
@@ -69,8 +77,12 @@ namespace WebHooks.Core.Commands
         {
             var results = new PSDataCollection<PSObject>();
 
-            var input = new PSDataCollection<PSObject>();
-            var output = new PSDataCollection<PSObject>();
+            lock (runLock)
+            {
+                this._powershell = PowerShell.Create();
+            }
+
+            this._powershell.Runspace = this._runspace;
 
             try
             {
@@ -86,6 +98,8 @@ namespace WebHooks.Core.Commands
 
                 addCommands(_powershell);
 
+                _powershell.Commands.Commands[0].MergeMyResults(PipelineResultTypes.Error, PipelineResultTypes.Output);
+
                 results = await _powershell.InvokeAsync();
 
             }
@@ -96,14 +110,14 @@ namespace WebHooks.Core.Commands
             }
             finally
             {
-                _logger.LogDebug($"命令执行输入\n{string.Join("\n", input)}");
                 _logger.LogDebug($"命令执行结果\n{string.Join("\n", results)}");
-                _logger.LogDebug($"命令执行输出\n{string.Join("\n", output)}");
+
                 _logger.LogDebug($"命令执行历史\n{_powershell?.HistoryString}");
 
                 if (_powershell != null)
                 {
-                    _powershell.Commands.Clear();
+                    _powershell?.Dispose();
+                    _powershell = null;
                 }
             }
 
@@ -152,7 +166,8 @@ namespace WebHooks.Core.Commands
                     }
                 }
 
-                //initialSessionState.ImportPSModulesFromPath(initScriptPath);
+                // powershell 模块按文件夹导入
+                //initialSessionState.ImportPSModulesFromPath(initScriptPath); 
             }
             catch (Exception ex)
             {

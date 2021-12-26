@@ -1,0 +1,77 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Management.Automation.Host;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace WebHooks.Core.Commands
+{
+    public class WebShellHost : PSHost
+    {
+        #region private
+        private WebShell shellInstance;
+        private CultureInfo originalCultureInfo => System.Threading.Thread.CurrentThread.CurrentCulture;
+        private CultureInfo originalUICultureInfo => System.Threading.Thread.CurrentThread.CurrentUICulture;
+        private Guid instanceId => Guid.NewGuid();
+        private WebShellUserInterface webshellUI => new WebShellUserInterface();
+        private IWebShellOutput output { get; set; }
+
+        #endregion
+
+        public WebShellHost(WebShell webShell, IWebShellOutput? webShellOutput)
+        {
+            shellInstance = webShell;
+
+            if(webShellOutput != null)
+            {
+                output = webShellOutput;
+            }
+            else
+            {
+                output = new WebShellOutputHelepr();
+            }
+
+            webshellUI.OutputEventHandker += output.WriteLine;
+        }
+
+        public override CultureInfo CurrentCulture => originalCultureInfo;
+
+        public override CultureInfo CurrentUICulture => originalUICultureInfo;
+
+        public override Guid InstanceId => instanceId;
+
+        public override string Name => "Web Shell";
+
+        public override PSHostUserInterface UI => webshellUI;
+
+        public override Version Version => new Version(1, 0, 0, 0);
+
+        public override void EnterNestedPrompt()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void ExitNestedPrompt()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void NotifyBeginApplication()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void NotifyEndApplication()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void SetShouldExit(int exitCode)
+        {
+            this.shellInstance.ShouldExit = true;
+            this.shellInstance.ExitCode = exitCode;
+        }
+    }
+}
