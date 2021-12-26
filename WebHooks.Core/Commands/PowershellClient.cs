@@ -98,7 +98,14 @@ namespace WebHooks.Core.Commands
 
                 addCommands(_powershell);
 
-                _powershell.Commands.Commands[0].MergeMyResults(PipelineResultTypes.Error, PipelineResultTypes.Output);
+                _logger.LogDebug($"Commands Count: {_powershell.Commands.Commands.Count}");
+                _logger.LogDebug($"Current Commands: {string.Join("\n", _powershell.Commands.Commands.Select(a => a.CommandText))}");
+
+                foreach (var cmd in _powershell.Commands.Commands)
+                {
+                    cmd.MergeMyResults(PipelineResultTypes.All, PipelineResultTypes.Output);
+                }
+                //_powershell.Commands.Commands[0].MergeMyResults(PipelineResultTypes.Error, PipelineResultTypes.Output);
 
                 results = await _powershell.InvokeAsync();
 
