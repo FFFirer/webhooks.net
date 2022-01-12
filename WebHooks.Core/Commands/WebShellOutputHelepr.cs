@@ -36,7 +36,7 @@ namespace WebHooks.Core.Commands
         {
             message = FormatMessage(message);
             _buffer.AppendLine(message);
-            _logger?.LogTrace($"<OUTPUT> {message}");
+            _logger?.LogDebug($"<OUTPUT> {message}");
         }
 
         private string FormatMessage(string message)

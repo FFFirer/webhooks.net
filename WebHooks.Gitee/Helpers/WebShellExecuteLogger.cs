@@ -26,7 +26,7 @@ namespace WebHooks.Gitee.Helpers
         public void WriteLine(object? sender, string message)
         {
             Messages.AppendLine(message);
-            _logger.LogTrace($"<OUTPUT> {message}");
+            _logger.LogDebug($"<OUTPUT> {message}");
         }
     }
 }
