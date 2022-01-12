@@ -27,7 +27,7 @@ namespace WebHooks.Gitee.APIs
 
                 //_giteeService.HandlePushEventAsync(repoKey, xGiteeToken, xGiteeTimestamp, xGiteeEvent, webhook);
 
-                Task.Factory.StartNew(() => _giteeService.HandlePushEventAsync(repoKey, xGiteeToken, xGiteeTimestamp, xGiteeEvent, webhook));
+                Task.Factory.StartNew(() => _giteeService.HandlePushEventAsyncV2(repoKey, xGiteeToken, xGiteeTimestamp, xGiteeEvent, webhook));
             }
             catch (Exception ex)
             {
