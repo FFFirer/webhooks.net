@@ -238,16 +238,20 @@ namespace WebHooks.Core.Commands
         {
             try
             {
+                _logger.LogInformation("开始执行");
                 this.ExecuteHelper(addCmd);
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "执行失败");
                 this.ReportException(ex);
             }
             finally
             {
+                _logger.LogInformation("执行结束");
                 if (this.shouldExit)
                 {
+                    _logger.LogDebug($"退出执行({this.exitCode})");
                     throw new Exception($"退出执行({this.exitCode})");
                 }
             }

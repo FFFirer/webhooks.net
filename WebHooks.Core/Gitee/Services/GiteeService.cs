@@ -14,14 +14,17 @@ namespace WebHooks.Core.Gitee.Services
         private readonly ILogger _logger;
         private readonly IOptionsSnapshot<GiteeWebHookOption> _giteeOptions;
         private readonly ICommandService _commandService;
+        private readonly ILoggerFactory _loggerFactory;
 
         public GiteeService(ILogger<GiteeService> logger
             , IOptionsSnapshot<GiteeWebHookOption> namedGiteeOptions
-            , ICommandService commandService)
+            , ICommandService commandService
+            , ILoggerFactory loggerFactory)
         {
             _logger = logger;
             _giteeOptions = namedGiteeOptions;
             _commandService = commandService;
+            _loggerFactory = loggerFactory;
         }
 
         public async Task HandlePushEventAsync(string repoKey, string xGiteeToken, string xGiteeTimestamp, string xGiteeEvent, PushWebHook webHook)
@@ -116,7 +119,7 @@ namespace WebHooks.Core.Gitee.Services
             return;
         }
 
-        public Task HandlePushEventAsyncV2(string configKey, string xGiteeToken, string xGiteeTimestamp, string xGiteeEvent, PushWebHook webHook)
+        public void HandlePushEventAsyncV2(string configKey, string xGiteeToken, string xGiteeTimestamp, string xGiteeEvent, PushWebHook webHook)
         {
             try
             {
@@ -132,8 +135,8 @@ namespace WebHooks.Core.Gitee.Services
                 var workingDirectory = PrepareRunDirectory(option.Platform, configKey);
                 var gitRepoFolder = Path.Combine(workingDirectory, ".git");
 
-                var logOutput = new WebShellOutputHelepr(_logger);
-                var shell = new WebShell(_logger, logOutput);
+                var logOutput = new WebShellOutputHelepr(_loggerFactory.CreateLogger("output"));
+                var shell = new WebShell(_loggerFactory.CreateLogger("webshell"), logOutput);
 
                 // 拉取代码
                 var pullBranch = (PowerShell shell) =>
@@ -179,8 +182,6 @@ namespace WebHooks.Core.Gitee.Services
             {
                 _logger.LogInformation("操作结束");
             }
-
-            return Task.CompletedTask;
         }
 
         /// <summary>

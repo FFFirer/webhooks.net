@@ -29,6 +29,6 @@ namespace WebHooks.Core.Gitee.Services
         /// <param name="xGiteeEvent"></param>
         /// <param name="webHook"></param>
         /// <returns></returns>
-        Task HandlePushEventAsyncV2(string configKey, string xGiteeToken, string xGiteeTimestamp, string xGiteeEvent, PushWebHook webHook);
+        void HandlePushEventAsyncV2(string configKey, string xGiteeToken, string xGiteeTimestamp, string xGiteeEvent, PushWebHook webHook);
     }
 }

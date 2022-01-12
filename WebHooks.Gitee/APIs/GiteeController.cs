@@ -12,7 +12,7 @@ namespace WebHooks.Gitee.APIs
         private readonly IGiteeService _giteeService;
 
         public GiteeController(ILogger<GiteeController> logger
-            , IGiteeService giteeService)
+            , IGiteeService giteeService, ILoggerFactory loggerFactory)
         {
             _logger = logger;
             _giteeService = giteeService;
@@ -25,7 +25,9 @@ namespace WebHooks.Gitee.APIs
             {
                 var (xGiteeToken, xGiteeTimestamp, xGiteeEvent) = ParseGiteeHeader(HttpContext);
 
-                _giteeService.HandlePushEventAsync(repoKey, xGiteeToken, xGiteeTimestamp, xGiteeEvent, webhook);
+                //_giteeService.HandlePushEventAsync(repoKey, xGiteeToken, xGiteeTimestamp, xGiteeEvent, webhook);
+
+                Task.Factory.StartNew(() => _giteeService.HandlePushEventAsync(repoKey, xGiteeToken, xGiteeTimestamp, xGiteeEvent, webhook));
             }
             catch (Exception ex)
             {
