@@ -67,7 +67,7 @@ namespace WebHooks.Core.Commands
             set { exitCode = value; }
         }
 
-        private async Task AsyncExecuteHelper(string cmd, object? input)
+        private void ExecuteHelper(string cmd, object? input)
         {
             if (string.IsNullOrEmpty(cmd))
             {
@@ -92,7 +92,7 @@ namespace WebHooks.Core.Commands
                     command.MergeMyResults(PipelineResultTypes.Error, PipelineResultTypes.Output);
                 }
 
-                await this.powershell.InvokeAsync();
+                this.powershell.Invoke();
             }
             finally
             {
@@ -221,11 +221,11 @@ namespace WebHooks.Core.Commands
             }
         }
 
-        public async Task ExecuteAsync(string cmd)
+        public void Execute(string cmd)
         {
             try
             {
-                await this.AsyncExecuteHelper(cmd, null);
+                this.ExecuteHelper(cmd, null);
             }
             catch (RuntimeException rte)
             {
@@ -234,11 +234,11 @@ namespace WebHooks.Core.Commands
             }
         }
 
-        public async Task ExecuteAsync(Action<PowerShell> addCmd)
+        public void Execute(Action<PowerShell> addCmd)
         {
             try
             {
-                await this.AsyncExecuteHelper(addCmd);
+                this.ExecuteHelper(addCmd);
             }
             catch (Exception ex)
             {
@@ -256,7 +256,7 @@ namespace WebHooks.Core.Commands
         /// <summary>
         /// 初始化
         /// </summary>
-        public async Task ExecutesAsync(params string[] cmds)
+        public void Executes(params string[] cmds)
         {
             if(cmds.Length <= 0)
             {
@@ -275,7 +275,7 @@ namespace WebHooks.Core.Commands
                     break;
                 }
 
-                await this.ExecuteAsync(cmd);
+                this.Execute(cmd);
             }
         }
     

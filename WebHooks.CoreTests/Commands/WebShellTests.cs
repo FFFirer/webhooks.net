@@ -46,13 +46,13 @@ namespace WebHooks.Core.Commands.Tests
                 var testWebShellOutput = new TestWebShellOutput();
                 var shell = new WebShell(logger, testWebShellOutput);
 
-                shell.ExecuteAsync("$PSVersionTable.PSVersion");
-                shell.ExecuteAsync("Get-ExperimentalFeature");
-                shell.ExecuteAsync("Enable-ExperimentalFeature -Name \"PSAnsiRendering\"");
-                shell.ExecuteAsync("[ExperimentalFeature]::IsEnabled(\"PSAnsiRendering\")");
-                shell.ExecuteAsync("echo $Env:__SuppressAnsiEscapeSequences");
-                shell.ExecuteAsync("$PSStyle.OutputRendering");
-                shell.ExecuteAsync("ls");
+                shell.Execute("$PSVersionTable.PSVersion");
+                shell.Execute("Get-ExperimentalFeature");
+                shell.Execute("Enable-ExperimentalFeature -Name \"PSAnsiRendering\"");
+                shell.Execute("[ExperimentalFeature]::IsEnabled(\"PSAnsiRendering\")");
+                shell.Execute("echo $Env:__SuppressAnsiEscapeSequences");
+                shell.Execute("$PSStyle.OutputRendering");
+                shell.Execute("ls");
             }
             catch (Exception ex)
             {
@@ -76,7 +76,7 @@ namespace WebHooks.Core.Commands.Tests
 
         public void WriteLine(object? sender, string message)
         {
-            //message = Regex.Replace(message, AnsiColorPattern, "");   // 去除Ansi Escape Codes
+            message = Regex.Replace(message, AnsiColorPattern, "");   // 去除Ansi Escape Codes
             //v = v.TrimEnd('\n');                                    // 去除行尾回车
             Logger.LogMessage(message);
         }

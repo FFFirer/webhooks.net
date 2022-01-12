@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace WebHooks.Core.Commands
@@ -33,8 +34,18 @@ namespace WebHooks.Core.Commands
 
         public void WriteLine(object? sender, string message)
         {
+            message = FormatMessage(message);
             _buffer.AppendLine(message);
             _logger?.LogTrace($"<OUTPUT> {message}");
         }
+
+        private string FormatMessage(string message)
+        {
+            message = Regex.Replace(message, AnsiColorPattern, "");   // 去除Ansi Escape Codes
+            message = message.TrimEnd('\n');
+            return message;
+        }
+
+        private string AnsiColorPattern = @"\u001b(.*?)m";
     }
 }

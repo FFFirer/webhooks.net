@@ -116,7 +116,7 @@ namespace WebHooks.Core.Gitee.Services
             return;
         }
 
-        public async Task HandlePushEventAsyncV2(string configKey, string xGiteeToken, string xGiteeTimestamp, string xGiteeEvent, PushWebHook webHook)
+        public Task HandlePushEventAsyncV2(string configKey, string xGiteeToken, string xGiteeTimestamp, string xGiteeEvent, PushWebHook webHook)
         {
             try
             {
@@ -146,7 +146,7 @@ namespace WebHooks.Core.Gitee.Services
                     .AddParameter("ErrorAction", "Stop");
                 };
 
-                await shell.ExecuteAsync(pullBranch);
+                shell.Execute(pullBranch);
 
                 _logger.LogDebug($"触发实现Steps: {string.Join(",", option.Events.Keys)}");
 
@@ -168,7 +168,7 @@ namespace WebHooks.Core.Gitee.Services
                         }
                     };
 
-                    await shell.ExecuteAsync(executeScripts);
+                    shell.Execute(executeScripts);
                 }
             }
             catch (Exception ex)
@@ -179,6 +179,8 @@ namespace WebHooks.Core.Gitee.Services
             {
                 _logger.LogInformation("操作结束");
             }
+
+            return Task.CompletedTask;
         }
 
         /// <summary>
