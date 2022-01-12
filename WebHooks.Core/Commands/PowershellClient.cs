@@ -27,6 +27,7 @@ namespace WebHooks.Core.Commands
             _logger = logger;
 
             _program = new WebHooksProgram();
+
             _host = new WebHooksHost(_program);
 
             var initialState = InitialSessionState.CreateDefault();

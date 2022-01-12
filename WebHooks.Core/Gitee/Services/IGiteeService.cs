@@ -19,5 +19,16 @@ namespace WebHooks.Core.Gitee.Services
         /// <param name="webHook">Gitee WebHook</param>
         /// <returns></returns>
         Task HandlePushEventAsync(string configKey, string xGiteeToken, string xGiteeTimestamp, string xGiteeEvent, PushWebHook webHook);
+
+        /// <summary>
+        /// 处理推送事件，替换Powershell执行逻辑
+        /// </summary>
+        /// <param name="configKey"></param>
+        /// <param name="xGiteeToken"></param>
+        /// <param name="xGiteeTimestamp"></param>
+        /// <param name="xGiteeEvent"></param>
+        /// <param name="webHook"></param>
+        /// <returns></returns>
+        Task HandlePushEventAsyncV2(string configKey, string xGiteeToken, string xGiteeTimestamp, string xGiteeEvent, PushWebHook webHook);
     }
 }

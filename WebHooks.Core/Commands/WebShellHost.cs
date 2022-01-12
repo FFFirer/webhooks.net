@@ -15,9 +15,12 @@ namespace WebHooks.Core.Commands
         private CultureInfo originalCultureInfo => System.Threading.Thread.CurrentThread.CurrentCulture;
         private CultureInfo originalUICultureInfo => System.Threading.Thread.CurrentThread.CurrentUICulture;
         private Guid instanceId => Guid.NewGuid();
-        private WebShellUserInterface webshellUI => new WebShellUserInterface();
+        private WebShellUserInterface webshellUI { get; set; } = new WebShellUserInterface();
         private IWebShellOutput output { get; set; }
-
+        private void EmitOutput(object? sender, string message)
+        {
+            output?.WriteLine(sender, message);
+        }
         #endregion
 
         public WebShellHost(WebShell webShell, IWebShellOutput? webShellOutput)
@@ -33,7 +36,7 @@ namespace WebHooks.Core.Commands
                 output = new WebShellOutputHelepr();
             }
 
-            webshellUI.OutputEventHandker += output.WriteLine;
+            webshellUI.OutputEventHandker += EmitOutput;
         }
 
         public override CultureInfo CurrentCulture => originalCultureInfo;

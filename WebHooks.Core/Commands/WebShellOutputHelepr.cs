@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,16 @@ namespace WebHooks.Core.Commands
     public class WebShellOutputHelepr : IWebShellOutput
     {
         private StringBuilder _buffer => new StringBuilder();
+        private readonly ILogger? _logger;
+
+        public WebShellOutputHelepr()
+        {
+
+        }
+        public WebShellOutputHelepr(ILogger logger)
+        {
+            this._logger = logger;
+        }
 
         public void Clear()
         {
@@ -23,6 +34,7 @@ namespace WebHooks.Core.Commands
         public void WriteLine(object? sender, string message)
         {
             _buffer.AppendLine(message);
+            _logger?.LogTrace($"<OUTPUT> {message}");
         }
     }
 }

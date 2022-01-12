@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -33,7 +34,15 @@ namespace WebHooks.Core.Commands
         {
             this._logger = logger;
             this.host = new WebShellHost(this, output);
-            this.runspace = RunspaceFactory.CreateRunspace(this.host);
+
+            var initialState = InitialSessionState.CreateDefault();
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                initialState.ExecutionPolicy = Microsoft.PowerShell.ExecutionPolicy.RemoteSigned;
+            }
+
+            this.runspace = RunspaceFactory.CreateRunspace(this.host, initialState);
             this.runspace.Open();
 
             lock (locker)
@@ -58,7 +67,7 @@ namespace WebHooks.Core.Commands
             set { exitCode = value; }
         }
 
-        private void ExecuteHelper(string cmd, object? input)
+        private async Task AsyncExecuteHelper(string cmd, object? input)
         {
             if (string.IsNullOrEmpty(cmd))
             {
@@ -74,19 +83,21 @@ namespace WebHooks.Core.Commands
 
             try
             {
-                this.powershell.AddScript(cmd);
+                this.powershell.AddScript(cmd).AddParameter("ErrorAction", "Stop");
 
                 this.powershell.AddCommand("out-default");
 
-                this.powershell.Commands.Commands[0].MergeMyResults(PipelineResultTypes.Error, PipelineResultTypes.Output);
+                this.powershell.Commands.Commands[0].MergeMyResults(PipelineResultTypes.All, PipelineResultTypes.Output);
 
-                if (input != null)
-                {
-                    this.powershell.Invoke(new object[] { input });
-                }else
-                {
-                    this.powershell.Invoke();
-                }
+                //if (input != null)
+                //{
+                //    this.powershell.In(new object[] { input });
+                //}else
+                //{
+
+                //}
+
+                await this.powershell.InvokeAsync();
             }
             finally
             {
@@ -126,7 +137,36 @@ namespace WebHooks.Core.Commands
                 }
             }
         }
+        private async Task AsyncExecuteHelper(Action<PowerShell> addCmds)
+        {
+            lock (this.locker)
+            {
+                this.powershell = PowerShell.Create();
+            }
 
+            this.powershell.Runspace = this.runspace;
+
+            try
+            {
+                addCmds(this.powershell);
+
+                this.powershell.AddCommand("out-string");
+
+                this.powershell.Commands.Commands[0].MergeMyResults(PipelineResultTypes.Error, PipelineResultTypes.Output);
+
+                var results = await this.powershell.InvokeAsync();
+
+                LogExecuteResults(results);
+            }
+            finally
+            {
+                lock (locker)
+                {
+                    this.powershell?.Dispose();
+                    this.powershell = null;
+                }
+            }
+        }
         private void ReportException(Exception e)
         {
             if (e != null)
@@ -181,11 +221,11 @@ namespace WebHooks.Core.Commands
             }
         }
 
-        public void Execute(string cmd)
+        public async Task ExecuteAsync(string cmd)
         {
             try
             {
-                this.ExecuteHelper(cmd, null);
+                await this.AsyncExecuteHelper(cmd, null);
             }
             catch (RuntimeException rte)
             {
@@ -194,10 +234,31 @@ namespace WebHooks.Core.Commands
             }
         }
 
+        public async Task ExecuteAsync(Action<PowerShell> addCmd)
+        {
+            try
+            {
+                await this.AsyncExecuteHelper(addCmd);
+            }
+            catch (Exception ex)
+            {
+                this.ReportException(ex);
+            }
+            finally
+            {
+                if (this.shouldExit)
+                {
+                    throw new Exception($"退出执行({this.exitCode})");
+                }
+            }
+        }
+
+
+
         /// <summary>
         /// 初始化
         /// </summary>
-        public void Executes(params string[] cmds)
+        public async Task ExecutesAsync(params string[] cmds)
         {
             if(cmds.Length <= 0)
             {
@@ -216,8 +277,35 @@ namespace WebHooks.Core.Commands
                     break;
                 }
 
-                this.Execute(cmd);
+                await this.ExecuteAsync(cmd);
             }
+        }
+    
+        public void Executes(IEnumerable<Action<PowerShell>> addCommands)
+        {
+            foreach (var addCmd in addCommands)
+            {
+                try
+                {
+                    this.ExecuteHelper(addCmd);
+                }
+                catch (Exception ex)
+                {
+                    this.ReportException(ex);
+                }
+                finally
+                {
+                    if (this.shouldExit)
+                    {
+                        throw new Exception($"退出执行({this.exitCode})");
+                    }
+                }
+            }
+        }
+
+        private void LogExecuteResults(PSDataCollection<PSObject> results)
+        {
+            
         }
     }
 }

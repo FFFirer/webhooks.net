@@ -1,14 +1,12 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WebHooks.Core.Commands;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Moq;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
+using Moq;
+using System;
+using System.Management.Automation;
+using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace WebHooks.Core.Commands.Tests
 {
@@ -32,6 +30,8 @@ namespace WebHooks.Core.Commands.Tests
         [TestMethod()]
         public void ExecuteTest()
         {
+            PSStyle.Instance.OutputRendering = OutputRendering.PlainText;
+
             var logger = _loggerFactory.CreateLogger("Test");
             var output = new Mock<IWebShellOutput>();
 
@@ -43,9 +43,16 @@ namespace WebHooks.Core.Commands.Tests
 
             try
             {
-                var shell = new WebShell(logger, output.Object);
+                var testWebShellOutput = new TestWebShellOutput();
+                var shell = new WebShell(logger, testWebShellOutput);
 
-                shell.Execute("ls");
+                shell.ExecuteAsync("$PSVersionTable.PSVersion");
+                shell.ExecuteAsync("Get-ExperimentalFeature");
+                shell.ExecuteAsync("Enable-ExperimentalFeature -Name \"PSAnsiRendering\"");
+                shell.ExecuteAsync("[ExperimentalFeature]::IsEnabled(\"PSAnsiRendering\")");
+                shell.ExecuteAsync("echo $Env:__SuppressAnsiEscapeSequences");
+                shell.ExecuteAsync("$PSStyle.OutputRendering");
+                shell.ExecuteAsync("ls");
             }
             catch (Exception ex)
             {
@@ -53,5 +60,27 @@ namespace WebHooks.Core.Commands.Tests
                 Assert.Fail();
             }
         }
+    }
+
+    public class TestWebShellOutput : IWebShellOutput
+    {
+        public void Clear()
+        {
+            throw new NotImplementedException();
+        }
+
+        public string Get()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void WriteLine(object? sender, string message)
+        {
+            //message = Regex.Replace(message, AnsiColorPattern, "");   // 去除Ansi Escape Codes
+            //v = v.TrimEnd('\n');                                    // 去除行尾回车
+            Logger.LogMessage(message);
+        }
+
+        private string AnsiColorPattern = @"\u001b(.*?)m";
     }
 }

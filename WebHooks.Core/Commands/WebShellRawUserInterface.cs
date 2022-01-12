@@ -9,24 +9,51 @@ namespace WebHooks.Core.Commands
 {
     public class WebShellRawUserInterface : PSHostRawUserInterface
     {
-        public override ConsoleColor BackgroundColor { get => Console.BackgroundColor; set => Console.BackgroundColor = value; }
-        public override Size BufferSize
+        private ConsoleColor _backgroundColor => ConsoleColor.White;
+        private ConsoleColor _foregroundColor => ConsoleColor.Red;
+        private int _bufferWidth => 100;
+        private int _bufferHeight => 3000;
+        private int _cursorSize => 20;
+        private bool _keyAvailable => false;
+        private int _largestWindowWidth => int.MaxValue;
+        private int _largestWindowHeight => int.MaxValue;
+        private int _windowLeft => 0;
+        private int _windowTop => 0;
+        private int _windowWidth = 100;
+        private int _windowHeight = 100;
+
+        public override ConsoleColor BackgroundColor
         {
             get
             {
-                return new Size(Console.BufferWidth, Console.BufferHeight);
+                return _backgroundColor;
             }
             set
             {
 
             }
         }
-        public override Coordinates CursorPosition { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override Size BufferSize
+        {
+            get
+            {
+                return new Size(_bufferWidth, _bufferHeight);
+            }
+            set
+            {
+
+            }
+        }
+        public override Coordinates CursorPosition
+        {
+            get { throw new NotImplementedException(); }
+            set { throw new NotImplementedException(); }
+        }
         public override int CursorSize
         {
             get
             {
-                return Console.CursorSize;
+                return _cursorSize;
             }
             set
             {
@@ -35,21 +62,24 @@ namespace WebHooks.Core.Commands
         }
         public override ConsoleColor ForegroundColor
         {
-            get => Console.ForegroundColor;
+            get
+            {
+                return _foregroundColor;
+            }
             set
             {
 
             }
         }
 
-        public override bool KeyAvailable => Console.KeyAvailable;
+        public override bool KeyAvailable => _keyAvailable;
 
         public override Size MaxPhysicalWindowSize => throw new NotImplementedException();
 
-        public override Size MaxWindowSize => new Size(Console.LargestWindowWidth, Console.LargestWindowHeight);
+        public override Size MaxWindowSize => new Size(_largestWindowWidth, _largestWindowHeight);
 
-        public override Coordinates WindowPosition { get => new Coordinates(Console.WindowLeft, Console.WindowTop); set { } }
-        public override Size WindowSize { get => new Size(Console.WindowWidth, Console.WindowHeight); set { } }
+        public override Coordinates WindowPosition { get => new Coordinates(_windowLeft, _windowTop); set { } }
+        public override Size WindowSize { get => new Size(_windowWidth, _windowHeight); set { } }
         public override string WindowTitle { get; set; } = String.Empty;
 
         public override void FlushInputBuffer()

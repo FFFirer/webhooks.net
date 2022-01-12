@@ -70,19 +70,19 @@ namespace WebHooks.Core.Commands
         public override void WriteDebugLine(string message)
         {
             // 输出
-            OnOutput($"[DEBUG] {message}\n");
+            OnOutput($"[DEBUG] {message}");
         }
 
         public override void WriteErrorLine(string value)
         {
             // 输出
-            OnOutput($"[ERROR] {value}\n");
+            OnOutput($"[ERROR] {value}");
         }
 
         public override void WriteLine(string value)
         {
             // 输出
-            OnOutput($"{value}\n");
+            OnOutput($"{value}");
         }
 
         public override void WriteProgress(long sourceId, ProgressRecord record)
@@ -93,13 +93,13 @@ namespace WebHooks.Core.Commands
         public override void WriteVerboseLine(string message)
         {
             // 输出
-            OnOutput($"[VERBOSE] {message}\n");
+            OnOutput($"[VERBOSE] {message}");
         }
 
         public override void WriteWarningLine(string message)
         {
             // 输出
-            OnOutput($"[WARNING] {message}\n");
+            OnOutput($"[WARNING] {message}");
         }
     }
 }
