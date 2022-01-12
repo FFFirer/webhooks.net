@@ -29,11 +29,13 @@ namespace WebHooks.Core.Commands
 
             if(webShellOutput != null)
             {
+                webShellOutput.WriteLine(this, "订阅事件");
                 output = webShellOutput;
+                webShellOutput.WriteLine(this, "订阅事件成功");
             }
             else
             {
-                output = new WebShellOutputHelepr();
+                throw new Exception("Ouput为空");
             }
 
             webshellUI.OutputEventHandker += EmitOutput;
