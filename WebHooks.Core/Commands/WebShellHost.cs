@@ -43,6 +43,8 @@ namespace WebHooks.Core.Commands
             }
 
             webshellUI.OutputEventHandker += EmitOutput;
+
+            webshellUI.Write("测试Host输出");
         }
 
         public override CultureInfo CurrentCulture => originalCultureInfo;
