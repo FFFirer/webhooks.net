@@ -34,8 +34,8 @@ namespace WebHooks.Core.Commands
 
         public void WriteLine(object? sender, string message)
         {
-            message = FormatMessage(message);
-            _buffer.AppendLine(message);
+            //message = FormatMessage(message);
+            //_buffer.AppendLine(message);
             _logger?.LogDebug($"<OUTPUT> {message}");
         }
 

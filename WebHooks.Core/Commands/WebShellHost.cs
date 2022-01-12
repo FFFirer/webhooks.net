@@ -19,6 +19,10 @@ namespace WebHooks.Core.Commands
         private IWebShellOutput output { get; set; }
         private void EmitOutput(object? sender, string message)
         {
+            if(output == null)
+            {
+                throw new Exception("output 为空");
+            }
             output?.WriteLine(sender, message);
         }
         #endregion
