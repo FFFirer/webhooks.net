@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
@@ -42,22 +43,16 @@ namespace WebHooks.Core.Commands
                 initialState.ExecutionPolicy = Microsoft.PowerShell.ExecutionPolicy.RemoteSigned;
             }
 
+            System.Threading.Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("zh-cn");
+
+            PreLoadCommands(initialState);
+
             this.runspace = RunspaceFactory.CreateRunspace(this.host, initialState);
             this.runspace.Open();
 
             lock (locker)
             {
                 this.powershell = PowerShell.Create();
-            }
-
-            try
-            {
-
-            }
-            catch (Exception)
-            {
-
-                throw;
             }
         }
 
@@ -309,5 +304,54 @@ namespace WebHooks.Core.Commands
         {
             
         }
+
+        private void PreLoadCommands(InitialSessionState? initialSessionState)
+        {
+            if (initialSessionState == null)
+            {
+                throw new ArgumentNullException(nameof(initialSessionState));
+            }
+
+            var contentRootDir = AppDomain.CurrentDomain.BaseDirectory;
+
+            var scriptsDir = Path.Combine(contentRootDir, "scripts");
+
+            if (!Directory.Exists(scriptsDir))
+            {
+                throw new DirectoryNotFoundException(scriptsDir);
+            }
+
+            var initScriptPath = Path.Combine(scriptsDir, "Git-Help.ps1");
+
+            if (!File.Exists(initScriptPath))
+            {
+                throw new FileNotFoundException(initScriptPath);
+            }
+
+            try
+            {
+                var scriptsDirInfo = new DirectoryInfo(scriptsDir);
+
+                var childDirs = scriptsDirInfo.GetDirectories();
+
+                if (childDirs.Any())
+                {
+                    foreach (var childDir in childDirs)
+                    {
+                        _logger.LogInformation($"Import Module: {childDir.FullName}");
+                        initialSessionState.ImportPSModulesFromPath(childDir.FullName);
+                    }
+                }
+
+                // powershell 模块按文件夹导入
+                //initialSessionState.ImportPSModulesFromPath(initScriptPath); 
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"导入模块失败！{initScriptPath}");
+                throw;
+            }
+        }
+
     }
 }
