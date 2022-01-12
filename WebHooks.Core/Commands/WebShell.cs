@@ -155,7 +155,7 @@ namespace WebHooks.Core.Commands
 
                 var results = await this.powershell.InvokeAsync();
 
-                LogExecuteResults(results);
+                //LogExecuteResults(results);
             }
             finally
             {
