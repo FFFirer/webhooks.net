@@ -26,7 +26,10 @@ namespace WebHooks.Core.Commands
             {
                 throw new Exception("没有注册到事件！");
             }
-
+            if(OutputEventHandker.GetInvocationList().Length <= 0)
+            {
+                throw new Exception("注册到事件数量为0！");
+            }
             OutputEventHandker?.Invoke(this, message);
         }
 

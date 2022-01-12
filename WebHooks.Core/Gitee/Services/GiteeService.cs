@@ -135,7 +135,7 @@ namespace WebHooks.Core.Gitee.Services
                 var workingDirectory = PrepareRunDirectory(option.Platform, configKey);
                 var gitRepoFolder = Path.Combine(workingDirectory, ".git");
 
-                var logOutput = new WebShellOutputHelepr(_loggerFactory.CreateLogger("output"));
+                var logOutput = new WebShellOutputHelepr(_loggerFactory.CreateLogger("PS"));
                 var shell = new WebShell(_loggerFactory.CreateLogger("webshell"), logOutput);
 
                 // 拉取代码
