@@ -22,6 +22,11 @@ namespace WebHooks.Core.Commands
         /// <param name="message"></param>
         private void OnOutput(string message)
         {
+            if(OutputEventHandker == null)
+            {
+                throw new Exception("没有注册到事件！");
+            }
+
             OutputEventHandker?.Invoke(this, message);
         }
 
