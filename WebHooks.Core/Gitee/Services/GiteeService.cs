@@ -118,54 +118,66 @@ namespace WebHooks.Core.Gitee.Services
 
         public async Task HandlePushEventAsyncV2(string configKey, string xGiteeToken, string xGiteeTimestamp, string xGiteeEvent, PushWebHook webHook)
         {
-            _logger.LogInformation($@"Push事件触发，{nameof(xGiteeToken)}:{xGiteeToken}，{nameof(xGiteeTimestamp)}:{xGiteeTimestamp}，{nameof(xGiteeEvent)}:{xGiteeEvent}, {nameof(webHook)}: {JsonSerializer.Serialize(webHook)}");
-
-            // 检查前置条件
-            Check(configKey, xGiteeToken, xGiteeTimestamp, xGiteeEvent, webHook);
-
-            var option = _giteeOptions.Get(configKey);
-
-            // 准备工作目录
-            var workingDirectory = PrepareRunDirectory(option.Platform, configKey);
-            var gitRepoFolder = Path.Combine(workingDirectory, ".git");
-
-            var logOutput = new WebShellOutputHelepr(_logger);
-            var shell = new WebShell(_logger, logOutput);
-
-            // 拉取代码
-            var pullBranch = (PowerShell shell) =>
+            try
             {
-                shell.AddStatement()
-                .AddCommand("Get-GitBranch")
-                .AddParameter("Directory", workingDirectory)
-                .AddParameter("RepoUrl", webHook?.Repository?.CloneUrl)
-                .AddParameter("Branch", GetBranch(webHook))
-                .AddParameter("ErrorAction", "Stop");
-            };
 
-            await shell.ExecuteAsync(pullBranch);
+                _logger.LogInformation($@"Push事件触发，{nameof(xGiteeToken)}:{xGiteeToken}，{nameof(xGiteeTimestamp)}:{xGiteeTimestamp}，{nameof(xGiteeEvent)}:{xGiteeEvent}, {nameof(webHook)}: {JsonSerializer.Serialize(webHook)}");
 
-            _logger.LogDebug($"触发实现Steps: {string.Join(",", option.Events.Keys)}");
+                // 检查前置条件
+                Check(configKey, xGiteeToken, xGiteeTimestamp, xGiteeEvent, webHook);
 
-            // 执行step
-            foreach (var step in option.Events[xGiteeEvent])
-            {
-                var executeScripts = (PowerShell shell) =>
+                var option = _giteeOptions.Get(configKey);
+
+                // 准备工作目录
+                var workingDirectory = PrepareRunDirectory(option.Platform, configKey);
+                var gitRepoFolder = Path.Combine(workingDirectory, ".git");
+
+                var logOutput = new WebShellOutputHelepr(_logger);
+                var shell = new WebShell(_logger, logOutput);
+
+                // 拉取代码
+                var pullBranch = (PowerShell shell) =>
                 {
-                    // 第一步：进入工作目录
                     shell.AddStatement()
-                        .AddCommand("Set-Location")
-                        .AddParameter("Path", workingDirectory)
-                        .AddParameter("ErrorAction", "Stop");
-
-                    foreach (var script in step.Scripts)
-                    {
-                        _logger.LogDebug($"添加脚本：{script}");
-                        shell.AddStatement().AddScript(script).AddParameter("ErrorAction", "Stop");
-                    }
+                    .AddCommand("Get-GitBranch")
+                    .AddParameter("Directory", workingDirectory)
+                    .AddParameter("RepoUrl", webHook?.Repository?.CloneUrl)
+                    .AddParameter("Branch", GetBranch(webHook))
+                    .AddParameter("ErrorAction", "Stop");
                 };
 
-                await shell.ExecuteAsync(executeScripts);
+                await shell.ExecuteAsync(pullBranch);
+
+                _logger.LogDebug($"触发实现Steps: {string.Join(",", option.Events.Keys)}");
+
+                // 执行step
+                foreach (var step in option.Events[xGiteeEvent])
+                {
+                    var executeScripts = (PowerShell shell) =>
+                    {
+                        // 第一步：进入工作目录
+                        shell.AddStatement()
+                            .AddCommand("Set-Location")
+                            .AddParameter("Path", workingDirectory)
+                            .AddParameter("ErrorAction", "Stop");
+
+                        foreach (var script in step.Scripts)
+                        {
+                            _logger.LogDebug($"添加脚本：{script}");
+                            shell.AddStatement().AddScript(script).AddParameter("ErrorAction", "Stop");
+                        }
+                    };
+
+                    await shell.ExecuteAsync(executeScripts);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "操作失败");
+            }
+            finally
+            {
+                _logger.LogInformation("操作结束");
             }
         }
 

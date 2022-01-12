@@ -87,15 +87,10 @@ namespace WebHooks.Core.Commands
 
                 this.powershell.AddCommand("out-default");
 
-                this.powershell.Commands.Commands[0].MergeMyResults(PipelineResultTypes.All, PipelineResultTypes.Output);
-
-                //if (input != null)
-                //{
-                //    this.powershell.In(new object[] { input });
-                //}else
-                //{
-
-                //}
+                foreach (var command in this.powershell.Commands.Commands)
+                {
+                    command.MergeMyResults(PipelineResultTypes.Error, PipelineResultTypes.Output);
+                }
 
                 await this.powershell.InvokeAsync();
             }
@@ -148,11 +143,16 @@ namespace WebHooks.Core.Commands
 
             try
             {
+                _logger.LogDebug("开始执行命令");
+
                 addCmds(this.powershell);
 
                 this.powershell.AddCommand("out-string");
 
-                this.powershell.Commands.Commands[0].MergeMyResults(PipelineResultTypes.Error, PipelineResultTypes.Output);
+                foreach (var cmd in this.powershell.Commands.Commands)
+                {
+                    cmd.MergeMyResults(PipelineResultTypes.Error, PipelineResultTypes.Output);
+                }
 
                 var results = await this.powershell.InvokeAsync();
 
@@ -252,8 +252,6 @@ namespace WebHooks.Core.Commands
                 }
             }
         }
-
-
 
         /// <summary>
         /// 初始化
