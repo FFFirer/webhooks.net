@@ -114,7 +114,10 @@ namespace WebHooks.Core.Commands
 
                 this.powershell.AddCommand("out-string");
 
-                this.powershell.Commands.Commands[0].MergeMyResults(PipelineResultTypes.Error, PipelineResultTypes.Output);
+                foreach (var command in this.powershell.Commands.Commands)
+                {
+                   command.MergeMyResults(PipelineResultTypes.All, PipelineResultTypes.Output);
+                }
 
                 this.powershell.Invoke();
             }
