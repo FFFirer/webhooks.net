@@ -118,7 +118,7 @@ namespace WebHooks.Core.Commands
             }
             finally
             {
-                _logger.LogDebug($"命令执行结果\n{string.Join("\n", results)}");
+                _logger.LogDebug($"命令执行结果\n{string.Join("\n", results.Select(a=>a.ToString()))}");
 
                 _logger.LogDebug($"命令执行历史\n{_powershell?.HistoryString}");
 

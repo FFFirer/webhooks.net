@@ -119,7 +119,8 @@ namespace WebHooks.Core.Commands
                    command.MergeMyResults(PipelineResultTypes.All, PipelineResultTypes.Output);
                 }
 
-                this.powershell.Invoke();
+                var results = this.powershell.Invoke();
+                LogExecuteResults(results);
             }
             finally 
             {
@@ -303,9 +304,9 @@ namespace WebHooks.Core.Commands
             }
         }
 
-        private void LogExecuteResults(PSDataCollection<PSObject> results)
+        private void LogExecuteResults(Collection<PSObject> results)
         {
-            
+            _logger.LogDebug($"执行结果：\n{string.Join("\n", results.Select(a => a.ToString()))}");
         }
 
         private void PreLoadCommands(InitialSessionState? initialSessionState)
