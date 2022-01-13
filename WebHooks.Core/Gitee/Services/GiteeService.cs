@@ -48,7 +48,7 @@ namespace WebHooks.Core.Gitee.Services
 
             if (!option.Events.ContainsKey(xGiteeEvent))
             {
-                throw new Exception($"{xGiteeEvent}, 未配置事件触发条件: {string.Join(",", option.Events.Keys)}")
+                throw new Exception($"{xGiteeEvent}, 未配置事件触发条件: {string.Join(",", option.Events.Keys)}");
             }
 
             var workingDirectory = Path.Combine(Environment.CurrentDirectory, "tasks", option.Platform, repoKey);
