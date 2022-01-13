@@ -253,8 +253,33 @@ namespace WebHooks.Core.Gitee.Services
 
         private string GetBranch(PushWebHook? webHook)
         {
-            return webHook?.Ref?.Substring(10) ?? string.Empty;
+            var refs = webHook?.Ref;
+
+            if (string.IsNullOrEmpty(refs))
+            {
+                return webHook?.Project?.DefaultBranch ?? "master";
+            }
+
+            if (refs.StartsWith(TagsRef))
+            {
+                return refs.Substring(TagsRef.Length);
+            }
+
+            if (refs.StartsWith(RemotesRef))
+            {
+                return refs.Substring(RemotesRef.Length).Split('/').Last();
+            }
+
+            if (refs.StartsWith(HeadsRef))
+            {
+                return refs.Substring(HeadsRef.Length);
+            }
+
+            return refs.Split('/').Last();
         }
 
+        private const string TagsRef = "/refs/tags/";
+        private const string RemotesRef = "/refs/remotes/";
+        private const string HeadsRef = "/refs/heads/";
     }
 }
