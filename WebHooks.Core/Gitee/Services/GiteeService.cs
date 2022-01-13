@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Management.Automation;
+using System.Text;
 using System.Text.Json;
 using WebHooks.Core.Commands;
 using WebHooks.Core.Gitee.Helpers;
@@ -16,12 +17,11 @@ namespace WebHooks.Core.Gitee.Services
         private readonly ICommandService _commandService;
         private readonly ILoggerFactory _loggerFactory;
 
-        public GiteeService(ILogger<GiteeService> logger
-            , IOptionsSnapshot<GiteeWebHookOption> namedGiteeOptions
+        public GiteeService(IOptionsSnapshot<GiteeWebHookOption> namedGiteeOptions
             , ICommandService commandService
             , ILoggerFactory loggerFactory)
         {
-            _logger = logger;
+            _logger = loggerFactory.CreateLogger(nameof(GiteeService));
             _giteeOptions = namedGiteeOptions;
             _commandService = commandService;
             _loggerFactory = loggerFactory;
@@ -38,41 +38,44 @@ namespace WebHooks.Core.Gitee.Services
 
             if (option == null)
             {
-                _logger.LogError($@"没有配置对应的构建配置，repo key: {repoKey}");
-                return;
+                throw new Exception($@"没有配置对应的构建配置，repo key: {repoKey}");
             }
 
             if (!CheckRequest(xGiteeToken, xGiteeTimestamp, option.Secret))
             {
-                _logger.LogError($@"请求校验失败");
-                return;
+                throw new Exception("请求校验失败");
             }
 
             if (!option.Events.ContainsKey(xGiteeEvent))
             {
-                _logger.LogWarning($"{xGiteeEvent}, 未配置事件触发条件: {string.Join(",", option.Events.Keys)}");
-                return;
+                throw new Exception($"{xGiteeEvent}, 未配置事件触发条件: {string.Join(",", option.Events.Keys)}")
             }
 
-            var runDictionary = Path.Combine(Environment.CurrentDirectory, "tasks", option.Platform, repoKey);
-            
-            if (!Directory.Exists(runDictionary))
+            var workingDirectory = Path.Combine(Environment.CurrentDirectory, "tasks", option.Platform, repoKey);
+
+            _logger.LogDebug($"工作目录：{workingDirectory}");
+
+            if (!Directory.Exists(workingDirectory))
             {
-                Directory.CreateDirectory(runDictionary);   // 创建工作目录
+                _logger.LogDebug($"工作目录，新建：{workingDirectory}");
+                Directory.CreateDirectory(workingDirectory);   // 创建工作目录
             }
 
-            var gitConfigFolder = Path.Combine(runDictionary, ".git");
+            var gitConfigFolder = Path.Combine(workingDirectory, ".git");
 
             var shell = PowershellClient.Create(_logger);
+
+            var branch = GetBranch(webHook);
+            _logger.LogDebug($"触发分支：{branch}");
 
             // 拉取代码操作
             var pullBranch = (PowerShell shell) =>
             {
                 shell.AddStatement()
                 .AddCommand("Get-GitBranch")
-                .AddParameter("Directory", runDictionary)
+                .AddParameter("Directory", workingDirectory)
                 .AddParameter("RepoUrl", webHook?.Repository?.CloneUrl)
-                .AddParameter("Branch", GetBranch(webHook));
+                .AddParameter("Branch", branch);
             };
 
             var (exitCode, results) = await shell.InvokeAsync(pullBranch);
@@ -81,8 +84,7 @@ namespace WebHooks.Core.Gitee.Services
 
             if (exitCode != 0)
             {
-                _logger.LogWarning($"检查Git仓库时出错, {string.Join("\r\n", results.Select(a => a.ToString()).ToList())}");
-                return;
+                throw new Exception("检查Git仓库时出错, 退出命令执行");
             }
 
             _logger.LogDebug($"触发实现Steps: {string.Join(",", option.Events.Keys)}");
@@ -95,7 +97,7 @@ namespace WebHooks.Core.Gitee.Services
                 var executeScripts = (PowerShell shell) =>
                 {
                     // 第一步：进入工作目录
-                    shell.AddStatement().AddCommand("Set-Location").AddParameter("Path", runDictionary);
+                    shell.AddStatement().AddCommand("Set-Location").AddParameter("Path", workingDirectory);
 
                     foreach (var script in step.Scripts)
                     {
@@ -103,16 +105,14 @@ namespace WebHooks.Core.Gitee.Services
                         shell.AddStatement().AddScript(script);
                     }
                 };
-                
+
                 var (stepExitCode, stepResults) = await shell.InvokeAsync(executeScripts);
 
                 _logger.LogDebug($"StepExitCode: {stepExitCode}");
 
                 if (stepExitCode != 0)
                 {
-                    _logger.LogWarning($"执行步骤时出错, {string.Join("\r\n", stepResults.Select(a => a.ToString()).ToList())}");
-
-                    break;
+                    throw new Exception("执行步骤时出错，退出执行！");
                 }
             }
 
@@ -193,7 +193,7 @@ namespace WebHooks.Core.Gitee.Services
         /// <returns></returns>
         private bool CheckRequest(string xGiteeToken, string xGiteeTimestamp, string secret)
         {
-            if(xGiteeToken == secret)
+            if (xGiteeToken == secret)
             {
                 // 密码校验
                 return true;
@@ -219,7 +219,7 @@ namespace WebHooks.Core.Gitee.Services
         {
             // 对应仓库的命名配置
             var option = _giteeOptions.Get(repoKey);
-            
+
             _logger.LogDebug($"配置[{repoKey}], 内容[{JsonSerializer.Serialize(option)}]");
 
             if (option == null)
@@ -248,12 +248,13 @@ namespace WebHooks.Core.Gitee.Services
                 Directory.CreateDirectory(runDictionary);   // 创建工作目录
             }
 
-            return runDictionary; 
+            return runDictionary;
         }
 
         private string GetBranch(PushWebHook? webHook)
         {
             return webHook?.Ref?.Substring(10) ?? string.Empty;
         }
+
     }
 }

@@ -106,10 +106,8 @@ namespace WebHooks.Core.Commands
                 {
                     cmd.MergeMyResults(PipelineResultTypes.All, PipelineResultTypes.Output);
                 }
-                //_powershell.Commands.Commands[0].MergeMyResults(PipelineResultTypes.Error, PipelineResultTypes.Output);
 
                 results = await _powershell.InvokeAsync();
-
             }
             catch (Exception ex)
             {
@@ -118,7 +116,7 @@ namespace WebHooks.Core.Commands
             }
             finally
             {
-                _logger.LogDebug($"命令执行结果\n{string.Join("\n", results.Select(a=>a.ToString()))}");
+                _logger.LogDebug($"命令执行结果\n{FormatResults(results)}");
 
                 _logger.LogDebug($"命令执行历史\n{_powershell?.HistoryString}");
 
@@ -182,6 +180,28 @@ namespace WebHooks.Core.Commands
                 _logger.LogError(ex, $"导入模块失败！{initScriptPath}");
                 throw;
             }
+        }
+
+        /// <summary>
+        /// 格式化结果
+        /// </summary>
+        /// <param name="results"></param>
+        /// <returns></returns>
+        private string FormatResults(PSDataCollection<PSObject>? results)
+        {
+            if (results == null)
+            {
+                return string.Empty;
+            }
+
+            var resultBuilder = new StringBuilder();
+
+            foreach (var result in results)
+            {
+                resultBuilder.AppendLine(result.ToString());
+            }
+
+            return resultBuilder.ToString();
         }
     }
 }
