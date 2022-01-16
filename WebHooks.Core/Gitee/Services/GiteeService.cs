@@ -66,6 +66,7 @@ namespace WebHooks.Core.Gitee.Services
             var shell = PowershellClient.Create(_logger);
 
             var branch = GetBranch(webHook);
+            
             _logger.LogDebug($"触发分支：{branch}");
 
             // 拉取代码操作
@@ -75,7 +76,8 @@ namespace WebHooks.Core.Gitee.Services
                 .AddCommand("Get-GitBranch")
                 .AddParameter("Directory", workingDirectory)
                 .AddParameter("RepoUrl", webHook?.Repository?.CloneUrl)
-                .AddParameter("Branch", branch);
+                .AddParameter("Branch", branch)
+                .AddParameter("Ref", webHook?.Ref);
             };
 
             var (exitCode, results) = await shell.InvokeAsync(pullBranch);
@@ -262,7 +264,8 @@ namespace WebHooks.Core.Gitee.Services
 
             if (refs.StartsWith(TagsRef))
             {
-                return refs.Substring(TagsRef.Length);
+                //return refs.Substring(TagsRef.Length);
+                return webHook?.Project?.DefaultBranch ?? "master";
             }
 
             if (refs.StartsWith(RemotesRef))

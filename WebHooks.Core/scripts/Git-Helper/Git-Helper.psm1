@@ -4,7 +4,8 @@ function Get-GitBranch {
         [string] $Directory = '',
         [string] $RepoUrl = '',
         [string] $Branch = 'master',
-        [string] $Tag = ''
+        [string] $Tag = '',
+        [string] $Ref = ''
     )
     
     $OriginLocation = Get-Location
@@ -27,11 +28,36 @@ function Get-GitBranch {
         exit 1
     }
 
+    # 解析要拉取的目标，如果存在$Ref，则根据Ref来解析
+    if (-not $Ref.StartsWith("/refs/")) {
+        Write-Error "ref格式不正确 -> $Ref" 
+        exit 1;
+    }
+    else {
+        if ($Ref.StartsWith("/refs/heads/")) {
+            # 分支
+            $Branch = $Ref.Substring(12)
+        }
+        elseif ($Ref.StartsWith("/refs/remotes/")) {
+            # 远程分支
+            $Branch = $Ref.Substring(14).Split("/")[1]
+        }
+        elseif ($Ref.StartsWith("/refs/tags/")) {
+            # tag
+            $Tag = $Ref.Substring(12)
+        }
+        else {
+            Write-Error "错误的ref格式 -> $Ref"
+            exit 1 
+        }
+    }
+
     Set-Location $Directory
     Write-Output "进入目录：$Directory"
 
     $GitFolder = Join-Path $Directory -ChildPath ".git";
     $ExistsGitFolder = Test-Path $GitFolder
+    
     if (-not $ExistsGitFolder) {
         # Git文件夹不存在
         if ([String]::IsNullOrEmpty($RepoUrl)) {
@@ -58,7 +84,7 @@ function Get-GitBranch {
             # 单条记录
             if ($LocalBranchs.Contains($Branch)) {
                 Write-Output "匹配到分支: $LocalBranchs[i]"
-                $ExistsBranch = $true
+                $ExistsBranch = $truec
             }
         }
         else {
@@ -76,6 +102,7 @@ function Get-GitBranch {
         }
 
         if (-not $ExistsBranch) {
+
             git fetch origin
             # 切换分支
             git checkout $Branch
