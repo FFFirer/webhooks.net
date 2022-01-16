@@ -281,8 +281,8 @@ namespace WebHooks.Core.Gitee.Services
             return refs.Split('/').Last();
         }
 
-        private const string TagsRef = "/refs/tags/";
-        private const string RemotesRef = "/refs/remotes/";
-        private const string HeadsRef = "/refs/heads/";
+        private const string TagsRef = "refs/tags/";
+        private const string RemotesRef = "refs/remotes/";
+        private const string HeadsRef = "refs/heads/";
     }
 }

@@ -7,6 +7,10 @@ function Get-GitBranch {
         [string] $Tag = '',
         [string] $Ref = ''
     )
+
+    $HeadsRef = "refs/heads/"
+    $RemotesRef = "refs/remotes/"
+    $TagsRef = "refs/tags/"
     
     $OriginLocation = Get-Location
     Write-Output "当前目录：$OriginLocation"
@@ -29,22 +33,25 @@ function Get-GitBranch {
     }
 
     # 解析要拉取的目标，如果存在$Ref，则根据Ref来解析
-    if (-not $Ref.StartsWith("/refs/")) {
+    if (-not $Ref.StartsWith("refs/")) {
         Write-Error "ref格式不正确 -> $Ref" 
         exit 1;
     }
     else {
-        if ($Ref.StartsWith("/refs/heads/")) {
+        if ($Ref.StartsWith($HeadsRef)) {
             # 分支
-            $Branch = $Ref.Substring(12)
+            $Branch = $Ref.Substring($HeadsRef.Length)
+            Write-Output "匹配到分支：$Branch"
         }
-        elseif ($Ref.StartsWith("/refs/remotes/")) {
+        elseif ($Ref.StartsWith($RemotesRef.Length)) {
             # 远程分支
-            $Branch = $Ref.Substring(14).Split("/")[1]
+            $Branch = $Ref.Substring($RemotesRef.Length).Split("/")[1]
+            Write-Output "匹配到远程分支：$Branch"
         }
-        elseif ($Ref.StartsWith("/refs/tags/")) {
+        elseif ($Ref.StartsWith($TagsRef)) {
             # tag
-            $Tag = $Ref.Substring(12)
+            $Tag = $Ref.Substring($TagsRef.Length)
+            Write-Output "匹配到标签：$Tag"
         }
         else {
             Write-Error "错误的ref格式 -> $Ref"
