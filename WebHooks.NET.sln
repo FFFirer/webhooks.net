@@ -21,6 +21,18 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebHooks.PowerShell", "WebH
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebHooks.PowerShell.CommandLine", "WebHooks.PowerShell.CommandLine\WebHooks.PowerShell.CommandLine.csproj", "{9F89D85D-8C0D-41D2-B96E-018C5BA9AD73}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebHooks.UI", "WebHooks.UI\WebHooks.UI.csproj", "{59F85575-77C7-4C15-82BF-982B9679F05A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebHooks.EntityFrameworkCore.Pgsql", "WebHooks.EntityFrameworkCore.Pgsql\WebHooks.EntityFrameworkCore.Pgsql.csproj", "{B9526366-F6F1-4402-A891-99FF742D947F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Main", "Main", "{F1AADCB8-690A-48C0-938B-8FD832A5E902}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebHooks.Service", "WebHooks.Service\WebHooks.Service.csproj", "{6A038682-8639-465D-A9EC-3C95EB3B87E2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebHooks.Data", "WebHooks.Data\WebHooks.Data.csproj", "{A66B2086-A34E-4E30-B31E-1BDB1FC11A2A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebHooks.Shared", "WebHooks.Shared\WebHooks.Shared.csproj", "{8B2366E3-CCDF-428E-8B94-96859E413900}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,9 +75,36 @@ Global
 		{9F89D85D-8C0D-41D2-B96E-018C5BA9AD73}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9F89D85D-8C0D-41D2-B96E-018C5BA9AD73}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9F89D85D-8C0D-41D2-B96E-018C5BA9AD73}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59F85575-77C7-4C15-82BF-982B9679F05A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59F85575-77C7-4C15-82BF-982B9679F05A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59F85575-77C7-4C15-82BF-982B9679F05A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59F85575-77C7-4C15-82BF-982B9679F05A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9526366-F6F1-4402-A891-99FF742D947F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9526366-F6F1-4402-A891-99FF742D947F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9526366-F6F1-4402-A891-99FF742D947F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9526366-F6F1-4402-A891-99FF742D947F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A038682-8639-465D-A9EC-3C95EB3B87E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A038682-8639-465D-A9EC-3C95EB3B87E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A038682-8639-465D-A9EC-3C95EB3B87E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A038682-8639-465D-A9EC-3C95EB3B87E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A66B2086-A34E-4E30-B31E-1BDB1FC11A2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A66B2086-A34E-4E30-B31E-1BDB1FC11A2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A66B2086-A34E-4E30-B31E-1BDB1FC11A2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A66B2086-A34E-4E30-B31E-1BDB1FC11A2A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B2366E3-CCDF-428E-8B94-96859E413900}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B2366E3-CCDF-428E-8B94-96859E413900}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B2366E3-CCDF-428E-8B94-96859E413900}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B2366E3-CCDF-428E-8B94-96859E413900}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{59F85575-77C7-4C15-82BF-982B9679F05A} = {F1AADCB8-690A-48C0-938B-8FD832A5E902}
+		{B9526366-F6F1-4402-A891-99FF742D947F} = {F1AADCB8-690A-48C0-938B-8FD832A5E902}
+		{6A038682-8639-465D-A9EC-3C95EB3B87E2} = {F1AADCB8-690A-48C0-938B-8FD832A5E902}
+		{A66B2086-A34E-4E30-B31E-1BDB1FC11A2A} = {F1AADCB8-690A-48C0-938B-8FD832A5E902}
+		{8B2366E3-CCDF-428E-8B94-96859E413900} = {F1AADCB8-690A-48C0-938B-8FD832A5E902}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {09193658-FCCE-403F-B81C-B7CDE8C8B4F9}
