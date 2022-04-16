@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
+using WebHooks.Core.Gitee.Helpers;
 
 namespace WebHooks.Gitee.Helpers.Tests
 {
