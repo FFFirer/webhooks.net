@@ -1,7 +1,16 @@
+using WebHooks.EntityFrameworkCore.Pgsql;
+using WebHooks.Service.Extensions;
+
 var builder = WebApplication.CreateBuilder(args);
+
+var connectionString = builder.Configuration.GetConnectionString("Default");
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+// 添加服务注册
+builder.Services.AddWebHooksBasicService();
+// 添加数据库访问注册
+builder.Services.AddPgsqlDataContext(connectionString);
 
 var app = builder.Build();
 

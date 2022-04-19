@@ -5,13 +5,17 @@ namespace WebHooks.Data.DbContexts
 {
     public class WebHooksDataConext : DbContext
     {
+        public WebHooksDataConext() : base()
+        {
+
+        }
+
         public WebHooksDataConext(DbContextOptions<WebHooksDataConext> options) : base(options)
         {
 
         }
 
-        public DbSet<Platform> Platforms => Set<Platform>();
-        public DbSet<Project> Projects => Set<Project>();
+        public DbSet<Group> Groups => Set<Group>();
         public DbSet<Work> Works => Set<Work>();
     }
 }

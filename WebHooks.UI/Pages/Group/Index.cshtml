@@ -1,0 +1,86 @@
+﻿@page
+@model WebHooks.UI.Pages.Group.IndexModel
+@{
+    ViewData["Title"] = "所有分组";
+}
+
+@Html.AntiForgeryToken()
+
+<div class="row">
+    <div class="col-12">
+        <h1>
+            所有分组
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addGroupModal">
+                添加
+            </button>
+        </h1>
+    </div>
+
+    @foreach (var group in Model.Groups)
+    {
+        <div class="col-4  gy-3">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title">
+                        @group.Name
+                    </h3>
+                    <p>
+                        @group.Description
+                    </p>
+                    <a asp-page="/Group/Details" class="btn btn-primary">查看</a>
+                    <a asp-page="/Group/Details" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteGroupModal">删除</a>
+                </div>
+            </div>
+
+        </div>
+    }
+
+
+</div>
+
+<div class="modal fade" tabindex="-1" id="deleteGroupModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">删除分组？</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>将要删除一个分组，分组内所有东西都将删除！</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-danger">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" tabindex="-1" id="addGroupModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">添加</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label asp-for="Group.Name" class="form-label">分组名称</label>
+                    <input type="text" class="form-control" asp-for="Group.Name" v-model="name" placeholder="请输入分组名称">
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Group.Description" class="form-label">描述</label>
+                    <textarea class="form-control" asp-for="Group.Description" v-model="description" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" @@click="create()" class="btn btn-primary">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="module" src="~/js/group/index.js"></script>
+}

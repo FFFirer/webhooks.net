@@ -14,4 +14,8 @@
     <Folder Include="DataMap\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Mapster" Version="7.4.0-pre02" />
+  </ItemGroup>
+
 </Project>

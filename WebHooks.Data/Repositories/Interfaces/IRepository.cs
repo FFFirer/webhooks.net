@@ -1,9 +1,12 @@
-﻿using WebHooks.Data.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using WebHooks.Data.Entities;
 
 namespace WebHooks.Data.Repositories.Interfaces
 {
     public interface IRepository<TEntity, TPrimaryKey> where TEntity : Entity<TPrimaryKey>
     {
+        DbSet<TEntity> Set();
+
         /// <summary>
         /// 获取IQueryable<TEntity>
         /// </summary>
@@ -23,5 +26,7 @@ namespace WebHooks.Data.Repositories.Interfaces
         /// <param name="id"></param>
         /// <returns></returns>
         Task<TEntity?> LoadAsync(TPrimaryKey id);
+
+        Task<int> SaveChangesAsync();
     }
 }

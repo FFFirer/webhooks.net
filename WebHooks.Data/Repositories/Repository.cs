@@ -29,5 +29,15 @@ namespace WebHooks.Data.Repositories
         {
             return await this.GetAll().AsNoTracking().FirstOrDefaultAsync(a => a.Id!.Equals(id));
         }
+
+        public async Task<int> SaveChangesAsync()
+        {
+            return await _context.SaveChangesAsync();
+        }
+
+        public DbSet<TEntity> Set()
+        {
+            return _context.Set<TEntity>();
+        }
     }
 }

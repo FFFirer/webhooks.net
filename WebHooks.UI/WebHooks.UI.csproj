@@ -1,13 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UserSecretsId>
+			WebHooksUI-ea10e5fc-6133-4e88-ac11-aee8517613e8
+		</UserSecretsId>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\WebHooks.Shared\WebHooks.Shared.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\WebHooks.EntityFrameworkCore.Pgsql\WebHooks.EntityFrameworkCore.Pgsql.csproj" />
+		<ProjectReference Include="..\WebHooks.Service\WebHooks.Service.csproj" />
+		<ProjectReference Include="..\WebHooks.Shared\WebHooks.Shared.csproj" />
+	</ItemGroup>
 
 </Project>

@@ -19,19 +19,21 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo01", "Demo01\Demo01.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebHooks.PowerShell", "WebHooks.PowerShell\WebHooks.PowerShell.csproj", "{499467A8-89A9-446C-9C32-DF007EF47494}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebHooks.PowerShell.CommandLine", "WebHooks.PowerShell.CommandLine\WebHooks.PowerShell.CommandLine.csproj", "{9F89D85D-8C0D-41D2-B96E-018C5BA9AD73}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebHooks.PowerShell.CommandLine", "WebHooks.PowerShell.CommandLine\WebHooks.PowerShell.CommandLine.csproj", "{9F89D85D-8C0D-41D2-B96E-018C5BA9AD73}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebHooks.UI", "WebHooks.UI\WebHooks.UI.csproj", "{59F85575-77C7-4C15-82BF-982B9679F05A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebHooks.UI", "WebHooks.UI\WebHooks.UI.csproj", "{59F85575-77C7-4C15-82BF-982B9679F05A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebHooks.EntityFrameworkCore.Pgsql", "WebHooks.EntityFrameworkCore.Pgsql\WebHooks.EntityFrameworkCore.Pgsql.csproj", "{B9526366-F6F1-4402-A891-99FF742D947F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebHooks.EntityFrameworkCore.Pgsql", "WebHooks.EntityFrameworkCore.Pgsql\WebHooks.EntityFrameworkCore.Pgsql.csproj", "{B9526366-F6F1-4402-A891-99FF742D947F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Main", "Main", "{F1AADCB8-690A-48C0-938B-8FD832A5E902}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebHooks.Service", "WebHooks.Service\WebHooks.Service.csproj", "{6A038682-8639-465D-A9EC-3C95EB3B87E2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebHooks.Service", "WebHooks.Service\WebHooks.Service.csproj", "{6A038682-8639-465D-A9EC-3C95EB3B87E2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebHooks.Data", "WebHooks.Data\WebHooks.Data.csproj", "{A66B2086-A34E-4E30-B31E-1BDB1FC11A2A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebHooks.Data", "WebHooks.Data\WebHooks.Data.csproj", "{A66B2086-A34E-4E30-B31E-1BDB1FC11A2A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebHooks.Shared", "WebHooks.Shared\WebHooks.Shared.csproj", "{8B2366E3-CCDF-428E-8B94-96859E413900}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebHooks.Shared", "WebHooks.Shared\WebHooks.Shared.csproj", "{8B2366E3-CCDF-428E-8B94-96859E413900}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebHooks.EntityFrameworkCore.PgsqlTests", "WebHooks.EntityFrameworkCore.PgsqlTests\WebHooks.EntityFrameworkCore.PgsqlTests.csproj", "{3EDABD1D-655A-4D8A-90FA-01DD65486BEA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -95,6 +97,10 @@ Global
 		{8B2366E3-CCDF-428E-8B94-96859E413900}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8B2366E3-CCDF-428E-8B94-96859E413900}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8B2366E3-CCDF-428E-8B94-96859E413900}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3EDABD1D-655A-4D8A-90FA-01DD65486BEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3EDABD1D-655A-4D8A-90FA-01DD65486BEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3EDABD1D-655A-4D8A-90FA-01DD65486BEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3EDABD1D-655A-4D8A-90FA-01DD65486BEA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

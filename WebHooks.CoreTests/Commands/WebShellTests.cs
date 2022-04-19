@@ -13,8 +13,8 @@ namespace WebHooks.Core.Commands.Tests
     [TestClass()]
     public class WebShellTests
     {
-        private IServiceProvider _serviceProvider;
-        private ILoggerFactory _loggerFactory;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly ILoggerFactory _loggerFactory;
 
         public WebShellTests()
         {
@@ -81,6 +81,6 @@ namespace WebHooks.Core.Commands.Tests
             Logger.LogMessage(message);
         }
 
-        private string AnsiColorPattern = @"\u001b(.*?)m";
+        private readonly string AnsiColorPattern = @"\u001b(.*?)m";
     }
 }

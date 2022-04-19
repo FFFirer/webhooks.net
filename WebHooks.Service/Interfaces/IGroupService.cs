@@ -7,10 +7,10 @@ using WebHooks.Service.Dtos;
 
 namespace WebHooks.Service.Interfaces
 {
-    internal interface IPlatformService
+    public interface IGroupService
     {
-        Task<PlatformDto> ListAsync();
+        Task<List<GroupDto>> ListAsync();
 
-
+        Task SaveAsync(GroupDto group);
     }
 }

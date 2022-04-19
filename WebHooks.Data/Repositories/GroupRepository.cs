@@ -4,11 +4,10 @@ using WebHooks.Data.Repositories.Interfaces;
 
 namespace WebHooks.Data.Repositories
 {
-    public class PlatformRepository : Repository<Platform, Guid>, IPlatformRepository
+    public class GroupRepository : Repository<Group, Guid>, IGroupRepository
     {
-        public PlatformRepository(WebHooksDataConext context) : base(context)
+        public GroupRepository(WebHooksDataConext context) : base(context)
         {
-
         }
     }
 }
