@@ -1,13 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UserSecretsId>
+			WebHooksAPI-561e3dfa-f31d-44ec-bf3b-f77a7050c483
+		</UserSecretsId>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
-  </ItemGroup>
+	<ItemGroup>
+	  <PackageReference Include="NSwag.AspNetCore" Version="13.15.10" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\WebHooks.EntityFrameworkCore.Pgsql\WebHooks.EntityFrameworkCore.Pgsql.csproj" />
+		<ProjectReference Include="..\WebHooks.Service\WebHooks.Service.csproj" />
+		<ProjectReference Include="..\WebHooks.Shared\WebHooks.Shared.csproj" />
+	</ItemGroup>
 
 </Project>

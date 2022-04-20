@@ -13,6 +13,6 @@ namespace WebHooks.Service.Interfaces
 
         Task SaveAsync(GroupDto group);
 
-        Task RemoveAsync(Guid id); 
+        Task RemoveAsync(Guid id);
     }
 }

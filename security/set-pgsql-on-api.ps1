@@ -1,5 +1,5 @@
 $OriginalPath = $PWD.Path
-$ProjectPath = "../WebHooks.UI"
+$ProjectPath = "../WebHooks.API"
 $ConnectionString = "Host=127.0.0.1;Database=webhooks;Username=postgres;Password=123456;Encoding=UTF8;"
 $ConfigKey = "ConnectionStrings:Default"
 

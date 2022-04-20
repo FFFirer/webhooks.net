@@ -28,9 +28,14 @@ namespace WebHooks.Service
             return dtos;
         }
 
-        public Task RemoveAsync(Guid id)
+        public async Task RemoveAsync(Guid id)
         {
-            throw new NotImplementedException();
+            var group = await groupRepo.GetAsync(id);
+            if(group != null)
+            {
+                groupRepo.Set().Remove(group);
+                await groupRepo.SaveChangesAsync();
+            }
         }
 
         public async Task SaveAsync(GroupDto group)

@@ -1,19 +1,27 @@
+using WebHooks.EntityFrameworkCore.Pgsql;
+using WebHooks.Service.Extensions;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
+// 数据库连接字符串
+var connectionString = builder.Configuration.GetConnectionString("Default");
+// 添加控制器
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerDocument();
+// 注册基础服务
+builder.Services.AddWebHooksBasicService();
+// 注册数据库访问上下文
+builder.Services.AddPgsqlDataContext(connectionString);
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseOpenApi();
+    app.UseSwaggerUi3();
 }
 
 app.UseHttpsRedirection();
