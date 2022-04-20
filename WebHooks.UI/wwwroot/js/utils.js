@@ -29,8 +29,45 @@ const getUrl = function (handler)
     return `?handler=${handler}`;
 }
 
-export {
+/**
+ * ajax异步请求
+ * @param {string} handler 处理程序名称
+ * @param {FormData} formData 表单数据
+ * @param {Function} onSuccess 成功时的操作
+ * @param {Function} onError 错误时的操作
+ */
+const ajaxRequest = function (handler, formData, onSuccess, onError)
+{
+    $.ajax({
+        type: "POST",
+        url: getUrl(handler),
+        headers: {
+            "RequestVerificationToken": getRequestVerificationToken()
+        },
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function ()
+        {
+            if (onSuccess)
+            {
+                onSuccess();
+            }
+        },
+        error: function ()
+        {
+            if (onError)
+            {
+                onError()
+            }
+        }
+    })
+}
+
+export
+{
     getRequestVerificationToken,
     addRequestVerificationToken,
-    getUrl
+    getUrl,
+    ajaxRequest
 }

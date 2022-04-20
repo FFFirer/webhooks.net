@@ -12,5 +12,7 @@ namespace WebHooks.Service.Interfaces
         Task<List<GroupDto>> ListAsync();
 
         Task SaveAsync(GroupDto group);
+
+        Task RemoveAsync(Guid id); 
     }
 }

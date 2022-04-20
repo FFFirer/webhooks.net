@@ -28,5 +28,10 @@ namespace WebHooks.UI.Pages.Group
 
             return new JsonResult(null);
         }
+
+        public async Task OnPostDeleteGroup(Guid guid)
+        {
+            await _service.RemoveAsync(guid);
+        }
     }
 }
