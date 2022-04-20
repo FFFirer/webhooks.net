@@ -1,3 +1,6 @@
+using WebHooks.API;
+using WebHooks.API.Filters;
+using WebHooks.API.ResultWrapper;
 using WebHooks.EntityFrameworkCore.Pgsql;
 using WebHooks.Service.Extensions;
 
@@ -6,7 +9,11 @@ var builder = WebApplication.CreateBuilder(args);
 // 数据库连接字符串
 var connectionString = builder.Configuration.GetConnectionString("Default");
 // 添加控制器
-builder.Services.AddControllers();
+builder.Services.AddControllers(config =>
+{
+    config.Filters.AddService<ApiExceptionFilter>();
+    config.Filters.AddService<ResultWrapperFilter>();
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerDocument();
@@ -14,6 +21,10 @@ builder.Services.AddSwaggerDocument();
 builder.Services.AddWebHooksBasicService();
 // 注册数据库访问上下文
 builder.Services.AddPgsqlDataContext(connectionString);
+builder.Services.AddScoped<ApiExceptionFilter>();
+builder.Services.AddScoped<ResultWrapperFilter>();
+builder.Services.AddScoped<IResultWrapper, CustomResultWrapper>();
+
 
 var app = builder.Build();
 
