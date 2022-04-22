@@ -3,18 +3,22 @@ import { Modal } from "bootstrap";
 import { onMounted, Ref, ref } from "vue";
 import { GroupClientProxy } from "../../shared/client-proxy";
 import { ApiException, GroupDto } from "../../shared/webapi/client";
+import { useGlobalMessage } from "../Shared/GlobalMessage/GlobalMessageProxy";
 
 // 模态框
 const modalRef: Ref<HTMLDivElement | undefined> = ref();
 const messageRef: Ref<HTMLDivElement | undefined> = ref();
 
-const groupClient = new GroupClientProxy();
-
-const groups: Ref<GroupDto[]> = ref([]);
+const modalTitle = ref("");
+const messageContent = ref("");
 
 // bootstrap modal 实例
 let modal: bootstrap.Modal;
 let message: bootstrap.Modal;
+
+const groupClient = new GroupClientProxy();
+
+const groups: Ref<GroupDto[]> = ref([]);
 
 onMounted(() => {
     if (modalRef?.value != undefined) {
@@ -32,6 +36,8 @@ onMounted(() => {
     }
 });
 
+const globalMsg = useGlobalMessage();
+
 const list = async () => {
     try {
         groups.value = await groupClient.list();
@@ -39,14 +45,10 @@ const list = async () => {
         if ((error as any)["isApiException"]) {
             console.log((error as ApiException).message);
 
-            messageContent.value = (error as ApiException).message;
-            message.show();
+            globalMsg?.show((error as ApiException).message);
         }
-        // console.log("catch error", error);
     }
 };
-
-const modalTitle = ref("");
 
 const createGroup = () => {
     modalTitle.value = "新增";
@@ -58,7 +60,9 @@ const saveGroup = () => {
     modal.hide();
 };
 
-const messageContent = ref("");
+const test = () => {
+    globalMsg.show(new Date().toISOString());
+};
 </script>
 <template>
     <div class="row">
@@ -75,6 +79,9 @@ const messageContent = ref("");
             </button>
             <button type="button" class="btn btn btn-light" @click="list()">
                 搜索
+            </button>
+            <button type="button" class="btn btn btn-light" @click="test()">
+                测试
             </button>
         </div>
         <div class="col-12">
