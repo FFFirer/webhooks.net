@@ -41,6 +41,15 @@ export class GroupClient {
             return response.text().then((_responseText) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if(resultData200['__wrapped'])
+            {
+                if(resultData200.success){
+                    resultData200 = resultData200.result;
+                }
+                else{
+                    throwException(resultData200.error, status, _responseText, _headers)
+                }
+            }
             if (Array.isArray(resultData200)) {
                 result200 = [] as any;
                 for (let item of resultData200)
