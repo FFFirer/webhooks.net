@@ -2,10 +2,11 @@
 import { Modal } from "bootstrap";
 import { onMounted, Ref, ref } from "vue";
 import { GroupClientProxy } from "../../shared/client-proxy";
-import { GroupDto } from "../../shared/webapi/client";
+import { ApiException, GroupDto } from "../../shared/webapi/client";
 
 // 模态框
 const modalRef: Ref<HTMLDivElement | undefined> = ref();
+const messageRef: Ref<HTMLDivElement | undefined> = ref();
 
 const groupClient = new GroupClientProxy();
 
@@ -13,6 +14,7 @@ const groups: Ref<GroupDto[]> = ref([]);
 
 // bootstrap modal 实例
 let modal: bootstrap.Modal;
+let message: bootstrap.Modal;
 
 onMounted(() => {
     if (modalRef?.value != undefined) {
@@ -21,10 +23,27 @@ onMounted(() => {
         });
         modal = new Modal(modalRef.value);
     }
+
+    if (messageRef?.value != undefined) {
+        messageRef.value.addEventListener("hidden.bs.modal", () => {
+            messageContent.value = "";
+        });
+        message = new Modal(messageRef.value);
+    }
 });
 
 const list = async () => {
-    groups.value = await groupClient.list();
+    try {
+        groups.value = await groupClient.list();
+    } catch (error) {
+        if ((error as any)["isApiException"]) {
+            console.log((error as ApiException).message);
+
+            messageContent.value = (error as ApiException).message;
+            message.show();
+        }
+        // console.log("catch error", error);
+    }
 };
 
 const modalTitle = ref("");
@@ -38,6 +57,8 @@ const saveGroup = () => {
     // TODO: 调用保存
     modal.hide();
 };
+
+const messageContent = ref("");
 </script>
 <template>
     <div class="row">
@@ -79,6 +100,40 @@ const saveGroup = () => {
                     </tr>
                 </tbody>
             </table>
+        </div>
+    </div>
+
+    <div
+        ref="messageRef"
+        class="modal fade"
+        tabindex="-1"
+        aria-labelledby="messageModalLabel"
+        aria-hidden="true"
+    >
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="messageModalLabel">Message</h5>
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                    ></button>
+                </div>
+                <div class="modal-body">
+                    {{ messageContent }}
+                </div>
+                <div class="modal-footer">
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal"
+                    >
+                        确认
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 

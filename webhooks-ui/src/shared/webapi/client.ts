@@ -62,7 +62,7 @@ export class GroupClient {
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            return throwException("服务器发生意外错误。", status, _responseText, _headers);
             });
         }
         return Promise.resolve<GroupDto[]>(null as any);
@@ -96,7 +96,7 @@ export class GroupClient {
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            return throwException("服务器发生意外错误。", status, _responseText, _headers);
             });
         }
         return Promise.resolve<void>(null as any);
@@ -130,7 +130,7 @@ export class GroupClient {
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            return throwException("服务器发生意外错误。", status, _responseText, _headers);
             });
         }
         return Promise.resolve<void>(null as any);
