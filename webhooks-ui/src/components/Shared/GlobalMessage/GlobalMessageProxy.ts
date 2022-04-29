@@ -11,9 +11,11 @@ export class GlobalMessageProxy {
 }
 
 const __key = "inject-global-message-key";
+/**全局消息组件注入Key */
 export const InjectGlobalMessageProxyKey: InjectionKey<GlobalMessageProxy> =
     Symbol(__key);
 
+/**获取全局消息组件 */
 export function useGlobalMessage(): GlobalMessageProxy {
     return inject(InjectGlobalMessageProxyKey)!;
 }

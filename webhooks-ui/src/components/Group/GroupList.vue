@@ -2,41 +2,31 @@
 import { Modal } from "bootstrap";
 import { onMounted, Ref, ref } from "vue";
 import { GroupClientProxy } from "../../shared/client-proxy";
-import { ApiException, GroupDto } from "../../shared/webapi/client";
+import {
+    ApiException,
+    GroupDto,
+    RemoveGroupInput,
+} from "../../shared/webapi/client";
 import { useGlobalMessage } from "../Shared/GlobalMessage/GlobalMessageProxy";
+import BsModal from "../Shared/BsModal/BsModal.vue";
+import BsModalHelper from "../Shared/BsModal/BsModalHelper";
 
 // 模态框
 const modalRef: Ref<HTMLDivElement | undefined> = ref();
 const messageRef: Ref<HTMLDivElement | undefined> = ref();
 
 const modalTitle = ref("");
-const messageContent = ref("");
-
-// bootstrap modal 实例
-let modal: bootstrap.Modal;
-let message: bootstrap.Modal;
 
 const groupClient = new GroupClientProxy();
 
 const groups: Ref<GroupDto[]> = ref([]);
 
-onMounted(() => {
-    if (modalRef?.value != undefined) {
-        modalRef.value.addEventListener("hidden.bs.modal", () => {
-            // TODO: 清空表单
-        });
-        modal = new Modal(modalRef.value);
-    }
-
-    if (messageRef?.value != undefined) {
-        messageRef.value.addEventListener("hidden.bs.modal", () => {
-            messageContent.value = "";
-        });
-        message = new Modal(messageRef.value);
-    }
-});
+const editGroupModalTarget = "editGroupModal";
+let editGroupModal: Modal;
 
 const globalMsg = useGlobalMessage();
+
+let edittingGroup: Ref<GroupDto> = ref(new GroupDto());
 
 const list = async () => {
     try {
@@ -50,19 +40,56 @@ const list = async () => {
     }
 };
 
+const cancelEdit = () => {
+    edittingGroup.value = new GroupDto();
+    editGroupModal.hide();
+};
+
+/**编辑窗口关闭时触发事件 */
+const onEditGroupModalHidden = () => {
+    edittingGroup.value = new GroupDto();
+};
+
+/**保存 */
+const saveGroup = async () => {
+    const input = edittingGroup.value;
+
+    await groupClient.save(input);
+    await list();
+    editGroupModal.hide();
+};
+
+/**创建 */
 const createGroup = () => {
-    modalTitle.value = "新增";
-    modal.show();
+    modalTitle.value = "创建分组";
+    edittingGroup.value = new GroupDto();
+    edittingGroup.value.name = "";
+    edittingGroup.value.description = "";
+
+    editGroupModal.show();
 };
 
-const saveGroup = () => {
-    // TODO: 调用保存
-    modal.hide();
+/**编辑 */
+const editGroup = (group: GroupDto) => {
+    modalTitle.value = "编辑分组";
+    edittingGroup.value = group;
+    editGroupModal.show();
 };
 
-const test = () => {
-    globalMsg.show(new Date().toISOString());
+/**删除 */
+const removeGroup = async (group: GroupDto) => {
+    const input = new RemoveGroupInput({
+        id: group.id,
+    });
+    await groupClient.remove(input);
+    await list();
 };
+
+onMounted(() => {
+    editGroupModal = BsModalHelper.useModal(editGroupModalTarget);
+
+    list();
+});
 </script>
 <template>
     <div class="row">
@@ -77,21 +104,18 @@ const test = () => {
             >
                 添加
             </button>
-            <button type="button" class="btn btn btn-light" @click="list()">
+            <button type="button" class="btn btn btn-primary" @click="list()">
                 搜索
-            </button>
-            <button type="button" class="btn btn btn-light" @click="test()">
-                测试
             </button>
         </div>
         <div class="col-12">
             <table class="table">
                 <thead>
                     <tr>
-                        <th>#</th>
+                        <th class="w-50px">#</th>
+                        <th class="w-150px">操作</th>
                         <th>分组名称</th>
-                        <th>任务数量</th>
-                        <th>创建时间</th>
+                        <th>描述</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -100,94 +124,93 @@ const test = () => {
                             {{ index + 1 }}
                         </td>
                         <td>
+                            <div class="btn-group">
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-primary"
+                                    @click="editGroup(group)"
+                                >
+                                    编辑
+                                </button>
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-danger"
+                                    @click="removeGroup(group)"
+                                >
+                                    删除
+                                </button>
+                            </div>
+                        </td>
+                        <td>
                             {{ group.name }}
                         </td>
-                        <td>暂无</td>
-                        <td>暂无</td>
+                        <td>
+                            {{ group.description }}
+                        </td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
 
-    <div
-        ref="messageRef"
-        class="modal fade"
-        tabindex="-1"
-        aria-labelledby="messageModalLabel"
-        aria-hidden="true"
+    <bs-modal
+        :bs-target="editGroupModalTarget"
+        @hidden="onEditGroupModalHidden"
     >
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="messageModalLabel">Message</h5>
-                    <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
-                    ></button>
+        <template #header>
+            <h5 id="modalTitle" class="modal-title">
+                {{ modalTitle }}
+            </h5>
+        </template>
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <label for="name" class="form-label">分组名称</label>
+                    <input
+                        type="text"
+                        class="form-control"
+                        placeholder="请输入分组名称..."
+                        v-model="edittingGroup.name"
+                    />
                 </div>
-                <div class="modal-body">
-                    {{ messageContent }}
-                </div>
-                <div class="modal-footer">
-                    <button
-                        type="button"
-                        class="btn btn-secondary"
-                        data-bs-dismiss="modal"
-                    >
-                        确认
-                    </button>
+                <div class="form-group">
+                    <label for="description" class="form-label">描述</label>
+                    <textarea
+                        placeholder="请输入分组描述..."
+                        class="form-control"
+                        name="description"
+                        id="description"
+                        rows="10"
+                        v-model="edittingGroup.description"
+                    ></textarea>
                 </div>
             </div>
         </div>
-    </div>
-
-    <div
-        ref="modalRef"
-        class="modal fade"
-        tabindex="-1"
-        aria-labelledby="exampleModalLabel"
-        aria-hidden="true"
-    >
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">
-                        {{ modalTitle }}
-                    </h5>
-                    <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
-                    ></button>
-                </div>
-                <div class="modal-body">Hello!</div>
-                <div class="modal-footer">
-                    <button
-                        type="button"
-                        class="btn btn-secondary"
-                        data-bs-dismiss="modal"
-                    >
-                        取消
-                    </button>
-                    <button
-                        type="button"
-                        class="btn btn-primary"
-                        @click="saveGroup()"
-                    >
-                        保存
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+        <template #footer>
+            <button
+                type="button"
+                class="btn btn-secondary"
+                @click="cancelEdit()"
+            >
+                关闭
+            </button>
+            <button type="button" class="btn btn-primary" @click="saveGroup()">
+                保存
+            </button>
+        </template>
+    </bs-modal>
 </template>
 
 <style scoped>
 .toolbar .btn {
     margin-right: 1rem;
+}
+
+.w-150px {
+    width: 150px;
+}
+
+.w-50px {
+    width: 50px;
 }
 </style>
