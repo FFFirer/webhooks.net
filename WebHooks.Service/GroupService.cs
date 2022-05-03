@@ -4,6 +4,7 @@ using WebHooks.Data.Entities;
 using WebHooks.Data.Repositories.Interfaces;
 using WebHooks.Service.Dtos;
 using WebHooks.Service.Interfaces;
+using WebHooks.Shared.Paging;
 
 namespace WebHooks.Service
 {
@@ -26,6 +27,23 @@ namespace WebHooks.Service
             datas.Adapt(dtos);
 
             return dtos;
+        }
+
+        public async Task<PagingResult<GroupDto>> PageAsync(PagingQuery pagingQuery)
+        {
+            var query = groupRepo.GetAll().AsNoTracking();
+
+            var result = new PagingResult<GroupDto>(pagingQuery);
+
+            result.Total = await query.CountAsync();
+
+            query = query.Paging(pagingQuery);
+
+            var datas = await query.ToListAsync();
+
+            result.Rows = datas.Adapt<List<GroupDto>>();
+
+            return result;
         }
 
         public async Task RemoveAsync(Guid id)
