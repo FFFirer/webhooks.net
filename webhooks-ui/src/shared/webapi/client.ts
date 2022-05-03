@@ -9,13 +9,24 @@
 // ReSharper disable InconsistentNaming
 
 export class GroupClient {
-    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private http: {
+        fetch(url: RequestInfo, init?: RequestInit): Promise<Response>;
+    };
     private baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined =
+        undefined;
 
-    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
-        this.http = http ? http : window as any;
-        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "https://localhost:7029";
+    constructor(
+        baseUrl?: string,
+        http?: {
+            fetch(url: RequestInfo, init?: RequestInit): Promise<Response>;
+        }
+    ) {
+        this.http = http ? http : (window as any);
+        this.baseUrl =
+            baseUrl !== undefined && baseUrl !== null
+                ? baseUrl
+                : "https://localhost:7029";
     }
 
     list(): Promise<GroupDto[]> {
@@ -25,8 +36,8 @@ export class GroupClient {
         let options_: RequestInit = {
             method: "GET",
             headers: {
-                "Accept": "application/json"
-            }
+                Accept: "application/json",
+            },
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -36,33 +47,46 @@ export class GroupClient {
 
     protected processList(response: Response): Promise<GroupDto[]> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        let _headers: any = {};
+        if (response.headers && response.headers.forEach) {
+            response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+        }
         if (status === 200) {
             return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if(resultData200['__wrapped'])
-            {
-                if(resultData200.success){
-                    resultData200 = resultData200.result;
+                let result200: any = null;
+                let resultData200 =
+                    _responseText === ""
+                        ? null
+                        : JSON.parse(_responseText, this.jsonParseReviver);
+                if (resultData200["__wrapped"]) {
+                    if (resultData200.success) {
+                        resultData200 = resultData200.result;
+                    } else {
+                        throwException(
+                            resultData200.error,
+                            status,
+                            _responseText,
+                            _headers
+                        );
+                    }
                 }
-                else{
-                    throwException(resultData200.error, status, _responseText, _headers)
+                if (Array.isArray(resultData200)) {
+                    result200 = [] as any;
+                    for (let item of resultData200)
+                        result200!.push(GroupDto.fromJS(item));
+                } else {
+                    result200 = <any>null;
                 }
-            }
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(GroupDto.fromJS(item));
-            }
-            else {
-                result200 = <any>null;
-            }
-            return result200;
+                return result200;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
-            return throwException("服务器发生意外错误。", status, _responseText, _headers);
+                return throwException(
+                    "服务器发生意外错误。",
+                    status,
+                    _responseText,
+                    _headers
+                );
             });
         }
         return Promise.resolve<GroupDto[]>(null as any);
@@ -79,8 +103,8 @@ export class GroupClient {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Accept": "application/json"
-            }
+                Accept: "application/json",
+            },
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -88,28 +112,44 @@ export class GroupClient {
         });
     }
 
-    protected processQuery(response: Response): Promise<PagingResultOfGroupDto> {
+    protected processQuery(
+        response: Response
+    ): Promise<PagingResultOfGroupDto> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        let _headers: any = {};
+        if (response.headers && response.headers.forEach) {
+            response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+        }
         if (status === 200) {
             return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if(resultData200['__wrapped'])
-            {
-                if(resultData200.success){
-                    resultData200 = resultData200.result;
+                let result200: any = null;
+                let resultData200 =
+                    _responseText === ""
+                        ? null
+                        : JSON.parse(_responseText, this.jsonParseReviver);
+                if (resultData200["__wrapped"]) {
+                    if (resultData200.success) {
+                        resultData200 = resultData200.result;
+                    } else {
+                        throwException(
+                            resultData200.error,
+                            status,
+                            _responseText,
+                            _headers
+                        );
+                    }
                 }
-                else{
-                    throwException(resultData200.error, status, _responseText, _headers)
-                }
-            }
-            result200 = PagingResultOfGroupDto.fromJS(resultData200);
-            return result200;
+                result200 = PagingResultOfGroupDto.fromJS(resultData200);
+                return result200;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
-            return throwException("服务器发生意外错误。", status, _responseText, _headers);
+                return throwException(
+                    "服务器发生意外错误。",
+                    status,
+                    _responseText,
+                    _headers
+                );
             });
         }
         return Promise.resolve<PagingResultOfGroupDto>(null as any);
@@ -126,7 +166,7 @@ export class GroupClient {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-            }
+            },
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -136,14 +176,22 @@ export class GroupClient {
 
     protected processSave(response: Response): Promise<void> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        let _headers: any = {};
+        if (response.headers && response.headers.forEach) {
+            response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+        }
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+                return;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
-            return throwException("服务器发生意外错误。", status, _responseText, _headers);
+                return throwException(
+                    "服务器发生意外错误。",
+                    status,
+                    _responseText,
+                    _headers
+                );
             });
         }
         return Promise.resolve<void>(null as any);
@@ -160,7 +208,7 @@ export class GroupClient {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-            }
+            },
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -170,14 +218,22 @@ export class GroupClient {
 
     protected processRemove(response: Response): Promise<void> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        let _headers: any = {};
+        if (response.headers && response.headers.forEach) {
+            response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+        }
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+                return;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
-            return throwException("服务器发生意外错误。", status, _responseText, _headers);
+                return throwException(
+                    "服务器发生意外错误。",
+                    status,
+                    _responseText,
+                    _headers
+                );
             });
         }
         return Promise.resolve<void>(null as any);
@@ -203,14 +259,14 @@ export class DtoOfGuid implements IDtoOfGuid {
     }
 
     static fromJS(data: any): DtoOfGuid {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         let result = new DtoOfGuid();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         data["id"] = this.id;
         return data;
     }
@@ -237,14 +293,14 @@ export class GroupDto extends DtoOfGuid implements IGroupDto {
     }
 
     static fromJS(data: any): GroupDto {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         let result = new GroupDto();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         data["name"] = this.name;
         data["description"] = this.description;
         super.toJSON(data);
@@ -289,18 +345,17 @@ export class PagingResultOfGroupDto implements IPagingResultOfGroupDto {
     }
 
     static fromJS(data: any): PagingResultOfGroupDto {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         let result = new PagingResultOfGroupDto();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         if (Array.isArray(this.rows)) {
             data["rows"] = [];
-            for (let item of this.rows)
-                data["rows"].push(item.toJSON());
+            for (let item of this.rows) data["rows"].push(item.toJSON());
         }
         data["total"] = this.total;
         data["page"] = this.page;
@@ -337,14 +392,14 @@ export class PageGroupInput implements IPageGroupInput {
     }
 
     static fromJS(data: any): PageGroupInput {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         let result = new PageGroupInput();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         data["page"] = this.page;
         data["pageSize"] = this.pageSize;
         return data;
@@ -375,14 +430,14 @@ export class RemoveGroupInput implements IRemoveGroupInput {
     }
 
     static fromJS(data: any): RemoveGroupInput {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         let result = new RemoveGroupInput();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         data["id"] = this.id;
         return data;
     }
@@ -396,10 +451,16 @@ export class ApiException extends Error {
     message: string;
     status: number;
     response: string;
-    headers: { [key: string]: any; };
+    headers: { [key: string]: any };
     result: any;
 
-    constructor(message: string, status: number, response: string, headers: { [key: string]: any; }, result: any) {
+    constructor(
+        message: string,
+        status: number,
+        response: string,
+        headers: { [key: string]: any },
+        result: any
+    ) {
         super();
 
         this.message = message;
@@ -416,9 +477,13 @@ export class ApiException extends Error {
     }
 }
 
-function throwException(message: string, status: number, response: string, headers: { [key: string]: any; }, result?: any): any {
-    if (result !== null && result !== undefined)
-        throw result;
-    else
-        throw new ApiException(message, status, response, headers, null);
+function throwException(
+    message: string,
+    status: number,
+    response: string,
+    headers: { [key: string]: any },
+    result?: any
+): any {
+    if (result !== null && result !== undefined) throw result;
+    else throw new ApiException(message, status, response, headers, null);
 }
