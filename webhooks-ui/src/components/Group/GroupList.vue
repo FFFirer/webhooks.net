@@ -5,11 +5,13 @@ import { GroupClientProxy } from "../../shared/client-proxy";
 import {
     ApiException,
     GroupDto,
+    PageGroupInput,
     RemoveGroupInput,
 } from "../../shared/webapi/client";
 import { useGlobalMessage } from "../Shared/GlobalMessage/GlobalMessageProxy";
 import BsModal from "../Shared/BsModal/BsModal.vue";
 import BsModalHelper from "../Shared/BsModal/BsModalHelper";
+import BsPagination from "../Shared/BsPagination/BsPagination.vue";
 
 // 模态框
 const modalRef: Ref<HTMLDivElement | undefined> = ref();
@@ -28,9 +30,29 @@ const globalMsg = useGlobalMessage();
 
 let edittingGroup: Ref<GroupDto> = ref(new GroupDto());
 
+// 页码
+const currentPage: Ref<number> = ref(1);
+// 页大小
+const pageSize: Ref<number> = ref(5);
+// 总数
+const total: Ref<number> = ref(2);
+
 const list = async () => {
+    await query(1);
+};
+
+const query = async (page: number) => {
     try {
-        groups.value = await groupClient.list();
+        const queryInput: PageGroupInput = new PageGroupInput({
+            page: page,
+            pageSize: pageSize.value,
+        });
+
+        const result = await groupClient.query(queryInput);
+
+        groups.value = result.rows;
+        currentPage.value = page;
+        total.value = result.total;
     } catch (error) {
         if ((error as any)["isApiException"]) {
             console.log((error as ApiException).message);
@@ -55,7 +77,7 @@ const saveGroup = async () => {
     const input = edittingGroup.value;
 
     await groupClient.save(input);
-    await list();
+    await query(currentPage.value);
     editGroupModal.hide();
 };
 
@@ -82,13 +104,17 @@ const removeGroup = async (group: GroupDto) => {
         id: group.id,
     });
     await groupClient.remove(input);
-    await list();
+    await query(currentPage.value);
 };
 
-onMounted(() => {
+const handlePageChanged = async (page: number) => {
+    await query(page);
+};
+
+onMounted(async () => {
     editGroupModal = BsModalHelper.useModal(editGroupModalTarget);
 
-    list();
+    await query(currentPage.value);
 });
 </script>
 <template>
@@ -150,6 +176,15 @@ onMounted(() => {
                     </tr>
                 </tbody>
             </table>
+        </div>
+        <div class="col-12">
+            <bs-pagination
+                :page="currentPage"
+                :total="total"
+                :page-size="pageSize"
+                @page-changed="handlePageChanged"
+            >
+            </bs-pagination>
         </div>
     </div>
 
