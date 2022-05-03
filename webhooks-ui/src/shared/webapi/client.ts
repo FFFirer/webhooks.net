@@ -68,6 +68,53 @@ export class GroupClient {
         return Promise.resolve<GroupDto[]>(null as any);
     }
 
+    query(input: PageGroupInput): Promise<PagingResultOfGroupDto> {
+        let url_ = this.baseUrl + "/api/Group/Query";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(input);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processQuery(_response);
+        });
+    }
+
+    protected processQuery(response: Response): Promise<PagingResultOfGroupDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if(resultData200['__wrapped'])
+            {
+                if(resultData200.success){
+                    resultData200 = resultData200.result;
+                }
+                else{
+                    throwException(resultData200.error, status, _responseText, _headers)
+                }
+            }
+            result200 = PagingResultOfGroupDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("服务器发生意外错误。", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<PagingResultOfGroupDto>(null as any);
+    }
+
     save(groupDto: GroupDto): Promise<void> {
         let url_ = this.baseUrl + "/api/Group/Save";
         url_ = url_.replace(/[?&]$/, "");
@@ -208,6 +255,105 @@ export class GroupDto extends DtoOfGuid implements IGroupDto {
 export interface IGroupDto extends IDtoOfGuid {
     name?: string | undefined;
     description?: string | undefined;
+}
+
+export class PagingResultOfGroupDto implements IPagingResultOfGroupDto {
+    rows!: GroupDto[];
+    total!: number;
+    page!: number;
+    pageSize!: number;
+
+    constructor(data?: IPagingResultOfGroupDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+        if (!data) {
+            this.rows = [];
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["rows"])) {
+                this.rows = [] as any;
+                for (let item of _data["rows"])
+                    this.rows!.push(GroupDto.fromJS(item));
+            }
+            this.total = _data["total"];
+            this.page = _data["page"];
+            this.pageSize = _data["pageSize"];
+        }
+    }
+
+    static fromJS(data: any): PagingResultOfGroupDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PagingResultOfGroupDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.rows)) {
+            data["rows"] = [];
+            for (let item of this.rows)
+                data["rows"].push(item.toJSON());
+        }
+        data["total"] = this.total;
+        data["page"] = this.page;
+        data["pageSize"] = this.pageSize;
+        return data;
+    }
+}
+
+export interface IPagingResultOfGroupDto {
+    rows: GroupDto[];
+    total: number;
+    page: number;
+    pageSize: number;
+}
+
+export class PageGroupInput implements IPageGroupInput {
+    page!: number;
+    pageSize!: number;
+
+    constructor(data?: IPageGroupInput) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.page = _data["page"];
+            this.pageSize = _data["pageSize"];
+        }
+    }
+
+    static fromJS(data: any): PageGroupInput {
+        data = typeof data === 'object' ? data : {};
+        let result = new PageGroupInput();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["page"] = this.page;
+        data["pageSize"] = this.pageSize;
+        return data;
+    }
+}
+
+export interface IPageGroupInput {
+    page: number;
+    pageSize: number;
 }
 
 export class RemoveGroupInput implements IRemoveGroupInput {
