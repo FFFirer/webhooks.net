@@ -1,4 +1,9 @@
-import { GroupClient } from "./webapi/client";
+import {
+    ApiException,
+    GroupClient,
+    GroupDto,
+    WorkClient,
+} from "./webapi/client";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -14,3 +19,11 @@ export class GroupClientProxy extends GroupClient {
         super(API_URL, fetchProxy);
     }
 }
+
+export class WorkClientProxy extends WorkClient {
+    constructor() {
+        super(API_URL, fetchProxy);
+    }
+}
+
+type ClientType = GroupClient | WorkClient;

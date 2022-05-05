@@ -28,6 +28,9 @@ const goto = (page: number) => {
 const calcPageCount = () => {
     console.log("before calc page count", props.total, props.pageSize);
     _pageCount.value = Math.ceil(props.total / props.pageSize);
+    if (_pageCount.value <= 0) {
+        _pageCount.value = 1;
+    }
     console.log("calc page count", _pageCount.value);
 };
 

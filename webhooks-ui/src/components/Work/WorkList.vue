@@ -1,11 +1,216 @@
+<script setup lang="ts">
+import { Modal } from "bootstrap";
+import { onMounted, Ref, ref } from "vue";
+import { WorkClientProxy } from "../../shared/client-proxy";
+import {
+    ApiException,
+    PagingInput,
+    RemoveWorkInput,
+    WorkDto,
+} from "../../shared/webapi/client";
+import BsModal from "../Shared/BsModal/BsModal.vue";
+import BsModalHelper from "../Shared/BsModal/BsModalHelper";
+import BsPagination from "../Shared/BsPagination/BsPagination.vue";
+import { useGlobalMessage } from "../Shared/GlobalMessage/GlobalMessageProxy";
+
+const modalTitle = ref("");
+const workClient = new WorkClientProxy();
+
+const works: Ref<Array<WorkDto>> = ref([]);
+const editWorkModalTarget = "editWorkModal";
+
+let editWorkModal: Modal;
+
+const globalMsg = useGlobalMessage();
+
+let editingWork: Ref<WorkDto> = ref(new WorkDto());
+
+// 分页信息
+const currentPage: Ref<number> = ref(1);
+const pageSize: Ref<number> = ref(20);
+const total: Ref<number> = ref(0);
+
+/**
+ * 查询
+ * @param page 页码
+ */
+const query = async (page: number = 1) => {
+    try {
+        const input: PagingInput = new PagingInput({
+            page: page,
+            pageSize: pageSize.value,
+        });
+
+        var result = await workClient.query(input);
+        works.value = result.rows;
+        currentPage.value = page;
+        total.value = result.total;
+    } catch (error) {
+        if ((error as any)["isApiException"]) {
+            console.log((error as ApiException).message);
+
+            globalMsg?.show((error as ApiException).message);
+        }
+    }
+};
+
+const cancelEdit = () => {
+    editingWork.value = new WorkDto();
+    editWorkModal.hide();
+};
+
+const onEditWorkModalHidden = () => {
+    editingWork.value = new WorkDto();
+};
+
+/**保存 */
+const save = async () => {
+    const input = editingWork.value;
+
+    await workClient.save(input);
+    await query(currentPage.value);
+
+    editWorkModal.hide();
+};
+
+/**创建 */
+const create = () => {
+    modalTitle.value = "创建工作项";
+
+    editWorkModal.show();
+};
+
+/**编辑 */
+const edit = (work: WorkDto) => {
+    modalTitle.value = "编辑工作项";
+
+    editingWork.value = work;
+
+    editWorkModal.show();
+};
+
+/**移除 */
+const remove = async (work: WorkDto) => {
+    const input = new RemoveWorkInput({
+        id: work.id,
+    });
+
+    await workClient.remove(input);
+    await query(currentPage.value);
+};
+
+const handlePageChanged = async (page: number) => {
+    await query(page);
+};
+
+onMounted(async () => {
+    editWorkModal = BsModalHelper.useModal(editWorkModalTarget);
+
+    await query(currentPage.value);
+});
+</script>
 <template>
     <div class="row">
         <div class="col-12">
-            <h1>
-                所有工作项
-                <button type="button" class="btn btn-primary">添加</button>
-            </h1>
+            <h1>所有工作项</h1>
+        </div>
+        <div class="col-12 toolbar">
+            <button type="button" class="btn btn-primary" @click="create()">
+                添加
+            </button>
+            <button type="button" class="btn btn btn-primary" @click="query()">
+                搜索
+            </button>
+        </div>
+        <div class="col-12">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="w-50px">#</th>
+                        <th class="w-200px">操作</th>
+                        <th>分组名称</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(work, index) in works" :key="index">
+                        <td>
+                            {{ index + 1 }}
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-secondary"
+                                >
+                                    详情
+                                </button>
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-primary"
+                                    @click="edit(work)"
+                                >
+                                    编辑
+                                </button>
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-danger"
+                                    @click="remove(work)"
+                                >
+                                    删除
+                                </button>
+                            </div>
+                        </td>
+                        <td>
+                            {{ work.displayName }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-12 empty-table text-muted" v-if="works.length == 0">
+            没有数据
+        </div>
+        <div class="col-12">
+            <bs-pagination
+                :page="currentPage"
+                :total="total"
+                :page-size="pageSize"
+                @page-changed="handlePageChanged"
+            >
+            </bs-pagination>
         </div>
     </div>
+
+    <BsModal :bs-target="editWorkModalTarget" @hidden="onEditWorkModalHidden">
+        <template #header>
+            <h5 id="modalTitle" class="modal-title">
+                {{ modalTitle }}
+            </h5>
+        </template>
+        <div class="row">
+            <div class="col">
+                <div class="form-group">
+                    <label for="name" class="form-label">工作项名称</label>
+                    <input
+                        type="text"
+                        class="form-control"
+                        placeholder="请输入分组名称..."
+                        v-model="editingWork.displayName"
+                    />
+                </div>
+            </div>
+        </div>
+        <template #footer>
+            <button
+                type="button"
+                class="btn btn-secondary"
+                @click="cancelEdit()"
+            >
+                关闭
+            </button>
+            <button type="button" class="btn btn-primary" @click="save()">
+                保存
+            </button>
+        </template>
+    </BsModal>
 </template>
-<script setup lang="ts"></script>

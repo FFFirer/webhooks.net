@@ -54,7 +54,7 @@ const query = async (page: number) => {
         currentPage.value = page;
         total.value = result.total;
     } catch (error) {
-        if ((error as any)["isApiException"]) {
+        if (ApiException.isApiException(error)) {
             console.log((error as ApiException).message);
 
             globalMsg?.show((error as ApiException).message);
@@ -63,7 +63,6 @@ const query = async (page: number) => {
 };
 
 const cancelEdit = () => {
-    edittingGroup.value = new GroupDto();
     editGroupModal.hide();
 };
 
@@ -84,9 +83,6 @@ const saveGroup = async () => {
 /**创建 */
 const createGroup = () => {
     modalTitle.value = "创建分组";
-    edittingGroup.value = new GroupDto();
-    edittingGroup.value.name = "";
-    edittingGroup.value.description = "";
 
     editGroupModal.show();
 };
@@ -139,7 +135,7 @@ onMounted(async () => {
                 <thead>
                     <tr>
                         <th class="w-50px">#</th>
-                        <th class="w-150px">操作</th>
+                        <th class="w-200px">操作</th>
                         <th>分组名称</th>
                         <th>描述</th>
                     </tr>
@@ -151,6 +147,12 @@ onMounted(async () => {
                         </td>
                         <td>
                             <div class="btn-group">
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-secondary"
+                                >
+                                    详情
+                                </button>
                                 <button
                                     type="button"
                                     class="btn btn-sm btn-primary"
@@ -177,6 +179,9 @@ onMounted(async () => {
                 </tbody>
             </table>
         </div>
+        <div class="col-12 empty-table text-muted" v-if="groups.length == 0">
+            没有数据
+        </div>
         <div class="col-12">
             <bs-pagination
                 :page="currentPage"
@@ -198,7 +203,7 @@ onMounted(async () => {
             </h5>
         </template>
         <div class="row">
-            <div class="col">
+            <div class="col-12">
                 <div class="form-group">
                     <label for="name" class="form-label">分组名称</label>
                     <input
@@ -236,16 +241,4 @@ onMounted(async () => {
     </bs-modal>
 </template>
 
-<style scoped>
-.toolbar .btn {
-    margin-right: 1rem;
-}
-
-.w-150px {
-    width: 150px;
-}
-
-.w-50px {
-    width: 50px;
-}
-</style>
+<style scoped></style>

@@ -8,6 +8,6 @@ namespace WebHooks.Service.Dtos
 {
     public class WorkDto : Dto<Guid>
     {
-
+        public string? DisplayName { get; set; }
     }
 }
