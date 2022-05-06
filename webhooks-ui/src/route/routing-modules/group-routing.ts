@@ -1,8 +1,8 @@
 import { RouteRecordRaw } from "vue-router";
 
-import Groups from "../../components/Group/Groups.vue";
-import GroupList from "../../components/Group/GroupList.vue";
-import GroupDetail from "../../components/Group/GroupDetail.vue";
+import Groups from "../../views/Group/Groups.vue";
+import GroupList from "../../views/Group/GroupList.vue";
+import GroupDetail from "../../views/Group/GroupDetail.vue";
 
 const GroupsRoute: RouteRecordRaw = {
     path: "/group",

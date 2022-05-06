@@ -1,54 +1,62 @@
 <script setup lang="ts">
 import { Modal } from "bootstrap";
 import { onMounted, Ref, ref } from "vue";
-import { useRouter } from "vue-router";
-import { WorkClientProxy } from "../../shared/client-proxy";
+import { GroupClientProxy } from "../../shared/client-proxy";
 import {
     ApiException,
-    PagingInput,
-    RemoveWorkInput,
-    WorkDto,
+    GroupDto,
+    PageGroupInput,
+    RemoveGroupInput,
 } from "../../shared/webapi/client";
-import BsModal from "../Shared/BsModal/BsModal.vue";
-import BsModalHelper from "../Shared/BsModal/BsModalHelper";
-import BsPagination from "../Shared/BsPagination/BsPagination.vue";
-import { useGlobalMessage } from "../Shared/GlobalMessage/GlobalMessageProxy";
+import { useGlobalMessage } from "../../components/GlobalMessage/GlobalMessageProxy";
+import BsModal from "../../components/BsModal/BsModal.vue";
+import BsModalHelper from "../../components/BsModal/BsModalHelper";
+import BsPagination from "../../components/BsPagination/BsPagination.vue";
+import { useRouter } from "vue-router";
 
-const modalTitle = ref("");
-const workClient = new WorkClientProxy();
+// 模态框
+const modalRef: Ref<HTMLDivElement | undefined> = ref();
+const messageRef: Ref<HTMLDivElement | undefined> = ref();
 const router = useRouter();
 
-const works: Ref<Array<WorkDto>> = ref([]);
-const editWorkModalTarget = "editWorkModal";
+const modalTitle = ref("");
 
-let editWorkModal: Modal;
+const groupClient = new GroupClientProxy();
+
+const groups: Ref<GroupDto[]> = ref([]);
+
+const editGroupModalTarget = "editGroupModal";
+let editGroupModal: Modal;
 
 const globalMsg = useGlobalMessage();
 
-let editingWork: Ref<WorkDto> = ref(new WorkDto());
+let edittingGroup: Ref<GroupDto> = ref(new GroupDto());
 
-// 分页信息
+// 页码
 const currentPage: Ref<number> = ref(1);
-const pageSize: Ref<number> = ref(20);
-const total: Ref<number> = ref(0);
+// 页大小
+const pageSize: Ref<number> = ref(5);
+// 总数
+const total: Ref<number> = ref(2);
 
-/**
- * 查询
- * @param page 页码
- */
-const query = async (page: number = 1) => {
+const list = async () => {
+    await query(1);
+};
+
+const query = async (page: number) => {
     try {
-        const input: PagingInput = new PagingInput({
+        const queryInput: PageGroupInput = new PageGroupInput({
             page: page,
             pageSize: pageSize.value,
         });
 
-        var result = await workClient.query(input);
-        works.value = result.rows;
+        const result = await groupClient.query(queryInput);
+
+        groups.value = result.rows;
         currentPage.value = page;
         total.value = result.total;
     } catch (error) {
-        if ((error as any)["isApiException"]) {
+        if (ApiException.isApiException(error)) {
             console.log((error as ApiException).message);
 
             globalMsg?.show((error as ApiException).message);
@@ -57,47 +65,43 @@ const query = async (page: number = 1) => {
 };
 
 const cancelEdit = () => {
-    editingWork.value = new WorkDto();
-    editWorkModal.hide();
+    editGroupModal.hide();
 };
 
-const onEditWorkModalHidden = () => {
-    editingWork.value = new WorkDto();
+/**编辑窗口关闭时触发事件 */
+const onEditGroupModalHidden = () => {
+    edittingGroup.value = new GroupDto();
 };
 
 /**保存 */
-const save = async () => {
-    const input = editingWork.value;
+const saveGroup = async () => {
+    const input = edittingGroup.value;
 
-    await workClient.save(input);
+    await groupClient.save(input);
     await query(currentPage.value);
-
-    editWorkModal.hide();
+    editGroupModal.hide();
 };
 
 /**创建 */
-const create = () => {
-    modalTitle.value = "创建工作项";
+const createGroup = () => {
+    modalTitle.value = "创建分组";
 
-    editWorkModal.show();
+    editGroupModal.show();
 };
 
 /**编辑 */
-const edit = (work: WorkDto) => {
-    modalTitle.value = "编辑工作项";
-
-    editingWork.value = work;
-
-    editWorkModal.show();
+const editGroup = (group: GroupDto) => {
+    modalTitle.value = "编辑分组";
+    edittingGroup.value = group;
+    editGroupModal.show();
 };
 
-/**移除 */
-const remove = async (work: WorkDto) => {
-    const input = new RemoveWorkInput({
-        id: work.id,
+/**删除 */
+const removeGroup = async (group: GroupDto) => {
+    const input = new RemoveGroupInput({
+        id: group.id,
     });
-
-    await workClient.remove(input);
+    await groupClient.remove(input);
     await query(currentPage.value);
 };
 
@@ -105,18 +109,8 @@ const handlePageChanged = async (page: number) => {
     await query(page);
 };
 
-/**查看详细信息 */
-const showDetail = (id: string) => {
-    router.push({
-        name: "WorkDetail",
-        params: {
-            id: id,
-        },
-    });
-};
-
 onMounted(async () => {
-    editWorkModal = BsModalHelper.useModal(editWorkModalTarget);
+    editGroupModal = BsModalHelper.useModal(editGroupModalTarget);
 
     await query(currentPage.value);
 });
@@ -124,13 +118,17 @@ onMounted(async () => {
 <template>
     <div class="row">
         <div class="col-12">
-            <h1>所有工作项</h1>
+            <h1>所有分组</h1>
         </div>
         <div class="col-12 toolbar">
-            <button type="button" class="btn btn-primary" @click="create()">
+            <button
+                type="button"
+                class="btn btn-primary"
+                @click="createGroup()"
+            >
                 添加
             </button>
-            <button type="button" class="btn btn btn-primary" @click="query()">
+            <button type="button" class="btn btn btn-primary" @click="list()">
                 搜索
             </button>
         </div>
@@ -141,10 +139,11 @@ onMounted(async () => {
                         <th class="w-50px">#</th>
                         <th class="w-200px">操作</th>
                         <th>分组名称</th>
+                        <th>描述</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(work, index) in works" :key="index">
+                    <tr v-for="(group, index) in groups" :key="index">
                         <td>
                             {{ index + 1 }}
                         </td>
@@ -153,34 +152,36 @@ onMounted(async () => {
                                 <button
                                     type="button"
                                     class="btn btn-sm btn-secondary"
-                                    @click="showDetail(work.id)"
                                 >
                                     详情
                                 </button>
                                 <button
                                     type="button"
                                     class="btn btn-sm btn-primary"
-                                    @click="edit(work)"
+                                    @click="editGroup(group)"
                                 >
                                     编辑
                                 </button>
                                 <button
                                     type="button"
                                     class="btn btn-sm btn-danger"
-                                    @click="remove(work)"
+                                    @click="removeGroup(group)"
                                 >
                                     删除
                                 </button>
                             </div>
                         </td>
                         <td>
-                            {{ work.displayName }}
+                            {{ group.name }}
+                        </td>
+                        <td>
+                            {{ group.description }}
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
-        <div class="col-12 empty-table text-muted" v-if="works.length == 0">
+        <div class="col-12 empty-table text-muted" v-if="groups.length == 0">
             没有数据
         </div>
         <div class="col-12">
@@ -194,22 +195,36 @@ onMounted(async () => {
         </div>
     </div>
 
-    <BsModal :bs-target="editWorkModalTarget" @hidden="onEditWorkModalHidden">
+    <bs-modal
+        :bs-target="editGroupModalTarget"
+        @hidden="onEditGroupModalHidden"
+    >
         <template #header>
             <h5 id="modalTitle" class="modal-title">
                 {{ modalTitle }}
             </h5>
         </template>
         <div class="row">
-            <div class="col">
+            <div class="col-12">
                 <div class="form-group">
-                    <label for="name" class="form-label">工作项名称</label>
+                    <label for="name" class="form-label">分组名称</label>
                     <input
                         type="text"
                         class="form-control"
                         placeholder="请输入分组名称..."
-                        v-model="editingWork.displayName"
+                        v-model="edittingGroup.name"
                     />
+                </div>
+                <div class="form-group">
+                    <label for="description" class="form-label">描述</label>
+                    <textarea
+                        placeholder="请输入分组描述..."
+                        class="form-control"
+                        name="description"
+                        id="description"
+                        rows="10"
+                        v-model="edittingGroup.description"
+                    ></textarea>
                 </div>
             </div>
         </div>
@@ -221,9 +236,11 @@ onMounted(async () => {
             >
                 关闭
             </button>
-            <button type="button" class="btn btn-primary" @click="save()">
+            <button type="button" class="btn btn-primary" @click="saveGroup()">
                 保存
             </button>
         </template>
-    </BsModal>
+    </bs-modal>
 </template>
+
+<style scoped></style>

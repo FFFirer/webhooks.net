@@ -1,5 +1,5 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
-import Welcome from "../components/Welcome.vue";
+import Welcome from "../views/Welcome.vue";
 import GroupsRoute from "./routing-modules/group-routing";
 import WorksRoute from "./routing-modules/work-routing";
 
