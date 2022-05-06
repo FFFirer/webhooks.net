@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Modal } from "bootstrap";
 import { onMounted, Ref, ref } from "vue";
+import { useRouter } from "vue-router";
 import { WorkClientProxy } from "../../shared/client-proxy";
 import {
     ApiException,
@@ -15,6 +16,7 @@ import { useGlobalMessage } from "../Shared/GlobalMessage/GlobalMessageProxy";
 
 const modalTitle = ref("");
 const workClient = new WorkClientProxy();
+const router = useRouter();
 
 const works: Ref<Array<WorkDto>> = ref([]);
 const editWorkModalTarget = "editWorkModal";
@@ -103,6 +105,16 @@ const handlePageChanged = async (page: number) => {
     await query(page);
 };
 
+/**查看详细信息 */
+const showDetail = (id: string) => {
+    router.push({
+        name: "WorkDetail",
+        params: {
+            id: id,
+        },
+    });
+};
+
 onMounted(async () => {
     editWorkModal = BsModalHelper.useModal(editWorkModalTarget);
 
@@ -141,6 +153,7 @@ onMounted(async () => {
                                 <button
                                     type="button"
                                     class="btn btn-sm btn-secondary"
+                                    @click="showDetail(work.id)"
                                 >
                                     详情
                                 </button>

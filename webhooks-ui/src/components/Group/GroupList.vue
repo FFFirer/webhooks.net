@@ -12,10 +12,12 @@ import { useGlobalMessage } from "../Shared/GlobalMessage/GlobalMessageProxy";
 import BsModal from "../Shared/BsModal/BsModal.vue";
 import BsModalHelper from "../Shared/BsModal/BsModalHelper";
 import BsPagination from "../Shared/BsPagination/BsPagination.vue";
+import { useRouter } from "vue-router";
 
 // 模态框
 const modalRef: Ref<HTMLDivElement | undefined> = ref();
 const messageRef: Ref<HTMLDivElement | undefined> = ref();
+const router = useRouter();
 
 const modalTitle = ref("");
 

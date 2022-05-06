@@ -12,6 +12,14 @@ const WorksRoute: RouteRecordRaw = {
             component: WorkList,
             name: "WrokList",
         },
+        {
+            path: "detail/:id",
+            component: () => import("../../components/Work/WorkDetail.vue"),
+            name: "WorkDetail",
+            props: (route) => ({
+                id: route.params.id as string,
+            }),
+        },
     ],
 };
 
