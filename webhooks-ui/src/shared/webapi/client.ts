@@ -308,6 +308,86 @@ export class WorkClient {
         }
         return Promise.resolve<void>(null as any);
     }
+
+    detail(workId: string): Promise<WorkDetailDto> {
+        let url_ = this.baseUrl + "/api/Work/Detail/{workId}";
+        if (workId === undefined || workId === null)
+            throw new Error("The parameter 'workId' must be defined.");
+        url_ = url_.replace("{workId}", encodeURIComponent("" + workId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processDetail(_response);
+        });
+    }
+
+    protected processDetail(response: Response): Promise<WorkDetailDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if(resultData200['__wrapped'])
+            {
+                if(resultData200.success){
+                    resultData200 = resultData200.result;
+                }
+                else{
+                    throwException(resultData200.error, status, _responseText, _headers)
+                }
+            }
+            result200 = WorkDetailDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("服务器发生意外错误。", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<WorkDetailDto>(null as any);
+    }
+
+    saveDetail(detail: WorkDetailDto): Promise<void> {
+        let url_ = this.baseUrl + "/api/Work/SaveDetail";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(detail);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processSaveDetail(_response);
+        });
+    }
+
+    protected processSaveDetail(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("服务器发生意外错误。", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
 }
 
 export class DtoOfGuid implements IDtoOfGuid {
@@ -684,6 +764,297 @@ export class RemoveWorkInput implements IRemoveWorkInput {
 
 export interface IRemoveWorkInput {
     id: string;
+}
+
+export class WorkDetailDto implements IWorkDetailDto {
+    work?: WorkDto | undefined;
+    scripts?: BuildScript[] | undefined;
+    config?: GiteeWebhookConfig | undefined;
+
+    constructor(data?: IWorkDetailDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.work = _data["work"] ? WorkDto.fromJS(_data["work"]) : <any>undefined;
+            if (Array.isArray(_data["scripts"])) {
+                this.scripts = [] as any;
+                for (let item of _data["scripts"])
+                    this.scripts!.push(BuildScript.fromJS(item));
+            }
+            this.config = _data["config"] ? GiteeWebhookConfig.fromJS(_data["config"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): WorkDetailDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new WorkDetailDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["work"] = this.work ? this.work.toJSON() : <any>undefined;
+        if (Array.isArray(this.scripts)) {
+            data["scripts"] = [];
+            for (let item of this.scripts)
+                data["scripts"].push(item.toJSON());
+        }
+        data["config"] = this.config ? this.config.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IWorkDetailDto {
+    work?: WorkDto | undefined;
+    scripts?: BuildScript[] | undefined;
+    config?: GiteeWebhookConfig | undefined;
+}
+
+export class EntityOfInteger implements IEntityOfInteger {
+    id!: number;
+    createdAt?: Date | undefined;
+    modifedAt?: Date | undefined;
+
+    constructor(data?: IEntityOfInteger) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : <any>undefined;
+            this.modifedAt = _data["modifedAt"] ? new Date(_data["modifedAt"].toString()) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): EntityOfInteger {
+        data = typeof data === 'object' ? data : {};
+        let result = new EntityOfInteger();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : <any>undefined;
+        data["modifedAt"] = this.modifedAt ? this.modifedAt.toISOString() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IEntityOfInteger {
+    id: number;
+    createdAt?: Date | undefined;
+    modifedAt?: Date | undefined;
+}
+
+export class BuildScript extends EntityOfInteger implements IBuildScript {
+    workId!: string;
+    sortNumber!: number;
+    scripts!: string[];
+
+    constructor(data?: IBuildScript) {
+        super(data);
+        if (!data) {
+            this.scripts = [];
+        }
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.workId = _data["workId"];
+            this.sortNumber = _data["sortNumber"];
+            if (Array.isArray(_data["scripts"])) {
+                this.scripts = [] as any;
+                for (let item of _data["scripts"])
+                    this.scripts!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): BuildScript {
+        data = typeof data === 'object' ? data : {};
+        let result = new BuildScript();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["workId"] = this.workId;
+        data["sortNumber"] = this.sortNumber;
+        if (Array.isArray(this.scripts)) {
+            data["scripts"] = [];
+            for (let item of this.scripts)
+                data["scripts"].push(item);
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IBuildScript extends IEntityOfInteger {
+    workId: string;
+    sortNumber: number;
+    scripts: string[];
+}
+
+export class GiteeWebhookConfig extends EntityOfInteger implements IGiteeWebhookConfig {
+    workId!: string;
+    webHookUrl?: string | undefined;
+    authentications!: GiteeWebHookAuthentications;
+    secret!: GiteeSecret;
+    signatureKey!: GiteeSignatureKey;
+    events!: string[];
+
+    constructor(data?: IGiteeWebhookConfig) {
+        super(data);
+        if (!data) {
+            this.secret = new GiteeSecret();
+            this.signatureKey = new GiteeSignatureKey();
+            this.events = [];
+        }
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.workId = _data["workId"];
+            this.webHookUrl = _data["webHookUrl"];
+            this.authentications = _data["authentications"];
+            this.secret = _data["secret"] ? GiteeSecret.fromJS(_data["secret"]) : new GiteeSecret();
+            this.signatureKey = _data["signatureKey"] ? GiteeSignatureKey.fromJS(_data["signatureKey"]) : new GiteeSignatureKey();
+            if (Array.isArray(_data["events"])) {
+                this.events = [] as any;
+                for (let item of _data["events"])
+                    this.events!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): GiteeWebhookConfig {
+        data = typeof data === 'object' ? data : {};
+        let result = new GiteeWebhookConfig();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["workId"] = this.workId;
+        data["webHookUrl"] = this.webHookUrl;
+        data["authentications"] = this.authentications;
+        data["secret"] = this.secret ? this.secret.toJSON() : <any>undefined;
+        data["signatureKey"] = this.signatureKey ? this.signatureKey.toJSON() : <any>undefined;
+        if (Array.isArray(this.events)) {
+            data["events"] = [];
+            for (let item of this.events)
+                data["events"].push(item);
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IGiteeWebhookConfig extends IEntityOfInteger {
+    workId: string;
+    webHookUrl?: string | undefined;
+    authentications: GiteeWebHookAuthentications;
+    secret: GiteeSecret;
+    signatureKey: GiteeSignatureKey;
+    events: string[];
+}
+
+export enum GiteeWebHookAuthentications {
+    Srcret = 1,
+    SignatureKey = 2,
+}
+
+export class GiteeSecret implements IGiteeSecret {
+    secret?: string | undefined;
+
+    constructor(data?: IGiteeSecret) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.secret = _data["secret"];
+        }
+    }
+
+    static fromJS(data: any): GiteeSecret {
+        data = typeof data === 'object' ? data : {};
+        let result = new GiteeSecret();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["secret"] = this.secret;
+        return data;
+    }
+}
+
+export interface IGiteeSecret {
+    secret?: string | undefined;
+}
+
+export class GiteeSignatureKey implements IGiteeSignatureKey {
+    key?: string | undefined;
+
+    constructor(data?: IGiteeSignatureKey) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.key = _data["key"];
+        }
+    }
+
+    static fromJS(data: any): GiteeSignatureKey {
+        data = typeof data === 'object' ? data : {};
+        let result = new GiteeSignatureKey();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["key"] = this.key;
+        return data;
+    }
+}
+
+export interface IGiteeSignatureKey {
+    key?: string | undefined;
 }
 
 export class ApiException extends Error {
