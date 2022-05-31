@@ -1,9 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
-using System.Xml;
-using WebHooks.Data.DbContexts;
+﻿using Microsoft.EntityFrameworkCore.Design;
 
 namespace WebHooks.EntityFrameworkCore.Pgsql
 {

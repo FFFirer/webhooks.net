@@ -22,6 +22,15 @@ namespace WebHooks.Service
             this.workRepo = workRepository;
         }
 
+        public async Task<WorkDto?> GetAsync(Guid id)
+        {
+            var data = await workRepo.GetAsync(id);
+
+            if (data == null) return null;
+
+            return data.Adapt<WorkDto>();
+        }
+
         public async Task<List<WorkDto>> ListAsync()
         {
             var datas = await workRepo.GetAll().AsNoTracking()
@@ -56,8 +65,13 @@ namespace WebHooks.Service
             await workRepo.RemoveAsync(id);
         }
 
-        public async Task SaveAsync(WorkDto workDto)
+        public async Task SaveAsync(WorkDto? workDto)
         {
+            if(workDto == null)
+            {
+                return;
+            }
+
             var work = workDto.Adapt<Work>();
 
             if (work == null)

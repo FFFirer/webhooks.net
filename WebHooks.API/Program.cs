@@ -1,7 +1,7 @@
 using WebHooks.API;
 using WebHooks.API.Filters;
 using WebHooks.API.ResultWrapper;
-using WebHooks.EntityFrameworkCore.Pgsql;
+using WebHooks.Data.Extensions;
 using WebHooks.Service.Extensions;
 
 var DefaultCorsPolicyName = "default";

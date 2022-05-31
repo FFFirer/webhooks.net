@@ -13,6 +13,8 @@ namespace WebHooks.Data.Entities
     {
         public Guid? ProjectId { get; set; }
 
+        public Guid? GroupId { get; set; }
+
         public string? DisplayName { get; set; }
 
     }

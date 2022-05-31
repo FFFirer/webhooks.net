@@ -24,7 +24,7 @@ namespace WebHooks.EntityFrameworkCore.Pgsql
             optionsBuilder.UseNpgsql(connectionString);
         }
 
-        public string GetConnectionString(string projectFilePath)
+        public static string GetConnectionString(string projectFilePath)
         {
             if (!File.Exists(projectFilePath))
             {

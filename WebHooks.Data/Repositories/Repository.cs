@@ -60,7 +60,7 @@ namespace WebHooks.Data.Repositories
             return _context.Set<TEntity>();
         }
 
-        public async Task<TEntity?> UpdateAsync(TEntity? entity)
+        public async Task<TEntity?> UpdateAsync(TEntity? entity, bool saveImmediately = true)
         {
             TEntity? exist = null;
             if (entity == null)
@@ -72,7 +72,10 @@ namespace WebHooks.Data.Repositories
             if(exist != null)
             {
                 _context.Entry(exist).CurrentValues.SetValues(entity);
-               await  _context.SaveChangesAsync();
+                if (saveImmediately)
+                {
+                    await _context.SaveChangesAsync();
+                }
             }
             return exist;
         }

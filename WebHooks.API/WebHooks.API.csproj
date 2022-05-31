@@ -14,9 +14,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\WebHooks.EntityFrameworkCore.Pgsql\WebHooks.EntityFrameworkCore.Pgsql.csproj" />
 		<ProjectReference Include="..\WebHooks.Service\WebHooks.Service.csproj" />
-		<ProjectReference Include="..\WebHooks.Shared\WebHooks.Shared.csproj" />
 	</ItemGroup>
 
 </Project>

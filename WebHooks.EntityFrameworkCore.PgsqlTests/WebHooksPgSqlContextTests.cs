@@ -17,7 +17,7 @@ namespace WebHooks.EntityFrameworkCore.Pgsql.Tests
             var context = new WebHooksPgSqlContext();
             var projectFilePath = @"D:\Playground\repos\WebHooks.NET\WebHooks.EntityFrameworkCore.Pgsql\WebHooks.EntityFrameworkCore.Pgsql.csproj";
             
-            var connectString = context.GetConnectionString(projectFilePath);
+            var connectString = WebHooksPgSqlContext.GetConnectionString(projectFilePath);
 
             if (string.IsNullOrEmpty(connectString))
             {

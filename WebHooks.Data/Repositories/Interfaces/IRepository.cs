@@ -52,6 +52,7 @@ namespace WebHooks.Data.Repositories.Interfaces
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        Task<TEntity?> UpdateAsync(TEntity? entity);
+        Task<TEntity?> UpdateAsync(TEntity? entity, bool saveImmediately = true);
+
     }
 }

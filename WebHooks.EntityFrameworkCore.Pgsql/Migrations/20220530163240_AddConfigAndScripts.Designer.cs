@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WebHooks.EntityFrameworkCore.Pgsql;
@@ -11,9 +12,10 @@ using WebHooks.EntityFrameworkCore.Pgsql;
 namespace WebHooks.EntityFrameworkCore.Pgsql.Migrations
 {
     [DbContext(typeof(WebHooksPgSqlContext))]
-    partial class WebHooksPgSqlContextModelSnapshot : ModelSnapshot
+    [Migration("20220530163240_AddConfigAndScripts")]
+    partial class AddConfigAndScripts
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

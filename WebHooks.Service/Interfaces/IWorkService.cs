@@ -14,8 +14,10 @@ namespace WebHooks.Service.Interfaces
 
         Task<PagingResult<WorkDto>> PageAsync(PagingQuery pagingQuery);
 
-        Task SaveAsync(WorkDto workDto);
+        Task SaveAsync(WorkDto? workDto);
 
         Task RemoveAsync(Guid id);
+
+        Task<WorkDto?> GetAsync(Guid id);
     }
 }

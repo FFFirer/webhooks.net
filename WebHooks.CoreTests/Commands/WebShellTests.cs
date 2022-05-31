@@ -3,14 +3,11 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
 using Moq;
-using System;
 using System.Management.Automation;
-using System.Reflection;
-using System.Text.RegularExpressions;
 
 namespace WebHooks.Core.Commands.Tests
 {
-    [TestClass()]
+    [TestClass]
     public class WebShellTests
     {
         private readonly IServiceProvider _serviceProvider;

@@ -1,15 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WebHooks.Data.DbContexts;
 
-namespace WebHooks.EntityFrameworkCore.Pgsql
+namespace WebHooks.Data.Extensions
 {
-    public static class DataContextRegister
+    public static class PgsqlDbContextRegister
     {
         public static IServiceCollection AddPgsqlDataContext(this IServiceCollection services, string connectionString)
         {
