@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace WebHooks.Data.Gitee
 {
-    public class GiteeSecret
+    public class GiteeAuthenticationKey
     {
-        public string? Secret { get; set; }
+        public string? Value { get; set; }
     }
 }

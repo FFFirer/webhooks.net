@@ -23,9 +23,9 @@ namespace WebHooks.Data.DbContexts
 
             modelBuilder.Entity<GiteeWebhookConfig>(builder =>
             {
-                builder.Property(a => a.Authentications).HasConversion<string>();
-                builder.Property(a => a.Secret).HasJsonConversion();
-                builder.Property(a => a.SignatureKey).HasJsonConversion();
+                builder.Property(a => a.Authentication).HasConversion<string>();
+                builder.Property(a => a.AuthenticationKey).HasJsonConversion();
+
                 builder.Property(a => a.Events).HasJsonConversion();
             });
 

@@ -5,14 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 using WebHooks.Data.Entities;
 using WebHooks.Data.Gitee;
+using WebHooks.Service.Gitee.Dtos;
 
 namespace WebHooks.Service.Gitee
 {
     public interface IGiteeService
     {
-        Task<GiteeWebhookConfig?> GetConfigAsync(Guid workId);
+        Task<GiteeWebHookConfigDto?> GetConfigAsync(Guid workId);
 
-        Task SaveConfigAsync(GiteeWebhookConfig? config);
+        Task SaveConfigAsync(GiteeWebHookConfigDto? dto);
 
         Task RemoveConfigAsync(int id);
     }

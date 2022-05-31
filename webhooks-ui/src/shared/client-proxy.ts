@@ -1,5 +1,6 @@
 import {
     ApiException,
+    GiteeConfigClient,
     GroupClient,
     GroupDto,
     WorkClient,
@@ -21,6 +22,12 @@ export class GroupClientProxy extends GroupClient {
 }
 
 export class WorkClientProxy extends WorkClient {
+    constructor() {
+        super(API_URL, fetchProxy);
+    }
+}
+
+export class GiteeConfigClientProxy extends GiteeConfigClient {
     constructor() {
         super(API_URL, fetchProxy);
     }

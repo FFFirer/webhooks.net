@@ -8,9 +8,9 @@ namespace WebHooks.Service
 {
     public class BuildScriptService : IBuildScriptService
     {
-        private IRepository<BuildScript, int> repository;
+        private IBuildScriptRepository repository;
 
-        public BuildScriptService(IRepository<BuildScript, int> repository)
+        public BuildScriptService(IBuildScriptRepository repository)
         {
             this.repository = repository;
         }

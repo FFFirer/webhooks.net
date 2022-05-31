@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WebHooks.Data.Entities;
 using WebHooks.Data.Gitee;
+using WebHooks.Service.Gitee.Dtos;
 
 namespace WebHooks.Service.Dtos
 {
@@ -12,6 +13,6 @@ namespace WebHooks.Service.Dtos
     {
         public WorkDto? Work { get; set; }
         public List<BuildScript>? Scripts { get; set; }
-        public GiteeWebhookConfig? Config { get; set; }
+        public GiteeWebHookConfigDto? Config { get; set; }
     }
 }

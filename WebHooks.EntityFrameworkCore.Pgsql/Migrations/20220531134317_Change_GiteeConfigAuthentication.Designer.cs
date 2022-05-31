@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WebHooks.EntityFrameworkCore.Pgsql;
@@ -11,9 +12,10 @@ using WebHooks.EntityFrameworkCore.Pgsql;
 namespace WebHooks.EntityFrameworkCore.Pgsql.Migrations
 {
     [DbContext(typeof(WebHooksPgSqlContext))]
-    partial class WebHooksPgSqlContextModelSnapshot : ModelSnapshot
+    [Migration("20220531134317_Change_GiteeConfigAuthentication")]
+    partial class Change_GiteeConfigAuthentication
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -112,10 +114,6 @@ namespace WebHooks.EntityFrameworkCore.Pgsql.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("AuthenticationKey")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -125,6 +123,14 @@ namespace WebHooks.EntityFrameworkCore.Pgsql.Migrations
 
                     b.Property<DateTime?>("ModifedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Secret")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SignatureKey")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("WebHookUrl")
                         .HasColumnType("text");

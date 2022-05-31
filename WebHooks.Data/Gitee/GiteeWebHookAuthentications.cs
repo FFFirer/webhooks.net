@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WebHooks.Data.Gitee
 {
-    public enum GiteeWebHookAuthentications
+    public enum GiteeWebHookAuthentication
     {
         /// <summary>
         /// 密码

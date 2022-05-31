@@ -1,21 +1,33 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Mapster;
+using Microsoft.EntityFrameworkCore;
 using WebHooks.Data.Gitee;
+using WebHooks.Data.Gitee.Repository;
 using WebHooks.Data.Repositories.Interfaces;
+using WebHooks.Service.Gitee.Dtos;
 
 namespace WebHooks.Service.Gitee
 {
     public class GiteeService : IGiteeService
     {
-        private readonly IRepository<GiteeWebhookConfig, int> repo;
+        private readonly IGiteeConfigRepository repo;
 
-        public GiteeService(IRepository<GiteeWebhookConfig, int> repo)
+        public GiteeService(IGiteeConfigRepository repo)
         {
             this.repo = repo;
         }
 
-        public Task<GiteeWebhookConfig?> GetConfigAsync(Guid workId)
+        public async Task<GiteeWebHookConfigDto?> GetConfigAsync(Guid workId)
         {
-            return repo.GetAll().AsNoTracking().Where(a => a.WorkId == workId).FirstOrDefaultAsync();
+            var config = await repo.GetAll().AsNoTracking().Where(a => a.WorkId == workId).FirstOrDefaultAsync();
+
+            if(config == null)
+            {
+                return null;
+            }
+
+            var dto = config.Adapt<GiteeWebHookConfigDto>();
+
+            return dto;
         }
 
         public Task RemoveConfigAsync(int id)
@@ -23,14 +35,16 @@ namespace WebHooks.Service.Gitee
             return repo.RemoveAsync(id);
         }
 
-        public Task SaveConfigAsync(GiteeWebhookConfig? config)
+        public async Task SaveConfigAsync(GiteeWebHookConfigDto? dto)
         {
-            if(config == null)
+            if(dto == null)
             {
-                return Task.CompletedTask;
+                return;
             }
 
-            return repo.UpdateAsync(config);
+            var config = dto.Adapt<GiteeWebhookConfig>();
+
+            await repo.UpdateAsync(config);
         }
     }
 }
