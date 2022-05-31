@@ -140,7 +140,7 @@ onMounted(async () => {
                     <tr>
                         <th class="w-50px">#</th>
                         <th class="w-200px">操作</th>
-                        <th>分组名称</th>
+                        <th>名称</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -203,11 +203,11 @@ onMounted(async () => {
         <div class="row">
             <div class="col">
                 <div class="form-group">
-                    <label for="name" class="form-label">工作项名称</label>
+                    <label for="name" class="form-label">名称</label>
                     <input
                         type="text"
                         class="form-control"
-                        placeholder="请输入分组名称..."
+                        placeholder="请输入..."
                         v-model="editingWork.displayName"
                     />
                 </div>
