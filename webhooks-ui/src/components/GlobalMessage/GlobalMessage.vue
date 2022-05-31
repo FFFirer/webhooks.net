@@ -14,9 +14,53 @@ const messageRef: Ref<HTMLDivElement | undefined> = ref();
 const message = ref("");
 let messageModal: Modal;
 
-const showMessage = (msg: string) => {
+const showHeader: Ref<boolean> = ref(true);
+const showFooter: Ref<boolean> = ref(true);
+const showClose: Ref<boolean> = ref(true);
+
+/**
+ *
+ * @param msg 消息
+ * @param autoClose 自动隐藏秒数，默认不自动隐藏，单位秒
+ */
+const showMessage = (msg: string, autoClose?: number) => {
     message.value = msg;
+
+    showHeader.value = true;
+    showFooter.value = true;
+    showClose.value = true;
+
     messageModal?.show();
+
+    if (autoClose && autoClose > 0) {
+        setTimeout(() => {
+            messageModal?.hide();
+        }, autoClose * 1000);
+    }
+};
+
+/**
+ * 弹出通知
+ * @param msg 通知
+ * @param autoClose 自动关闭时间，默认3秒，最少1秒
+ */
+const notice = (msg: string, autoClose?: number) => {
+    message.value = msg;
+
+    autoClose = (autoClose ?? 0) >= 1 ? autoClose : 1;
+
+    showHeader.value = true;
+    showClose.value = false;
+    showFooter.value = false;
+
+    messageModal?.show();
+    console.log("show");
+    if (autoClose && autoClose > 0) {
+        setTimeout(() => {
+            messageModal?.hide();
+            console.log("hide");
+        }, autoClose * 1000);
+    }
 };
 
 onMounted(() => {
@@ -27,6 +71,7 @@ onMounted(() => {
     // 初始化，设置事件响应
     if (props.proxy != null) {
         props.proxy.onShow = showMessage;
+        props.proxy.onNotice = notice;
     }
 });
 </script>
@@ -41,9 +86,10 @@ onMounted(() => {
     >
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header" v-show="showHeader">
                     <h5 class="modal-title" id="messageModalLabel">消息</h5>
                     <button
+                        v-show="showClose"
                         type="button"
                         class="btn-close"
                         data-bs-dismiss="modal"
@@ -53,7 +99,7 @@ onMounted(() => {
                 <div class="modal-body">
                     {{ message }}
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer" v-show="showFooter">
                     <button
                         type="button"
                         class="btn btn-secondary"

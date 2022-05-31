@@ -2,10 +2,16 @@ import { inject, InjectionKey, provide } from "vue";
 
 export class GlobalMessageProxy {
     constructor() {}
-    onShow?: (message: string) => void;
-    show(message: string) {
+    onShow?: (message: string, autoClise?: number) => void;
+    onNotice?: (message: string, autoClose?: number) => void;
+    show(message: string, autoClose?: number) {
         if (this.onShow != null) {
-            this.onShow(message);
+            this.onShow(message, autoClose);
+        }
+    }
+    notice(message: string, closeAfter?: number) {
+        if (this.onNotice != null) {
+            this.onNotice(message, closeAfter);
         }
     }
 }

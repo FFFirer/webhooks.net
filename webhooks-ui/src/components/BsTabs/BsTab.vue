@@ -65,7 +65,7 @@ provide(BsTabInjectionKey, {
 
 <template>
     <div>
-        <ul class="nav nav-tabs">
+        <ul class="nav nav-tabs mb-3">
             <li class="nav-item" v-for="(t, i) in tabs">
                 <a
                     href="javascript:;"
