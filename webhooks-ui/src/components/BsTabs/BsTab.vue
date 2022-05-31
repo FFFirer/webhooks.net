@@ -55,7 +55,8 @@ onMounted(() => {
           })
         : [];
 
-    active.value = tabs.value.length > 0 ? tabs.value[0].id : "";
+    const initTab = tabs.value.length > 0 ? tabs.value[0].id : "";
+    changeTab(initTab);
 });
 
 provide(BsTabInjectionKey, {

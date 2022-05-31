@@ -17,6 +17,7 @@ import {
 } from "../../shared/webapi/client";
 import WorkDetailViewProps from "./WorkDetailProps";
 import Clipboard from "clipboard";
+import * as monaco from "monaco-editor";
 
 const props = defineProps(WorkDetailViewProps);
 
@@ -28,9 +29,17 @@ const LogTabId = "log";
 const ScriptsId = "scripts";
 
 const copyBtnRef: Ref<HTMLButtonElement | undefined> = ref();
+const codeEditorRef: Ref<HTMLDivElement | undefined> = ref();
 
 const handleTabActived = (id: string) => {
-    console.log("active", id);
+    if (id == ScriptsId) {
+        if (!hasInitCodeEditor.value) {
+            // 延时渲染
+            setTimeout(() => {
+                initCodeEditor();
+            }, 100);
+        }
+    }
 };
 
 const workClient = new WorkClientProxy();
@@ -39,6 +48,7 @@ const giteeConfigClient = new GiteeConfigClientProxy();
 const work: Ref<WorkDto> = ref(new WorkDto());
 const config: Ref<GiteeWebHookConfigDto> = ref(new GiteeWebHookConfigDto());
 const scripts: Ref<Array<BuildScript>> = ref([]);
+const hasInitCodeEditor: Ref<boolean> = ref(false);
 
 const loadDetail = async () => {
     const result = await workClient.detail(props.id);
@@ -47,6 +57,7 @@ const loadDetail = async () => {
     scripts.value = result.scripts ?? [];
 };
 
+/**保存工作项设置 */
 const saveWork = async () => {
     await workClient
         .save(work.value)
@@ -56,6 +67,7 @@ const saveWork = async () => {
         .catch((e) => {});
 };
 
+/**保存配置 */
 const saveGiteeConfig = async () => {
     const input = new SaveGiteeWebHookConfigInput();
     input.init(config.value);
@@ -67,23 +79,55 @@ const saveGiteeConfig = async () => {
         .catch((e) => {});
 };
 
+/**初始化赋值连接 */
 const initCopy = () => {
-    if (copyBtnRef.value) {
-        const clipboard = new Clipboard(copyBtnRef.value, {
-            text: function () {
-                return config.value.webHookUrl ?? "";
-            },
-            action: function () {
-                return "copy";
-            },
-            container: this,
-        });
-
-        clipboard.on("success", () => {
-            globalMessage.notice("复制成功");
-        });
+    if (!copyBtnRef.value) {
+        return;
     }
+
+    const clipboard = new Clipboard(copyBtnRef.value, {
+        text: function () {
+            return config.value.webHookUrl ?? "";
+        },
+        action: function () {
+            return "copy";
+        },
+        container: this,
+    });
+
+    clipboard.on("success", () => {
+        globalMessage.notice("复制成功");
+    });
 };
+
+const editor: Ref<monaco.editor.IStandaloneCodeEditor | undefined> = ref();
+
+/**初始化脚本编辑器 */
+const initCodeEditor = () => {
+    if (!codeEditorRef.value) {
+        return;
+    }
+
+    if (hasInitCodeEditor.value) {
+        return;
+    }
+
+    editor.value = monaco.editor.create(codeEditorRef.value, {
+        language: "powershell",
+
+        lineNumbers: "on",
+        roundedSelection: false,
+        scrollBeyondLastLine: false,
+        // theme: "vs-dark",
+        readOnly: false,
+        automaticLayout: true,
+    });
+    console.log("init code editor success");
+    hasInitCodeEditor.value = true;
+};
+
+/**保存脚本 */
+const saveScripts = () => {};
 
 const giteeAuthentications: Array<{
     value: GiteeWebHookAuthentication;
@@ -243,7 +287,21 @@ onMounted(async () => {
                         </div>
                     </div>
                 </bs-tab-item>
-                <bs-tab-item :id="ScriptsId" label="脚本设置"> </bs-tab-item>
+                <bs-tab-item :id="ScriptsId" label="脚本设置">
+                    <div class="row">
+                        <div class="col-12 mb-2">
+                            <button
+                                type="button"
+                                class="btn btn-sm btn-primary"
+                            >
+                                保存
+                            </button>
+                        </div>
+                        <div class="col-12 mb-2">
+                            <div class="code-editor" ref="codeEditorRef"></div>
+                        </div>
+                    </div>
+                </bs-tab-item>
                 <bs-tab-item :id="LogTabId" label="执行日志">
                     <div class="row">
                         <div class="col-12">
@@ -267,3 +325,9 @@ onMounted(async () => {
         </div>
     </div>
 </template>
+<style scoped>
+.code-editor {
+    height: 500px;
+    border: 1px solid #eee;
+}
+</style>
