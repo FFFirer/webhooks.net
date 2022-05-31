@@ -16,6 +16,7 @@ import {
     WorkDto,
 } from "../../shared/webapi/client";
 import WorkDetailViewProps from "./WorkDetailProps";
+import Clipboard from "clipboard";
 
 const props = defineProps(WorkDetailViewProps);
 
@@ -25,6 +26,8 @@ const BasicTabId = "basic";
 const SetupTabId = "setup";
 const LogTabId = "log";
 const ScriptsId = "scripts";
+
+const copyBtnRef: Ref<HTMLButtonElement | undefined> = ref();
 
 const handleTabActived = (id: string) => {
     console.log("active", id);
@@ -62,6 +65,24 @@ const saveGiteeConfig = async () => {
             globalMessage.notice("保存成功！");
         })
         .catch((e) => {});
+};
+
+const initCopy = () => {
+    if (copyBtnRef.value) {
+        const clipboard = new Clipboard(copyBtnRef.value, {
+            text: function () {
+                return config.value.webHookUrl ?? "";
+            },
+            action: function () {
+                return "copy";
+            },
+            container: this,
+        });
+
+        clipboard.on("success", () => {
+            globalMessage.notice("复制成功");
+        });
+    }
 };
 
 const giteeAuthentications: Array<{
@@ -103,6 +124,7 @@ const giteeWebHookEvents: Array<{ value: string; label: string }> = [
 
 onMounted(async () => {
     await loadDetail();
+    initCopy();
 });
 </script>
 <template>
@@ -150,13 +172,13 @@ onMounted(async () => {
                                     WebHook地址
                                     <button
                                         class="btn btn-sm btn-outline-primary"
+                                        ref="copyBtnRef"
                                     >
                                         copy
                                     </button>
                                 </label>
                                 <input
                                     type="text"
-                                    readonly
                                     name="webHookUrl"
                                     class="form-control"
                                     v-model="config.webHookUrl"

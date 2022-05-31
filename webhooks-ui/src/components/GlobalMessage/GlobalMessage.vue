@@ -3,6 +3,7 @@ import { Modal } from "bootstrap";
 import { onMounted, PropType, Ref, ref } from "vue";
 import { GlobalMessageProxy } from "./GlobalMessageProxy";
 
+
 const props = defineProps({
     proxy: {
         type: Object as PropType<GlobalMessageProxy>,
@@ -62,6 +63,7 @@ const notice = (msg: string, autoClose?: number) => {
         }, autoClose * 1000);
     }
 };
+
 
 onMounted(() => {
     if (messageRef?.value != undefined) {
