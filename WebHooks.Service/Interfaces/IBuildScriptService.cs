@@ -9,6 +9,10 @@ namespace WebHooks.Service.Interfaces
 {
     public interface IBuildScriptService
     {
+        Task<BuildScript?> GetAsync(Guid workId);
+
+        Task SaveAsync(BuildScript script);
+
         Task<List<BuildScript>> GetListAsync(Guid workId);
 
         /// <summary>
@@ -16,6 +20,6 @@ namespace WebHooks.Service.Interfaces
         /// </summary>
         /// <param name="scripts"></param>
         /// <returns></returns>
-        Task SaveAsync(List<BuildScript>? scripts);
+        Task SaveListAsync(List<BuildScript>? scripts);
     }
 }

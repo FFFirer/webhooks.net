@@ -482,6 +482,40 @@ export class WorkClient {
         }
         return Promise.resolve<void>(null as any);
     }
+
+    saveScripts(dto: BuildScriptDto): Promise<void> {
+        let url_ = this.baseUrl + "/api/Work/SaveScripts";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(dto);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processSaveScripts(_response);
+        });
+    }
+
+    protected processSaveScripts(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("服务器发生意外错误。", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
 }
 
 export class DtoOfInteger implements IDtoOfInteger {
@@ -1030,7 +1064,7 @@ export interface IRemoveWorkInput {
 
 export class WorkDetailDto implements IWorkDetailDto {
     work?: WorkDto | undefined;
-    scripts?: BuildScript[] | undefined;
+    script?: BuildScript | undefined;
     config?: GiteeWebHookConfigDto | undefined;
 
     constructor(data?: IWorkDetailDto) {
@@ -1045,11 +1079,7 @@ export class WorkDetailDto implements IWorkDetailDto {
     init(_data?: any) {
         if (_data) {
             this.work = _data["work"] ? WorkDto.fromJS(_data["work"]) : <any>undefined;
-            if (Array.isArray(_data["scripts"])) {
-                this.scripts = [] as any;
-                for (let item of _data["scripts"])
-                    this.scripts!.push(BuildScript.fromJS(item));
-            }
+            this.script = _data["script"] ? BuildScript.fromJS(_data["script"]) : <any>undefined;
             this.config = _data["config"] ? GiteeWebHookConfigDto.fromJS(_data["config"]) : <any>undefined;
         }
     }
@@ -1064,11 +1094,7 @@ export class WorkDetailDto implements IWorkDetailDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["work"] = this.work ? this.work.toJSON() : <any>undefined;
-        if (Array.isArray(this.scripts)) {
-            data["scripts"] = [];
-            for (let item of this.scripts)
-                data["scripts"].push(item.toJSON());
-        }
+        data["script"] = this.script ? this.script.toJSON() : <any>undefined;
         data["config"] = this.config ? this.config.toJSON() : <any>undefined;
         return data;
     }
@@ -1076,7 +1102,7 @@ export class WorkDetailDto implements IWorkDetailDto {
 
 export interface IWorkDetailDto {
     work?: WorkDto | undefined;
-    scripts?: BuildScript[] | undefined;
+    script?: BuildScript | undefined;
     config?: GiteeWebHookConfigDto | undefined;
 }
 
@@ -1171,6 +1197,58 @@ export class BuildScript extends EntityOfInteger implements IBuildScript {
 }
 
 export interface IBuildScript extends IEntityOfInteger {
+    workId: string;
+    sortNumber: number;
+    scripts: string[];
+}
+
+export class BuildScriptDto extends DtoOfInteger implements IBuildScriptDto {
+    workId!: string;
+    sortNumber!: number;
+    scripts!: string[];
+
+    constructor(data?: IBuildScriptDto) {
+        super(data);
+        if (!data) {
+            this.scripts = [];
+        }
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.workId = _data["workId"];
+            this.sortNumber = _data["sortNumber"];
+            if (Array.isArray(_data["scripts"])) {
+                this.scripts = [] as any;
+                for (let item of _data["scripts"])
+                    this.scripts!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): BuildScriptDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new BuildScriptDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["workId"] = this.workId;
+        data["sortNumber"] = this.sortNumber;
+        if (Array.isArray(this.scripts)) {
+            data["scripts"] = [];
+            for (let item of this.scripts)
+                data["scripts"].push(item);
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IBuildScriptDto extends IDtoOfInteger {
     workId: string;
     sortNumber: number;
     scripts: string[];

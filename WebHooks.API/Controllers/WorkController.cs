@@ -64,7 +64,7 @@ namespace WebHooks.API.Controllers
             }
             dto.Work = work;
             dto.Config = await _giteeService.GetConfigAsync(workId);
-            dto.Scripts = await _buildScriptService.GetListAsync(workId);
+            dto.Script = await _buildScriptService.GetAsync(workId);
 
             return dto;
         }
@@ -74,7 +74,19 @@ namespace WebHooks.API.Controllers
         {
             await _workService.SaveAsync(detail.Work);
             await _giteeService.SaveConfigAsync(detail.Config);
-            await _buildScriptService.SaveAsync(detail.Scripts);
+            //await _buildScriptService.SaveAsync(detail.Script ?? new BuildScript()
+            //{
+            //    WorkId = detail.Work?.Id,
+            //    SortNumber = 0
+            //}) ;
+        }
+
+        [HttpPost("[action]")]
+        public async Task SaveScripts(BuildScriptDto dto)
+        {
+            var data = dto.Adapt<BuildScript>();
+
+            await _buildScriptService.SaveAsync(data);
         }
     }
 }

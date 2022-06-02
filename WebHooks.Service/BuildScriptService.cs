@@ -15,6 +15,13 @@ namespace WebHooks.Service
             this.repository = repository;
         }
 
+        public Task<BuildScript?> GetAsync(Guid workId)
+        {
+            return repository.GetAll().AsNoTracking()
+                .Where(a => a.WorkId == workId)
+                .FirstOrDefaultAsync();
+        }
+
         public Task<List<BuildScript>> GetListAsync(Guid workId)
         {
             return repository.GetAll()
@@ -23,7 +30,12 @@ namespace WebHooks.Service
                 .ToListAsync();
         }
 
-        public Task SaveAsync(List<BuildScript>? scripts)
+        public async Task SaveAsync(BuildScript script)
+        {
+            await this.repository.UpdateAsync(script);
+        }
+
+        public Task SaveListAsync(List<BuildScript>? scripts)
         {
             if(scripts == null)
             {

@@ -12,7 +12,7 @@ namespace WebHooks.Service.Dtos
     public class WorkDetailDto
     {
         public WorkDto? Work { get; set; }
-        public List<BuildScript>? Scripts { get; set; }
+        public BuildScript? Script { get; set; }
         public GiteeWebHookConfigDto? Config { get; set; }
     }
 }

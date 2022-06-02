@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, Ref } from "vue";
+import { onMounted, ref, Ref, toRaw } from "vue";
 import BsTab from "../../components/BsTabs/BsTab.vue";
 import BsTabItem from "../../components/BsTabs/BsTabItem.vue";
 import { useGlobalMessage } from "../../components/GlobalMessage/GlobalMessageProxy";
@@ -9,6 +9,7 @@ import {
 } from "../../shared/client-proxy";
 import {
     BuildScript,
+    BuildScriptDto,
     GiteeWebHookAuthentication,
     GiteeWebHookConfigDto,
     SaveGiteeWebHookConfigInput,
@@ -18,6 +19,7 @@ import {
 import WorkDetailViewProps from "./WorkDetailProps";
 import Clipboard from "clipboard";
 import * as monaco from "monaco-editor";
+// import "monaco-editor/esm/vs/basic-languages/powershell/powershell.contribution";
 
 const props = defineProps(WorkDetailViewProps);
 
@@ -47,14 +49,14 @@ const giteeConfigClient = new GiteeConfigClientProxy();
 
 const work: Ref<WorkDto> = ref(new WorkDto());
 const config: Ref<GiteeWebHookConfigDto> = ref(new GiteeWebHookConfigDto());
-const scripts: Ref<Array<BuildScript>> = ref([]);
+const script: Ref<BuildScript> = ref(new BuildScript());
 const hasInitCodeEditor: Ref<boolean> = ref(false);
 
 const loadDetail = async () => {
     const result = await workClient.detail(props.id);
     work.value = result.work ?? new WorkDto();
     config.value = result.config ?? new GiteeWebHookConfigDto();
-    scripts.value = result.scripts ?? [];
+    script.value = result.script ?? new BuildScript();
 };
 
 /**保存工作项设置 */
@@ -100,7 +102,8 @@ const initCopy = () => {
     });
 };
 
-const editor: Ref<monaco.editor.IStandaloneCodeEditor | undefined> = ref();
+let editor: monaco.editor.IStandaloneCodeEditor | null = null;
+const needSave: Ref<boolean> = ref(false);
 
 /**初始化脚本编辑器 */
 const initCodeEditor = () => {
@@ -112,22 +115,43 @@ const initCodeEditor = () => {
         return;
     }
 
-    editor.value = monaco.editor.create(codeEditorRef.value, {
-        language: "powershell",
+    const codeModel = monaco.editor.createModel("", "powershell");
 
+    editor = monaco.editor.create(codeEditorRef.value, {
+        language: "powershell",
+        model: codeModel,
         lineNumbers: "on",
         roundedSelection: false,
         scrollBeyondLastLine: false,
-        // theme: "vs-dark",
+        theme: "vs-dark",
         readOnly: false,
         automaticLayout: true,
     });
-    console.log("init code editor success");
+
     hasInitCodeEditor.value = true;
 };
 
 /**保存脚本 */
-const saveScripts = () => {};
+const saveScripts = () => {
+    if (!hasInitCodeEditor.value) {
+        globalMessage.show("编辑器未初始化");
+        return;
+    }
+
+    const value = editor!.getModel()?.getValue() ?? "";
+    const dto = new BuildScriptDto();
+    dto.init(script.value);
+    // dto.scripts = value?.split("\n") ?? [];
+
+    workClient
+        .saveScripts(dto)
+        .then(() => {
+            globalMessage.notice("保存成功！", 3);
+        })
+        .catch((e) => {
+            globalMessage.show("保存出错");
+        });
+};
 
 const giteeAuthentications: Array<{
     value: GiteeWebHookAuthentication;
@@ -290,15 +314,16 @@ onMounted(async () => {
                 <bs-tab-item :id="ScriptsId" label="脚本设置">
                     <div class="row">
                         <div class="col-12 mb-2">
+                            <div class="code-editor" ref="codeEditorRef"></div>
+                        </div>
+                        <div class="col-12 mb-2">
                             <button
                                 type="button"
                                 class="btn btn-sm btn-primary"
+                                @click="saveScripts"
                             >
                                 保存
                             </button>
-                        </div>
-                        <div class="col-12 mb-2">
-                            <div class="code-editor" ref="codeEditorRef"></div>
                         </div>
                     </div>
                 </bs-tab-item>
