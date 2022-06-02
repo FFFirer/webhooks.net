@@ -44,7 +44,14 @@ namespace WebHooks.Service.Gitee
 
             var config = dto.Adapt<GiteeWebhookConfig>();
 
-            await repo.UpdateAsync(config);
+            if(config.Id > 0)
+            {
+                await repo.UpdateAsync(config);
+            }
+            else
+            {
+                await repo.InsertAsync(config);
+            }
         }
     }
 }

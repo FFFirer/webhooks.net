@@ -72,7 +72,9 @@ const saveWork = async () => {
 /**保存配置 */
 const saveGiteeConfig = async () => {
     const input = new SaveGiteeWebHookConfigInput();
+    config.value.workId = work.value.id;
     input.init(config.value);
+
     await giteeConfigClient
         .save(input)
         .then(() => {
@@ -115,7 +117,9 @@ const initCodeEditor = () => {
         return;
     }
 
-    const codeModel = monaco.editor.createModel("", "powershell");
+    const code = (script.value?.scripts ?? [])?.join("\n");
+
+    const codeModel = monaco.editor.createModel(code, "powershell");
 
     editor = monaco.editor.create(codeEditorRef.value, {
         language: "powershell",
@@ -141,7 +145,8 @@ const saveScripts = () => {
     const value = editor!.getModel()?.getValue() ?? "";
     const dto = new BuildScriptDto();
     dto.init(script.value);
-    // dto.scripts = value?.split("\n") ?? [];
+    dto.scripts = value?.split("\n") ?? [];
+    dto.workId = work.value.id;
 
     workClient
         .saveScripts(dto)
@@ -260,6 +265,8 @@ onMounted(async () => {
                                     name="authentication"
                                     id="authentication"
                                     class="form-select"
+                                    v-model="config.authentication"
+                                    placeholder="请选择一个授权方式"
                                 >
                                     <option
                                         v-for="a in giteeAuthentications"
@@ -269,7 +276,6 @@ onMounted(async () => {
                                     </option>
                                 </select>
                             </div>
-
                             <div class="mb-3">
                                 <input
                                     type="text"
@@ -278,7 +284,6 @@ onMounted(async () => {
                                     v-model="config.authenticationKey.value"
                                 />
                             </div>
-
                             <div class="mb-3">
                                 <label for="event">触发事件</label>
 
@@ -299,7 +304,6 @@ onMounted(async () => {
                                     </label>
                                 </div>
                             </div>
-
                             <div class="mb-3">
                                 <button
                                     class="btn btn-primary"
@@ -319,7 +323,7 @@ onMounted(async () => {
                         <div class="col-12 mb-2">
                             <button
                                 type="button"
-                                class="btn btn-sm btn-primary"
+                                class="btn btn-primary"
                                 @click="saveScripts"
                             >
                                 保存

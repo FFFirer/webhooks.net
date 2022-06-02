@@ -32,7 +32,14 @@ namespace WebHooks.Service
 
         public async Task SaveAsync(BuildScript script)
         {
-            await this.repository.UpdateAsync(script);
+            if(script.Id > 0)
+            {
+                await this.repository.UpdateAsync(script);
+            }
+            else
+            {
+                await this.repository.InsertAsync(script);
+            }
         }
 
         public Task SaveListAsync(List<BuildScript>? scripts)

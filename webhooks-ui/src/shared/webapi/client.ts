@@ -656,18 +656,34 @@ export interface IGiteeAuthenticationKey {
     value?: string | undefined;
 }
 
-export class SaveGiteeWebHookConfigInput implements ISaveGiteeWebHookConfigInput {
+export class SaveGiteeWebHookConfigInput extends DtoOfInteger implements ISaveGiteeWebHookConfigInput {
+    workId!: string;
+    webHookUrl!: string;
+    authentication!: GiteeWebHookAuthentication;
+    authenticationKey!: GiteeAuthenticationKey;
+    events!: string[];
 
     constructor(data?: ISaveGiteeWebHookConfigInput) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
+        super(data);
+        if (!data) {
+            this.authenticationKey = new GiteeAuthenticationKey();
+            this.events = [];
         }
     }
 
     init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.workId = _data["workId"];
+            this.webHookUrl = _data["webHookUrl"];
+            this.authentication = _data["authentication"];
+            this.authenticationKey = _data["authenticationKey"] ? GiteeAuthenticationKey.fromJS(_data["authenticationKey"]) : new GiteeAuthenticationKey();
+            if (Array.isArray(_data["events"])) {
+                this.events = [] as any;
+                for (let item of _data["events"])
+                    this.events!.push(item);
+            }
+        }
     }
 
     static fromJS(data: any): SaveGiteeWebHookConfigInput {
@@ -679,11 +695,26 @@ export class SaveGiteeWebHookConfigInput implements ISaveGiteeWebHookConfigInput
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["workId"] = this.workId;
+        data["webHookUrl"] = this.webHookUrl;
+        data["authentication"] = this.authentication;
+        data["authenticationKey"] = this.authenticationKey ? this.authenticationKey.toJSON() : <any>undefined;
+        if (Array.isArray(this.events)) {
+            data["events"] = [];
+            for (let item of this.events)
+                data["events"].push(item);
+        }
+        super.toJSON(data);
         return data;
     }
 }
 
-export interface ISaveGiteeWebHookConfigInput {
+export interface ISaveGiteeWebHookConfigInput extends IDtoOfInteger {
+    workId: string;
+    webHookUrl: string;
+    authentication: GiteeWebHookAuthentication;
+    authenticationKey: GiteeAuthenticationKey;
+    events: string[];
 }
 
 export class DtoOfGuid implements IDtoOfGuid {
