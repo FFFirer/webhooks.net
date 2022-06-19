@@ -1,17 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 using WebHooks.Models;
-using WebHooks.Models.Common;
-using WebHooks.Models.Gitee.Options;
 
 namespace WebHooks.Core.Commands
 {

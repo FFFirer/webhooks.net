@@ -1,8 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using WebHooks.Data.AdditionalWork.Git.Repositories;
 using WebHooks.Data.Gitee;
-using WebHooks.Data.Gitee.Repository;
+using WebHooks.Data.Gitee.Repositories;
 using WebHooks.Data.Repositories;
 using WebHooks.Data.Repositories.Interfaces;
+using WebHooks.Service.Git;
 using WebHooks.Service.Gitee;
 using WebHooks.Service.Interfaces;
 
@@ -23,7 +25,7 @@ namespace WebHooks.Service.Extensions
             services.AddScoped<IBuildScriptRepository, BuildScriptRepository>();
 
             services.AddScoped<IGiteeConfigRepository, GiteeConfigRepository>();
-
+            services.AddScoped<IGitConfigRepository, GitConfigRepository>();
             return services;
         }
 
@@ -34,6 +36,8 @@ namespace WebHooks.Service.Extensions
 
             services.AddScoped<IBuildScriptService, BuildScriptService>();
             services.AddScoped<IGiteeService, GiteeService>();
+
+            services.AddScoped<IGitConfigService, GitConfigService>();
 
             return services;
         }

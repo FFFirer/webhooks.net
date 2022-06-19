@@ -1,4 +1,4 @@
-﻿using System;
+﻿    using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,5 +17,9 @@ namespace WebHooks.Data.Entities
 
         public string? DisplayName { get; set; }
 
+        /// <summary>
+        /// 工作目录
+        /// </summary>
+        public string? WorkingDirectory { get; set; }
     }
 }

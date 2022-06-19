@@ -6,7 +6,7 @@ using WebHooks.Data.DbContexts;
 
 namespace WebHooks.EntityFrameworkCore.Pgsql
 {
-    public class WebHooksPgSqlContext : WebHooksDataConext
+    public class WebHooksPgSqlContext : WebHooksDataContext
     {
         public WebHooksPgSqlContext() : base()
         {

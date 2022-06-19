@@ -7,6 +7,9 @@ using WebHooks.Shared.CustomExceptions;
 
 namespace WebHooks.API.Filters
 {
+    /// <summary>
+    /// 接口异常过滤器
+    /// </summary>
     public class ApiExceptionFilter : IExceptionFilter
     {
         private readonly ILogger logger;

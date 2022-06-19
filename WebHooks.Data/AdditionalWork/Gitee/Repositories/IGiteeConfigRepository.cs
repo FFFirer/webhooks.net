@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WebHooks.Data.Repositories.Interfaces;
 
-namespace WebHooks.Data.Gitee.Repository
+namespace WebHooks.Data.Gitee.Repositories
 {
     public interface IGiteeConfigRepository : IRepository<GiteeWebhookConfig, int>
     {

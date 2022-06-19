@@ -11,7 +11,7 @@ namespace WebHooks.Data.Repositories
 {
     public class BuildScriptRepository : Repository<BuildScript, int>, IBuildScriptRepository
     {
-        public BuildScriptRepository(WebHooksDataConext context) : base(context)
+        public BuildScriptRepository(WebHooksDataContext context) : base(context)
         {
         }
     }

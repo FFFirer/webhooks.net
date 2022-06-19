@@ -6,7 +6,7 @@ namespace WebHooks.Data.Repositories
 {
     public class WorkRepository : Repository<Work, Guid>, IWorkRepository
     {
-        public WorkRepository(WebHooksDataConext context) : base(context)
+        public WorkRepository(WebHooksDataContext context) : base(context)
         {
         }
     }

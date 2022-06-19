@@ -6,7 +6,7 @@ namespace WebHooks.Data.Repositories
 {
     public class GroupRepository : Repository<Group, Guid>, IGroupRepository
     {
-        public GroupRepository(WebHooksDataConext context) : base(context)
+        public GroupRepository(WebHooksDataContext context) : base(context)
         {
         }
     }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using WebHooks.Data.Entities;
 
 namespace WebHooks.Data.Repositories.Interfaces
@@ -28,6 +29,12 @@ namespace WebHooks.Data.Repositories.Interfaces
         Task RemoveAsync(TPrimaryKey id);
 
         /// <summary>
+        /// 删除，条件
+        /// </summary>
+        /// <returns></returns>
+        Task RemoveAsync(Expression<Func<TEntity, bool>> predicate);
+
+        /// <summary>
         /// 根据主键获取一条记录，AsNoTracking
         /// </summary>
         /// <param name="id"></param>
@@ -54,5 +61,11 @@ namespace WebHooks.Data.Repositories.Interfaces
         /// <returns></returns>
         Task<TEntity?> UpdateAsync(TEntity? entity, bool saveImmediately = true);
 
+        /// <summary>
+        /// 判断是否存在
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<bool> ExistsAsync(TPrimaryKey id);
     }
 }

@@ -8,7 +8,7 @@ namespace WebHooks.Data.Extensions
     {
         public static IServiceCollection AddPgsqlDataContext(this IServiceCollection services, string connectionString)
         {
-            services.AddDbContext<WebHooksDataConext>(options =>
+            services.AddDbContext<WebHooksDataContext>(options =>
             {
                 options.UseNpgsql(connectionString);
             });

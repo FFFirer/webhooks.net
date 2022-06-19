@@ -1,7 +1,7 @@
 ﻿using Mapster;
 using Microsoft.EntityFrameworkCore;
 using WebHooks.Data.Gitee;
-using WebHooks.Data.Gitee.Repository;
+using WebHooks.Data.Gitee.Repositories;
 using WebHooks.Data.Repositories.Interfaces;
 using WebHooks.Service.Gitee.Dtos;
 

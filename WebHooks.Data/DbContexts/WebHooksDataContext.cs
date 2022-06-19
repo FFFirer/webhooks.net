@@ -1,18 +1,19 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using WebHooks.Data.AdditionalWork.Git;
 using WebHooks.Data.Entities;
 using WebHooks.Data.Extensions;
 using WebHooks.Data.Gitee;
 
 namespace WebHooks.Data.DbContexts
 {
-    public class WebHooksDataConext : DbContext
+    public class WebHooksDataContext : DbContext
     {
-        public WebHooksDataConext() : base()
+        public WebHooksDataContext() : base()
         {
 
         }
 
-        public WebHooksDataConext(DbContextOptions<WebHooksDataConext> options) : base(options)
+        public WebHooksDataContext(DbContextOptions<WebHooksDataContext> options) : base(options)
         {
 
         }
@@ -39,5 +40,7 @@ namespace WebHooks.Data.DbContexts
         public virtual DbSet<Work> Works => Set<Work>();
         public virtual DbSet<GiteeWebhookConfig> GiteeConfigs => Set<GiteeWebhookConfig>();
         public virtual DbSet<BuildScript> BuildScripts => Set<BuildScript>();
+
+        public virtual DbSet<GitConfig> GitConfigs => Set<GitConfig>();
     }
 }

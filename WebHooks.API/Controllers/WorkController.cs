@@ -10,6 +10,9 @@ using WebHooks.Shared.Paging;
 
 namespace WebHooks.API.Controllers
 {
+    /// <summary>
+    /// 工作项控制器
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class WorkController : BasicController
@@ -26,6 +29,11 @@ namespace WebHooks.API.Controllers
             _giteeService = giteeService;
         }
 
+        /// <summary>
+        /// 查询，分页
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         [HttpPost("[action]")]
         public async Task<PagingResult<WorkDto>> Query(PagingInput input)
         {
@@ -36,12 +44,22 @@ namespace WebHooks.API.Controllers
             return result;
         }
 
+        /// <summary>
+        /// 保存
+        /// </summary>
+        /// <param name="workDto"></param>
+        /// <returns></returns>
         [HttpPost("[action]")]
         public async Task Save(WorkDto workDto)
         {
             await _workService.SaveAsync(workDto);
         }
 
+        /// <summary>
+        /// 删除
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         [HttpPost("[action]")]
         public async Task Remove(RemoveWorkInput input)
         {
@@ -53,6 +71,11 @@ namespace WebHooks.API.Controllers
             }
         }
 
+        /// <summary>
+        /// 详情
+        /// </summary>
+        /// <param name="workId"></param>
+        /// <returns></returns>
         [HttpGet("[action]/{workId}")]
         public async Task<WorkDetailDto> Detail(Guid workId)
         {
@@ -69,6 +92,11 @@ namespace WebHooks.API.Controllers
             return dto;
         }
 
+        /// <summary>
+        /// 保存详情
+        /// </summary>
+        /// <param name="detail"></param>
+        /// <returns></returns>
         [HttpPost("[action]")]
         public async Task SaveDetail(WorkDetailDto detail)
         {
@@ -76,6 +104,11 @@ namespace WebHooks.API.Controllers
             await _giteeService.SaveConfigAsync(detail.Config);
         }
 
+        /// <summary>
+        /// 保存脚本
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
         [HttpPost("[action]")]
         public async Task SaveScripts(BuildScriptDto dto)
         {

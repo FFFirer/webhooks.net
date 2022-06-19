@@ -5,8 +5,11 @@ import AppHeader from "./views/AppHeader.vue";
 import AppFooter from "./views/AppFooter.vue";
 import GlobalMessage from "./components/GlobalMessage/GlobalMessage.vue";
 import { provideGlobalMessage } from "./components/GlobalMessage/GlobalMessageProxy";
+import GlobalSpinner from "./components/GlobalSpinner/GlobalSpinner.vue";
+import { provideGlobalSpinner } from "./components/GlobalSpinner/GlobalSpinnerProxy";
 
 const proxy = provideGlobalMessage();
+const spinner = provideGlobalSpinner();
 </script>
 
 <template>
@@ -16,6 +19,7 @@ const proxy = provideGlobalMessage();
             <router-view></router-view>
         </main>
         <global-message :proxy="proxy"></global-message>
+        <global-spinner :proxy="spinner"></global-spinner>
     </div>
     <app-footer></app-footer>
 </template>
