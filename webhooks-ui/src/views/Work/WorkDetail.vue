@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, Ref, toRaw } from "vue";
+import { onMounted, ref, Ref } from "vue";
 import BsTab from "../../components/BsTabs/BsTab.vue";
 import BsTabItem from "../../components/BsTabs/BsTabItem.vue";
 import { useGlobalMessage } from "../../components/GlobalMessage/GlobalMessageProxy";
@@ -13,13 +13,15 @@ import {
     GiteeWebHookAuthentication,
     GiteeWebHookConfigDto,
     SaveGiteeWebHookConfigInput,
-    WorkDetailDto,
     WorkDto,
 } from "../../shared/webapi/client";
 import WorkDetailViewProps from "./WorkDetailProps";
 import Clipboard from "clipboard";
 import * as monaco from "monaco-editor";
 // import "monaco-editor/esm/vs/basic-languages/powershell/powershell.contribution";
+
+import * as rpc from "vscode-ws-jsonrpc";
+import { stringify } from "querystring";
 
 const props = defineProps(WorkDetailViewProps);
 
@@ -108,7 +110,7 @@ let editor: monaco.editor.IStandaloneCodeEditor | null = null;
 const needSave: Ref<boolean> = ref(false);
 
 /**初始化脚本编辑器 */
-const initCodeEditor = () => {
+const initCodeEditor = async () => {
     if (!codeEditorRef.value) {
         return;
     }
@@ -116,6 +118,12 @@ const initCodeEditor = () => {
     if (hasInitCodeEditor.value) {
         return;
     }
+
+    monaco.languages.register({
+        id: "powershell",
+        extensions: [".ps1", "psm1", "psd1"],
+        aliases: ["pwsh"],
+    });
 
     const code = (script.value?.scripts ?? [])?.join("\n");
 
@@ -172,6 +180,8 @@ const giteeAuthentications: Array<{
     },
 ];
 
+const languageServicePipeName = "\\\\.\\pipe\\PSES_15nmpqbs.ghp";
+
 const giteeWebHookEvents: Array<{ value: string; label: string }> = [
     {
         value: "Push Hook",
@@ -194,6 +204,20 @@ const giteeWebHookEvents: Array<{ value: string; label: string }> = [
         label: "评论",
     },
 ];
+
+const connectLspServer = () => {
+    const ws = new WebSocket("ws://127.0.0.1:3341/lsp");
+    rpc.listen({
+        webSocket: ws,
+        onConnection: (connection: rpc.MessageConnection) => {
+            const notification = new rpc.NotificationType<string, void>(
+                "Test Notification"
+            );
+            connection.listen();
+            connection.sendNotification(notification, "hello world");
+        },
+    });
+};
 
 onMounted(async () => {
     await loadDetail();
@@ -347,6 +371,19 @@ onMounted(async () => {
                         </div>
                         <div class="col-12 empty-table text-muted" v-if="true">
                             没有数据
+                        </div>
+                    </div>
+                </bs-tab-item>
+                <bs-tab-item id="test" label="测试websocket">
+                    <div class="row">
+                        <div class="col-12">
+                            <button
+                                type="button"
+                                class="btn btn-primary"
+                                @click="connectLspServer"
+                            >
+                                测试
+                            </button>
                         </div>
                     </div>
                 </bs-tab-item>
