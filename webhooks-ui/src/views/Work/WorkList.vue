@@ -13,6 +13,11 @@ import BsModal from "../../components/BsModal/BsModal.vue";
 import BsModalHelper from "../../components/BsModal/BsModalHelper";
 import BsPagination from "../../components/BsPagination/BsPagination.vue";
 import { useGlobalMessage } from "../../components/GlobalMessage/GlobalMessageProxy";
+import {
+    GlobalSpinnerProxy,
+    useGlobalSpinner,
+} from "../../components/GlobalSpinner/GlobalSpinnerProxy";
+import { BusyMonitor } from "../../components/Monitor/BusyMonitor";
 
 const modalTitle = ref("");
 const workClient = new WorkClientProxy();
@@ -24,6 +29,9 @@ const editWorkModalTarget = "editWorkModal";
 let editWorkModal: Modal;
 
 const globalMsg = useGlobalMessage();
+const globalSpinner = useGlobalSpinner();
+
+const monitor = new BusyMonitor(globalSpinner, 100);
 
 let editingWork: Ref<WorkDto> = ref(new WorkDto());
 
@@ -43,6 +51,7 @@ const query = async (page: number = 1) => {
             pageSize: pageSize.value,
         });
 
+        monitor.IfBusy("正在查询中");
         var result = await workClient.query(input);
         works.value = result.rows;
         currentPage.value = page;
@@ -52,7 +61,11 @@ const query = async (page: number = 1) => {
             console.log((error as ApiException).message);
 
             globalMsg?.show((error as ApiException).message);
+        } else {
+            globalMsg?.show("未连接到服务器");
         }
+    } finally {
+        monitor.NotBusyNow();
     }
 };
 
@@ -68,9 +81,13 @@ const onEditWorkModalHidden = () => {
 /**保存 */
 const save = async () => {
     const input = editingWork.value;
-
-    await workClient.save(input);
-    await query(currentPage.value);
+    try {
+        monitor.IfBusy("正在保存中");
+        await workClient.save(input);
+        await query(currentPage.value);
+    } finally {
+        monitor.NotBusyNow();
+    }
 
     editWorkModal.hide();
 };

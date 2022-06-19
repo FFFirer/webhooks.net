@@ -15,6 +15,10 @@ export default ({ mode }) => {
         resolve: {
             alias: [
                 {
+                    find: "@",
+                    replacement: path.resolve(__dirname, "src"),
+                },
+                {
                     find: "vscode",
                     replacement: path.resolve(
                         __dirname,

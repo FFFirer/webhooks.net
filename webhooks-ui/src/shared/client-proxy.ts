@@ -8,10 +8,23 @@ import {
 
 const API_URL = import.meta.env.VITE_API_URL;
 
+class FetchProxyWithBusy {
+    constructor() {}
+
+    fetch(url: RequestInfo, init?: RequestInit): Promise<Response> {
+        // init!.mode = "no-cors";
+        return window.fetch(url, init).then((response) => {
+            return response;
+        });
+    }
+}
+
 const fetchProxy = {
     fetch(url: RequestInfo, init?: RequestInit): Promise<Response> {
         // init!.mode = "no-cors";
-        return window.fetch(url, init);
+        return window.fetch(url, init).then((response) => {
+            return response;
+        });
     },
 };
 

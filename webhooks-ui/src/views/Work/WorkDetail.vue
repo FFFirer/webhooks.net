@@ -22,10 +22,13 @@ import * as monaco from "monaco-editor";
 
 import * as rpc from "vscode-ws-jsonrpc";
 import { stringify } from "querystring";
+import { useGlobalSpinner } from "../../components/GlobalSpinner/GlobalSpinnerProxy";
+import { BusyMonitor } from "../../components/Monitor/BusyMonitor";
 
 const props = defineProps(WorkDetailViewProps);
 
 const globalMessage = useGlobalMessage();
+const globalSpinner = useGlobalSpinner();
 
 const BasicTabId = "basic";
 const SetupTabId = "setup";
@@ -54,21 +57,29 @@ const config: Ref<GiteeWebHookConfigDto> = ref(new GiteeWebHookConfigDto());
 const script: Ref<BuildScript> = ref(new BuildScript());
 const hasInitCodeEditor: Ref<boolean> = ref(false);
 
+const monitor = new BusyMonitor(globalSpinner, 100);
+
 const loadDetail = async () => {
-    const result = await workClient.detail(props.id);
-    work.value = result.work ?? new WorkDto();
-    config.value = result.config ?? new GiteeWebHookConfigDto();
-    script.value = result.script ?? new BuildScript();
+    try {
+        monitor.IfBusy("加载详情中");
+        const result = await workClient.detail(props.id);
+        work.value = result.work ?? new WorkDto();
+        config.value = result.config ?? new GiteeWebHookConfigDto();
+        script.value = result.script ?? new BuildScript();
+    } finally {
+        monitor.NotBusyNow();
+    }
 };
 
 /**保存工作项设置 */
 const saveWork = async () => {
-    await workClient
-        .save(work.value)
-        .then(() => {
-            globalMessage.notice("保存成功！");
-        })
-        .catch((e) => {});
+    try {
+        monitor.IfBusy("正在保存工作项中...请稍后");
+        await workClient.save(work.value);
+        globalMessage.notice("保存成功！");
+    } finally {
+        monitor.NotBusyNow();
+    }
 };
 
 /**保存配置 */
