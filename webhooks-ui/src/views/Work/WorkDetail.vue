@@ -87,13 +87,16 @@ const saveGiteeConfig = async () => {
     const input = new SaveGiteeWebHookConfigInput();
     config.value.workId = work.value.id;
     input.init(config.value);
-
+    monitor.IfBusy("正在保存中");
     await giteeConfigClient
         .save(input)
         .then(() => {
             globalMessage.notice("保存成功！");
         })
-        .catch((e) => {});
+        .catch((e) => {})
+        .finally(() => {
+            monitor.NotBusyNow();
+        });
 };
 
 /**初始化赋值连接 */

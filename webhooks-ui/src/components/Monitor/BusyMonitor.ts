@@ -6,8 +6,8 @@ export class BusyMonitor {
         this.baseTimeout = base ?? 500;
     }
 
-    timeout?: NodeJS.Timeout;
-    spinner: GlobalSpinnerProxy;
+    private timeout?: NodeJS.Timeout;
+    private spinner: GlobalSpinnerProxy;
     baseTimeout: number;
 
     IfBusy = (message?: string, time?: number) => {

@@ -13,6 +13,9 @@ import BsModal from "../../components/BsModal/BsModal.vue";
 import BsModalHelper from "../../components/BsModal/BsModalHelper";
 import BsPagination from "../../components/BsPagination/BsPagination.vue";
 import { useRouter } from "vue-router";
+import BsSpinner from "../../components/BsSpinner/BsSpinner.vue";
+import { BusyMonitor } from "../../components/Monitor/BusyMonitor";
+import { useGlobalSpinner } from "../../components/GlobalSpinner/GlobalSpinnerProxy";
 
 // 模态框
 const modalRef: Ref<HTMLDivElement | undefined> = ref();
@@ -29,6 +32,7 @@ const editGroupModalTarget = "editGroupModal";
 let editGroupModal: Modal;
 
 const globalMsg = useGlobalMessage();
+const globalSpinner = useGlobalSpinner();
 
 let edittingGroup: Ref<GroupDto> = ref(new GroupDto());
 
@@ -49,7 +53,8 @@ const query = async (page: number) => {
             page: page,
             pageSize: pageSize.value,
         });
-
+        isQuerying.value = true;
+        globalSpinner.show("查询中...请稍候");
         const result = await groupClient.query(queryInput);
 
         groups.value = result.rows;
@@ -60,7 +65,12 @@ const query = async (page: number) => {
             console.log((error as ApiException).message);
 
             globalMsg?.show((error as ApiException).message);
+        } else {
+            globalMsg?.show("未连接到服务器");
         }
+    } finally {
+        isQuerying.value = false;
+        globalSpinner.close();
     }
 };
 
@@ -88,6 +98,8 @@ const createGroup = () => {
 
     editGroupModal.show();
 };
+
+const isQuerying: Ref<boolean> = ref(false);
 
 /**编辑 */
 const editGroup = (group: GroupDto) => {
@@ -128,8 +140,14 @@ onMounted(async () => {
             >
                 添加
             </button>
-            <button type="button" class="btn btn btn-primary" @click="list()">
+            <button
+                type="button"
+                class="btn btn-primary"
+                @click="list()"
+                :disabled="isQuerying"
+            >
                 搜索
+                <bs-spinner :show="isQuerying" size="sm"></bs-spinner>
             </button>
         </div>
         <div class="col-12">

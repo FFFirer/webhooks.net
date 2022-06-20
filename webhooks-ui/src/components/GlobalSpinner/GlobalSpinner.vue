@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import BsModal from "@/components/BsModal/BsModal.vue";
+import { computed } from "@vue/reactivity";
 import { Modal } from "bootstrap";
 import { onMounted, PropType, ref, Ref } from "vue";
 import BsModalHelper from "../BsModal/BsModalHelper";
@@ -13,7 +13,6 @@ const props = defineProps({
 });
 
 const globalSpinnerTarget = "global-spinner-modal";
-let globalSpinnerModal: Modal;
 
 const defaultMessage = "Loading";
 const spinnerMessage: Ref<string> = ref("Loading");
@@ -23,20 +22,21 @@ const isShowing: Ref<boolean> = ref(false);
 const show = (message?: string) => {
     spinnerMessage.value = message ?? defaultMessage;
     isShowing.value = true;
-
-    if (isShowing.value) {
-        globalSpinnerModal.show();
-    }
 };
 
 const hide = () => {
     isShowing.value = false;
-    globalSpinnerModal.hide();
 };
 
-onMounted(() => {
-    globalSpinnerModal = BsModalHelper.useModal(globalSpinnerTarget);
+const classList = computed(() => {
+    return {
+        modal: true,
+        fade: true,
+        show: isShowing.value,
+    };
+});
 
+onMounted(() => {
     if (props.proxy != null) {
         props.proxy.onShow = show;
         props.proxy.onHide = hide;
@@ -45,23 +45,34 @@ onMounted(() => {
 </script>
 
 <template>
-    <BsModal :bs-target="globalSpinnerTarget" :title="spinnerMessage">
-        <div class="d-flex align-items-center">
-            <div
-                class="spinner-border ms-auto"
-                role="status"
-                aria-hidden="true"
-            ></div>
+    <Teleport to="body">
+        <div class="mask" v-show="isShowing">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <div class="d-flex align-items-center">
+                            <strong>{{ spinnerMessage }}</strong>
+                            <div
+                                class="spinner-border ms-auto"
+                                role="status"
+                                aria-hidden="true"
+                            ></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <template #footer>
-            <button
-                type="button"
-                class="btn btn-secondary"
-                data-bs-dismiss="modal"
-                @click="hide()"
-            >
-                取消
-            </button>
-        </template>
-    </BsModal>
+    </Teleport>
 </template>
+
+<style scoped>
+.mask {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1200;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+</style>

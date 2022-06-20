@@ -18,6 +18,7 @@ import {
     useGlobalSpinner,
 } from "../../components/GlobalSpinner/GlobalSpinnerProxy";
 import { BusyMonitor } from "../../components/Monitor/BusyMonitor";
+import BsSpinner from "../../components/BsSpinner/BsSpinner.vue";
 
 const modalTitle = ref("");
 const workClient = new WorkClientProxy();
@@ -31,8 +32,6 @@ let editWorkModal: Modal;
 const globalMsg = useGlobalMessage();
 const globalSpinner = useGlobalSpinner();
 
-const monitor = new BusyMonitor(globalSpinner, 100);
-
 let editingWork: Ref<WorkDto> = ref(new WorkDto());
 
 // 分页信息
@@ -40,6 +39,7 @@ const currentPage: Ref<number> = ref(1);
 const pageSize: Ref<number> = ref(20);
 const total: Ref<number> = ref(0);
 
+const isQuerying: Ref<boolean> = ref(false);
 /**
  * 查询
  * @param page 页码
@@ -50,8 +50,8 @@ const query = async (page: number = 1) => {
             page: page,
             pageSize: pageSize.value,
         });
-
-        monitor.IfBusy("正在查询中");
+        isQuerying.value = true;
+        globalSpinner.show("正在查询中...请稍后");
         var result = await workClient.query(input);
         works.value = result.rows;
         currentPage.value = page;
@@ -65,7 +65,8 @@ const query = async (page: number = 1) => {
             globalMsg?.show("未连接到服务器");
         }
     } finally {
-        monitor.NotBusyNow();
+        isQuerying.value = false;
+        globalSpinner.close();
     }
 };
 
@@ -78,15 +79,17 @@ const onEditWorkModalHidden = () => {
     editingWork.value = new WorkDto();
 };
 
+const isSaving: Ref<boolean> = ref(false);
+
 /**保存 */
 const save = async () => {
     const input = editingWork.value;
     try {
-        monitor.IfBusy("正在保存中");
+        isSaving.value = true;
         await workClient.save(input);
         await query(currentPage.value);
     } finally {
-        monitor.NotBusyNow();
+        isSaving.value = false;
     }
 
     editWorkModal.hide();
@@ -147,8 +150,14 @@ onMounted(async () => {
             <button type="button" class="btn btn-primary" @click="create()">
                 添加
             </button>
-            <button type="button" class="btn btn btn-primary" @click="query()">
+            <button
+                type="button"
+                class="btn btn-primary"
+                @click="query()"
+                :disabled="isQuerying"
+            >
                 搜索
+                <BsSpinner :show="isQuerying" size="sm"></BsSpinner>
             </button>
         </div>
         <div class="col-12">
@@ -238,8 +247,15 @@ onMounted(async () => {
             >
                 关闭
             </button>
-            <button type="button" class="btn btn-primary" @click="save()">
+            <button
+                type="button"
+                class="btn btn-primary"
+                @click="save()"
+                :disabled="isSaving"
+                size="sm"
+            >
                 保存
+                <BsSpinner :show="isSaving" size="sm"></BsSpinner>
             </button>
         </template>
     </BsModal>
