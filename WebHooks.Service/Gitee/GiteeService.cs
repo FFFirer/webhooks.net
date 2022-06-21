@@ -18,7 +18,8 @@ namespace WebHooks.Service.Gitee
 
         public async Task<GiteeWebHookConfigDto?> GetConfigAsync(Guid workId)
         {
-            var config = await repo.GetAll().AsNoTracking().Where(a => a.WorkId == workId).FirstOrDefaultAsync();
+            var config = await repo.GetAll()
+                .AsNoTracking().Where(a => a.WorkId == workId).FirstOrDefaultAsync();
 
             if(config == null)
             {
@@ -30,7 +31,7 @@ namespace WebHooks.Service.Gitee
             return dto;
         }
 
-        public Task RemoveConfigAsync(int id)
+        public Task RemoveConfigAsync(Guid workId, int id)
         {
             return repo.RemoveAsync(id);
         }

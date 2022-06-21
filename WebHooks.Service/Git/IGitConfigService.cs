@@ -4,7 +4,7 @@ namespace WebHooks.Service.Git
 {
     public interface IGitConfigService
     {
-        Task<GitConfig?> GetAsync(Guid workId, int configId);
+        Task<GitConfig?> GetAsync(Guid workId);
 
         Task SaveAsync(GitConfig? gitConfig);
 

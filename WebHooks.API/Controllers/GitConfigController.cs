@@ -1,5 +1,4 @@
 ﻿using Mapster;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebHooks.API.Models.Inputs.GitConfig;
 using WebHooks.Data.AdditionalWork.Git;
@@ -19,10 +18,10 @@ namespace WebHooks.API.Controllers
             this._gitConfigService = gitConfigService;
         }
 
-        [HttpGet("{workId}/{configId}")]
-        public async Task<GitConfigDto> Get(Guid workId, int configId)
+        [HttpGet("{workId}")]
+        public async Task<GitConfigDto> Get(Guid workId)
         {
-            var config = await _gitConfigService.GetAsync(workId, configId);
+            var config = await _gitConfigService.GetAsync(workId);
 
             if(config == null)
             {

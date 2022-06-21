@@ -1,14 +1,12 @@
 ﻿using Mapster;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebHooks.API.Models.Inputs.Gitee;
-using WebHooks.Data.Gitee;
 using WebHooks.Service.Gitee;
 using WebHooks.Service.Gitee.Dtos;
 
 namespace WebHooks.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class GiteeConfigController : BasicController
     {
@@ -19,7 +17,7 @@ namespace WebHooks.API.Controllers
             _giteeService = giteeService;   
         }
 
-        [HttpGet("[action]/{workId}/{configId}")]
+        [HttpGet("{workId}")]
         public async Task<GiteeWebHookConfigDto> Get(Guid workId)
         {
             var config = await _giteeService.GetConfigAsync(workId);
@@ -35,12 +33,18 @@ namespace WebHooks.API.Controllers
             return dto;
         }
 
-        [HttpPost("[action]")]
+        [HttpPost()]
         public async Task Save(SaveGiteeWebHookConfigInput input)
         {
             var dto = input.Adapt<GiteeWebHookConfigDto>();
 
             await _giteeService.SaveConfigAsync(dto);
+        }
+
+        [HttpPost("{workId}/{configId}")]
+        public async Task Remove(Guid workId, int configId)
+        {
+            await _giteeService.RemoveConfigAsync(workId, configId);
         }
     }
 }

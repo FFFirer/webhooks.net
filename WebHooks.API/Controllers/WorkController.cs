@@ -63,11 +63,11 @@ namespace WebHooks.API.Controllers
         [HttpPost("[action]")]
         public async Task Remove(RemoveWorkInput input)
         {
-            await _workService.RemoveAsync(input.Id);
-            var config = await _giteeService.GetConfigAsync(input.Id);
+            await _workService.RemoveAsync(input.WorkId);
+            var config = await _giteeService.GetConfigAsync(input.WorkId);
             if(config != null)
             {
-                await _giteeService.RemoveConfigAsync(config.Id);
+                await _giteeService.RemoveConfigAsync(input.WorkId, config.Id);
             }
         }
 

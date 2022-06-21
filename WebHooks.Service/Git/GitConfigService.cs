@@ -16,14 +16,14 @@ namespace WebHooks.Service.Git
             this.workRepository = workRepository;
         }
 
-        public async Task<GitConfig?> GetAsync(Guid workId, int configId)
+        public async Task<GitConfig?> GetAsync(Guid workId)
         {
             if (await workRepository.ExistsAsync(workId))
             {
                 throw new Exception($"no such data, {nameof(workId)}: {workId}");
             }
 
-            return await repository.GetAll().AsNoTracking().Where(a => a.WorkId == workId && a.Id == configId).FirstOrDefaultAsync();
+            return await repository.GetAll().AsNoTracking().Where(a => a.WorkId == workId).FirstOrDefaultAsync();
         }
 
         public async Task RemoveAsync(Guid workId, int configId)

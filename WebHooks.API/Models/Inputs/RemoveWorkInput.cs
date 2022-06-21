@@ -2,6 +2,6 @@
 {
     public class RemoveWorkInput
     {
-        public Guid Id { get; set; }
+        public Guid WorkId { get; set; }
     }
 }

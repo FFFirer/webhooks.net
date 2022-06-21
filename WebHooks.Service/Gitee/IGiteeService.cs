@@ -15,6 +15,6 @@ namespace WebHooks.Service.Gitee
 
         Task SaveConfigAsync(GiteeWebHookConfigDto? dto);
 
-        Task RemoveConfigAsync(int id);
+        Task RemoveConfigAsync(Guid workdId, int id);
     }
 }
