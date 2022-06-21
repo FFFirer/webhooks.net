@@ -21,5 +21,10 @@ namespace WebHooks.Data.Entities
         /// 工作目录
         /// </summary>
         public string? WorkingDirectory { get; set; }
+
+        /// <summary>
+        /// 扩展配置类型
+        /// </summary>
+        public string? ExternalConfigType { get; set; }
     }
 }

@@ -9,5 +9,6 @@ namespace WebHooks.Service.Dtos
     public class WorkDto : Dto<Guid>
     {
         public string DisplayName { get; set; } = default!;
+        public string ExternalConfigType { get; set; } = default!;
     }
 }
