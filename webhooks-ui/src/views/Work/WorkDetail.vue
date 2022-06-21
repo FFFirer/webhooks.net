@@ -1,12 +1,9 @@
 <script setup lang="ts">
-import { onMounted, ref, Ref } from "vue";
-import BsTab from "../../components/BsTabs/BsTab.vue";
-import BsTabItem from "../../components/BsTabs/BsTabItem.vue";
-import { useGlobalMessage } from "../../components/GlobalMessage/GlobalMessageProxy";
-import {
-    GiteeConfigClientProxy,
-    WorkClientProxy,
-} from "../../shared/client-proxy";
+import { defineAsyncComponent, onMounted, ref, Ref } from "vue";
+import BsTab from "@/components/BsTabs/BsTab.vue";
+import BsTabItem from "@/components/BsTabs/BsTabItem.vue";
+import { useGlobalMessage } from "@/components/GlobalMessage/GlobalMessageProxy";
+import { GiteeConfigClientProxy, WorkClientProxy } from "@/shared/client-proxy";
 import {
     BuildScript,
     BuildScriptDto,
@@ -14,16 +11,19 @@ import {
     GiteeWebHookConfigDto,
     SaveGiteeWebHookConfigInput,
     WorkDto,
-} from "../../shared/webapi/client";
+} from "@/shared/webapi/client";
 import WorkDetailViewProps from "./WorkDetailProps";
 import Clipboard from "clipboard";
 import * as monaco from "monaco-editor";
 // import "monaco-editor/esm/vs/basic-languages/powershell/powershell.contribution";
 
 import * as rpc from "vscode-ws-jsonrpc";
-import { stringify } from "querystring";
-import { useGlobalSpinner } from "../../components/GlobalSpinner/GlobalSpinnerProxy";
-import { BusyMonitor } from "../../components/Monitor/BusyMonitor";
+
+import { useGlobalSpinner } from "@/components/GlobalSpinner/GlobalSpinnerProxy";
+import { BusyMonitor } from "@/components/Monitor/BusyMonitor";
+
+import ExternalConfig from "@/views/ExternalConfigs/ExternalConfig.vue";
+import { useRouter } from "vue-router";
 
 const props = defineProps(WorkDetailViewProps);
 
@@ -194,8 +194,6 @@ const giteeAuthentications: Array<{
     },
 ];
 
-const languageServicePipeName = "\\\\.\\pipe\\PSES_15nmpqbs.ghp";
-
 const giteeWebHookEvents: Array<{ value: string; label: string }> = [
     {
         value: "Push Hook",
@@ -233,15 +231,42 @@ const connectLspServer = () => {
     });
 };
 
-onMounted(async () => {
-    await loadDetail();
-    initCopy();
+const externalConfigTypes: Array<{ label: string; value: string }> = [
+    {
+        label: "无",
+        value: "",
+    },
+    {
+        label: "Git",
+        value: "ExternalGitConfig",
+    },
+    {
+        label: "Gitee",
+        value: "ExternalGiteeConfig",
+    },
+];
+
+const router = useRouter();
+const backToWorkList = () => {
+    router.push({
+        name: "WorkList",
+    });
+};
+
+onMounted(() => {
+    loadDetail().then(() => {
+        initCopy();
+    });
 });
 </script>
 <template>
     <div class="row mb-3">
         <div class="col-12">
-            <button type="button" class="btn btn-outline-primary">
+            <button
+                type="button"
+                class="btn btn-outline-primary"
+                @click="backToWorkList"
+            >
                 返回列表
             </button>
         </div>
@@ -263,6 +288,27 @@ onMounted(async () => {
                                     v-model="work.displayName"
                                 />
                             </div>
+                            <div class="mb-3">
+                                <label
+                                    for="externalConfigType"
+                                    class="form-label"
+                                >
+                                    扩展配置
+                                </label>
+                                <select
+                                    name="externalConfigType"
+                                    id="externalConfigType"
+                                    class="form-select"
+                                    v-model="work.externalConfigType"
+                                >
+                                    <option
+                                        v-for="t in externalConfigTypes"
+                                        :value="t.value"
+                                    >
+                                        {{ t.label }}
+                                    </option>
+                                </select>
+                            </div>
 
                             <div class="mb-3">
                                 <button
@@ -275,7 +321,7 @@ onMounted(async () => {
                         </div>
                     </div>
                 </bs-tab-item>
-                <bs-tab-item :id="SetupTabId" label="WebHook">
+                <bs-tab-item :id="SetupTabId" label="扩展设置">
                     <div class="row">
                         <div class="col-12">
                             <div class="mb-3">
@@ -401,6 +447,12 @@ onMounted(async () => {
                         </div>
                     </div>
                 </bs-tab-item>
+                <BsTabItem id="asyncComponent" label="异步组件">
+                    <!-- <external-config
+                        :external-type="work.externalConfigType"
+                    ></external-config> -->
+                    <!-- <AsyncExternalConfigComponent></AsyncExternalConfigComponent> -->
+                </BsTabItem>
             </bs-tab>
         </div>
     </div>

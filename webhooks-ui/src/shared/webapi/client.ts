@@ -8,6 +8,100 @@
 /* eslint-disable */
 // ReSharper disable InconsistentNaming
 
+export class GitConfigClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "https://localhost:7029";
+    }
+
+    get(workId: string, configId: number): Promise<GitConfigDto> {
+        let url_ = this.baseUrl + "/api/GitConfig/Get/{workId}/{configId}";
+        if (workId === undefined || workId === null)
+            throw new Error("The parameter 'workId' must be defined.");
+        url_ = url_.replace("{workId}", encodeURIComponent("" + workId));
+        if (configId === undefined || configId === null)
+            throw new Error("The parameter 'configId' must be defined.");
+        url_ = url_.replace("{configId}", encodeURIComponent("" + configId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGet(_response);
+        });
+    }
+
+    protected processGet(response: Response): Promise<GitConfigDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if(resultData200['__wrapped'])
+            {
+                if(resultData200.success){
+                    resultData200 = resultData200.result;
+                }
+                else{
+                    throwException(resultData200.error, status, _responseText, _headers)
+                }
+            }
+            result200 = GitConfigDto.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("服务器发生意外错误。", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<GitConfigDto>(null as any);
+    }
+
+    save(input: SaveGitConfigInput): Promise<void> {
+        let url_ = this.baseUrl + "/api/GitConfig/Save";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(input);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processSave(_response);
+        });
+    }
+
+    protected processSave(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("服务器发生意外错误。", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+}
+
 export class GiteeConfigClient {
     private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
     private baseUrl: string;
@@ -554,6 +648,91 @@ export interface IDtoOfInteger {
     id: number;
 }
 
+export class GitConfigDto extends DtoOfInteger implements IGitConfigDto {
+    workId!: string;
+    addressType?: string | undefined;
+    repositoryAddress?: string | undefined;
+    branch?: string | undefined;
+    tag?: string | undefined;
+
+    constructor(data?: IGitConfigDto) {
+        super(data);
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.workId = _data["workId"];
+            this.addressType = _data["addressType"];
+            this.repositoryAddress = _data["repositoryAddress"];
+            this.branch = _data["branch"];
+            this.tag = _data["tag"];
+        }
+    }
+
+    static fromJS(data: any): GitConfigDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new GitConfigDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["workId"] = this.workId;
+        data["addressType"] = this.addressType;
+        data["repositoryAddress"] = this.repositoryAddress;
+        data["branch"] = this.branch;
+        data["tag"] = this.tag;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IGitConfigDto extends IDtoOfInteger {
+    workId: string;
+    addressType?: string | undefined;
+    repositoryAddress?: string | undefined;
+    branch?: string | undefined;
+    tag?: string | undefined;
+}
+
+export class SaveGitConfigInput implements ISaveGitConfigInput {
+    toSave?: GitConfigDto | undefined;
+
+    constructor(data?: ISaveGitConfigInput) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.toSave = _data["toSave"] ? GitConfigDto.fromJS(_data["toSave"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): SaveGitConfigInput {
+        data = typeof data === 'object' ? data : {};
+        let result = new SaveGitConfigInput();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["toSave"] = this.toSave ? this.toSave.toJSON() : <any>undefined;
+        return data;
+    }
+}
+
+export interface ISaveGitConfigInput {
+    toSave?: GitConfigDto | undefined;
+}
+
 export class GiteeWebHookConfigDto extends DtoOfInteger implements IGiteeWebHookConfigDto {
     workId!: string;
     webHookUrl!: string;
@@ -986,6 +1165,7 @@ export interface IPagingResultOfWorkDto {
 
 export class WorkDto extends DtoOfGuid implements IWorkDto {
     displayName!: string;
+    externalConfigType!: string;
 
     constructor(data?: IWorkDto) {
         super(data);
@@ -995,6 +1175,7 @@ export class WorkDto extends DtoOfGuid implements IWorkDto {
         super.init(_data);
         if (_data) {
             this.displayName = _data["displayName"];
+            this.externalConfigType = _data["externalConfigType"];
         }
     }
 
@@ -1008,6 +1189,7 @@ export class WorkDto extends DtoOfGuid implements IWorkDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["displayName"] = this.displayName;
+        data["externalConfigType"] = this.externalConfigType;
         super.toJSON(data);
         return data;
     }
@@ -1015,6 +1197,7 @@ export class WorkDto extends DtoOfGuid implements IWorkDto {
 
 export interface IWorkDto extends IDtoOfGuid {
     displayName: string;
+    externalConfigType: string;
 }
 
 export class PagingInput implements IPagingInput {

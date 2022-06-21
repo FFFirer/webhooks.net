@@ -1,6 +1,6 @@
 import { RouteRecordRaw } from "vue-router";
-import Works from "../../views/Work/Works.vue";
-import WorkList from "../../views/Work/WorkList.vue";
+import Works from "@/views/Work/Works.vue";
+import WorkList from "@/views/Work/WorkList.vue";
 
 const WorksRoute: RouteRecordRaw = {
     name: "Work",
@@ -9,12 +9,12 @@ const WorksRoute: RouteRecordRaw = {
     children: [
         {
             path: "",
-            component: WorkList,
-            name: "WrokList",
+            component: import("../../views/Work/WorkList.vue"),
+            name: "WorkList",
         },
         {
             path: "detail/:id",
-            component: () => import("../../views/Work/WorkDetail.vue"),
+            component: () => import("@/views/Work/WorkDetail.vue"),
             name: "WorkDetail",
             props: (route) => ({
                 id: route.params.id as string,

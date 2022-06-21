@@ -8,14 +8,14 @@ import {
     PageGroupInput,
     RemoveGroupInput,
 } from "../../shared/webapi/client";
-import { useGlobalMessage } from "../../components/GlobalMessage/GlobalMessageProxy";
-import BsModal from "../../components/BsModal/BsModal.vue";
-import BsModalHelper from "../../components/BsModal/BsModalHelper";
-import BsPagination from "../../components/BsPagination/BsPagination.vue";
+import { useGlobalMessage } from "@/components/GlobalMessage/GlobalMessageProxy";
+import BsModal from "@/components/BsModal/BsModal.vue";
+import BsModalHelper from "@/components/BsModal/BsModalHelper";
+import BsPagination from "@/components/BsPagination/BsPagination.vue";
 import { useRouter } from "vue-router";
-import BsSpinner from "../../components/BsSpinner/BsSpinner.vue";
-import { BusyMonitor } from "../../components/Monitor/BusyMonitor";
-import { useGlobalSpinner } from "../../components/GlobalSpinner/GlobalSpinnerProxy";
+import BsSpinner from "@/components/BsSpinner/BsSpinner.vue";
+import { BusyMonitor } from "@/components/Monitor/BusyMonitor";
+import { useGlobalSpinner } from "@/components/GlobalSpinner/GlobalSpinnerProxy";
 
 // 模态框
 const modalRef: Ref<HTMLDivElement | undefined> = ref();

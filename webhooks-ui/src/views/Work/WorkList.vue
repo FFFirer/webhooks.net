@@ -9,16 +9,16 @@ import {
     RemoveWorkInput,
     WorkDto,
 } from "../../shared/webapi/client";
-import BsModal from "../../components/BsModal/BsModal.vue";
-import BsModalHelper from "../../components/BsModal/BsModalHelper";
-import BsPagination from "../../components/BsPagination/BsPagination.vue";
-import { useGlobalMessage } from "../../components/GlobalMessage/GlobalMessageProxy";
+import BsModal from "@/components/BsModal/BsModal.vue";
+import BsModalHelper from "@/components/BsModal/BsModalHelper";
+import BsPagination from "@/components/BsPagination/BsPagination.vue";
+import { useGlobalMessage } from "@/components/GlobalMessage/GlobalMessageProxy";
 import {
     GlobalSpinnerProxy,
     useGlobalSpinner,
-} from "../../components/GlobalSpinner/GlobalSpinnerProxy";
-import { BusyMonitor } from "../../components/Monitor/BusyMonitor";
-import BsSpinner from "../../components/BsSpinner/BsSpinner.vue";
+} from "@/components/GlobalSpinner/GlobalSpinnerProxy";
+import { BusyMonitor } from "@/components/Monitor/BusyMonitor";
+import BsSpinner from "@/components/BsSpinner/BsSpinner.vue";
 
 const modalTitle = ref("");
 const workClient = new WorkClientProxy();
