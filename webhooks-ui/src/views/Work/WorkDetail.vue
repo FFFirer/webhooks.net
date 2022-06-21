@@ -26,6 +26,7 @@ import {
     ExternalConfigService,
     ExternalConfigType,
 } from "../ExternalConfigs/ExternalConfigService";
+import { computed } from "@vue/reactivity";
 
 const props = defineProps(WorkDetailViewProps);
 
@@ -56,7 +57,6 @@ const workClient = new WorkClientProxy();
 const giteeConfigClient = new GiteeConfigClientProxy();
 
 const work: Ref<WorkDto> = ref(new WorkDto());
-const config: Ref<GiteeWebHookConfigDto> = ref(new GiteeWebHookConfigDto());
 
 const script: Ref<BuildScript> = ref(new BuildScript());
 const hasInitCodeEditor: Ref<boolean> = ref(false);
@@ -70,7 +70,6 @@ const loadDetail = async () => {
         monitor.IfBusy("加载详情中");
         const result = await workClient.detail(props.id);
         work.value = result.work ?? new WorkDto();
-        config.value = result.config ?? new GiteeWebHookConfigDto();
         script.value = result.script ?? new BuildScript();
     } finally {
         monitor.NotBusyNow();
@@ -86,44 +85,6 @@ const saveWork = async () => {
     } finally {
         monitor.NotBusyNow();
     }
-};
-
-/**保存配置 */
-const saveGiteeConfig = async () => {
-    const input = new SaveGiteeWebHookConfigInput();
-    config.value.workId = work.value.id;
-    input.init(config.value);
-    monitor.IfBusy("正在保存中");
-    await giteeConfigClient
-        .save(input)
-        .then(() => {
-            globalMessage.notice("保存成功！");
-        })
-        .catch((e) => {})
-        .finally(() => {
-            monitor.NotBusyNow();
-        });
-};
-
-/**初始化赋值连接 */
-const initCopy = () => {
-    if (!copyBtnRef.value) {
-        return;
-    }
-
-    const clipboard = new Clipboard(copyBtnRef.value, {
-        text: function () {
-            return config.value.webHookUrl ?? "";
-        },
-        action: function () {
-            return "copy";
-        },
-        container: this,
-    });
-
-    clipboard.on("success", () => {
-        globalMessage.notice("复制成功");
-    });
 };
 
 let editor: monaco.editor.IStandaloneCodeEditor | null = null;
@@ -259,10 +220,13 @@ const backToWorkList = () => {
     });
 };
 
+const externalConfigLabel = computed(() => {
+    console.log("work", work.value);
+    return `${work.value.externalConfigType ?? ""}配置`;
+});
+
 onMounted(() => {
-    loadDetail().then(() => {
-        initCopy();
-    });
+    loadDetail().then(() => {});
 });
 </script>
 <template>
@@ -327,90 +291,12 @@ onMounted(() => {
                         </div>
                     </div>
                 </bs-tab-item>
-                <bs-tab-item :id="SetupTab" label="扩展设置">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="mb-3">
-                                <label for="webHookUrl" class="form-label">
-                                    WebHook地址
-                                    <button
-                                        class="btn btn-sm btn-outline-primary"
-                                        ref="copyBtnRef"
-                                    >
-                                        copy
-                                    </button>
-                                </label>
-                                <input
-                                    type="text"
-                                    name="webHookUrl"
-                                    class="form-control"
-                                    v-model="config.webHookUrl"
-                                />
-                            </div>
-                            <div class="mb-3">
-                                <label for="authentication">
-                                    密码/签名密钥
-                                </label>
-                                <select
-                                    name="authentication"
-                                    id="authentication"
-                                    class="form-select"
-                                    v-model="config.authentication"
-                                    placeholder="请选择一个授权方式"
-                                >
-                                    <option
-                                        v-for="a in giteeAuthentications"
-                                        :value="a.value"
-                                    >
-                                        {{ a.label }}
-                                    </option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    name="secret"
-                                    v-model="config.authenticationKey.value"
-                                />
-                            </div>
-                            <div class="mb-3">
-                                <label for="event">触发事件</label>
-
-                                <div
-                                    class="form-check"
-                                    v-for="(evt, index) in giteeWebHookEvents"
-                                    :key="index"
-                                >
-                                    <input
-                                        type="checkbox"
-                                        class="form-check-input"
-                                        name="event"
-                                        v-model="config.events"
-                                        :value="evt.value"
-                                    />
-                                    <label class="form-check-label">
-                                        {{ evt.label }}
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <button
-                                    class="btn btn-primary"
-                                    @click="saveGiteeConfig()"
-                                >
-                                    保存
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </bs-tab-item>
-                <BsTabItem :id="ExternalConfigTab" label="扩展配置">
+                <bs-tab-item :id="ExternalConfigTab" label="扩展配置">
                     <ExternalConfig
                         :external-type="work.externalConfigType"
                         :work-id="work.id"
                     ></ExternalConfig>
-                </BsTabItem>
+                </bs-tab-item>
                 <bs-tab-item :id="ScriptsTab" label="脚本设置">
                     <div class="row">
                         <div class="col-12 mb-2">
