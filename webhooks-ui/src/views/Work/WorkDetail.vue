@@ -17,29 +17,32 @@ import Clipboard from "clipboard";
 import * as monaco from "monaco-editor";
 // import "monaco-editor/esm/vs/basic-languages/powershell/powershell.contribution";
 
-import * as rpc from "vscode-ws-jsonrpc";
-
 import { useGlobalSpinner } from "@/components/GlobalSpinner/GlobalSpinnerProxy";
 import { BusyMonitor } from "@/components/Monitor/BusyMonitor";
 
-import ExternalConfig from "@/views/ExternalConfigs/ExternalConfig.vue";
 import { useRouter } from "vue-router";
+import ExternalConfig from "@/views/ExternalConfigs/ExternalConfig.vue";
+import {
+    ExternalConfigService,
+    ExternalConfigType,
+} from "../ExternalConfigs/ExternalConfigService";
 
 const props = defineProps(WorkDetailViewProps);
 
 const globalMessage = useGlobalMessage();
 const globalSpinner = useGlobalSpinner();
 
-const BasicTabId = "basic";
-const SetupTabId = "setup";
-const LogTabId = "log";
-const ScriptsId = "scripts";
+const BasicTab = "basic-tab";
+const SetupTab = "setup-tab";
+const LogTab = "log-tab";
+const ScriptsTab = "scripts-tab";
+const ExternalConfigTab = "external-config-tab";
 
 const copyBtnRef: Ref<HTMLButtonElement | undefined> = ref();
 const codeEditorRef: Ref<HTMLDivElement | undefined> = ref();
 
 const handleTabActived = (id: string) => {
-    if (id == ScriptsId) {
+    if (id == ScriptsTab) {
         if (!hasInitCodeEditor.value) {
             // 延时渲染
             setTimeout(() => {
@@ -54,10 +57,13 @@ const giteeConfigClient = new GiteeConfigClientProxy();
 
 const work: Ref<WorkDto> = ref(new WorkDto());
 const config: Ref<GiteeWebHookConfigDto> = ref(new GiteeWebHookConfigDto());
+
 const script: Ref<BuildScript> = ref(new BuildScript());
 const hasInitCodeEditor: Ref<boolean> = ref(false);
 
 const monitor = new BusyMonitor(globalSpinner, 100);
+
+const externalConfigService = new ExternalConfigService();
 
 const loadDetail = async () => {
     try {
@@ -217,19 +223,19 @@ const giteeWebHookEvents: Array<{ value: string; label: string }> = [
     },
 ];
 
-const connectLspServer = () => {
-    const ws = new WebSocket("ws://127.0.0.1:3341/lsp");
-    rpc.listen({
-        webSocket: ws,
-        onConnection: (connection: rpc.MessageConnection) => {
-            const notification = new rpc.NotificationType<string, void>(
-                "Test Notification"
-            );
-            connection.listen();
-            connection.sendNotification(notification, "hello world");
-        },
-    });
-};
+// const connectLspServer = () => {
+//     const ws = new WebSocket("ws://127.0.0.1:3341/lsp");
+//     rpc.listen({
+//         webSocket: ws,
+//         onConnection: (connection: rpc.MessageConnection) => {
+//             const notification = new rpc.NotificationType<string, void>(
+//                 "Test Notification"
+//             );
+//             connection.listen();
+//             connection.sendNotification(notification, "hello world");
+//         },
+//     });
+// };
 
 const externalConfigTypes: Array<{ label: string; value: string }> = [
     {
@@ -238,11 +244,11 @@ const externalConfigTypes: Array<{ label: string; value: string }> = [
     },
     {
         label: "Git",
-        value: "ExternalGitConfig",
+        value: "git",
     },
     {
         label: "Gitee",
-        value: "ExternalGiteeConfig",
+        value: "gitee",
     },
 ];
 
@@ -274,7 +280,7 @@ onMounted(() => {
     <div class="row">
         <div class="col-12">
             <bs-tab @tab-actived="handleTabActived">
-                <bs-tab-item :id="BasicTabId" label="基础信息">
+                <bs-tab-item :id="BasicTab" label="基础信息">
                     <div class="row">
                         <div class="col-12">
                             <div class="mb-3">
@@ -321,7 +327,7 @@ onMounted(() => {
                         </div>
                     </div>
                 </bs-tab-item>
-                <bs-tab-item :id="SetupTabId" label="扩展设置">
+                <bs-tab-item :id="SetupTab" label="扩展设置">
                     <div class="row">
                         <div class="col-12">
                             <div class="mb-3">
@@ -399,7 +405,13 @@ onMounted(() => {
                         </div>
                     </div>
                 </bs-tab-item>
-                <bs-tab-item :id="ScriptsId" label="脚本设置">
+                <BsTabItem :id="ExternalConfigTab" label="扩展配置">
+                    <ExternalConfig
+                        :external-type="work.externalConfigType"
+                        :work-id="work.id"
+                    ></ExternalConfig>
+                </BsTabItem>
+                <bs-tab-item :id="ScriptsTab" label="脚本设置">
                     <div class="row">
                         <div class="col-12 mb-2">
                             <div class="code-editor" ref="codeEditorRef"></div>
@@ -415,7 +427,7 @@ onMounted(() => {
                         </div>
                     </div>
                 </bs-tab-item>
-                <bs-tab-item :id="LogTabId" label="执行日志">
+                <bs-tab-item :id="LogTab" label="执行日志">
                     <div class="row">
                         <div class="col-12">
                             <table class="table">
@@ -434,7 +446,7 @@ onMounted(() => {
                         </div>
                     </div>
                 </bs-tab-item>
-                <bs-tab-item id="test" label="测试websocket">
+                <!-- <bs-tab-item id="test" label="测试websocket">
                     <div class="row">
                         <div class="col-12">
                             <button
@@ -446,13 +458,7 @@ onMounted(() => {
                             </button>
                         </div>
                     </div>
-                </bs-tab-item>
-                <BsTabItem id="asyncComponent" label="异步组件">
-                    <!-- <external-config
-                        :external-type="work.externalConfigType"
-                    ></external-config> -->
-                    <!-- <AsyncExternalConfigComponent></AsyncExternalConfigComponent> -->
-                </BsTabItem>
+                </bs-tab-item> -->
             </bs-tab>
         </div>
     </div>

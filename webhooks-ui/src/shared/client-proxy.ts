@@ -1,5 +1,6 @@
 import {
     ApiException,
+    GitConfigClient,
     GiteeConfigClient,
     GroupClient,
     GroupDto,
@@ -46,4 +47,14 @@ export class GiteeConfigClientProxy extends GiteeConfigClient {
     }
 }
 
-type ClientType = GroupClient | WorkClient;
+export class GitConfigClientProxy extends GitConfigClient {
+    constructor() {
+        super(API_URL, fetchProxy);
+    }
+}
+
+type ClientType =
+    | GroupClient
+    | WorkClient
+    | GiteeConfigClient
+    | GitConfigClient;

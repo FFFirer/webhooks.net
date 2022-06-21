@@ -6,7 +6,7 @@ import "./assets/site.css";
 import "./assets/bs-extension.css";
 import "./assets/webhooks-ui.css";
 import router from "./route/index";
-import { globalInstallExternalConfigComponents } from "./views/ExternalConfigs/ExternalConfigInstall";
+import { globalInstallExternalConfigComponents } from "@/views/ExternalConfigs/ExternalConfigInstall";
 
 const app = createApp(App);
 

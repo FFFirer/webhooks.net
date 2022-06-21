@@ -1,9 +1,5 @@
 <script setup lang="ts">
-import { computed } from "@vue/reactivity";
-import GitExternalConfig from "@/GitConfig.vue";
-import GiteeExternalConfig from "./GiteeConfig.vue";
-import NotFoundExternalConfig from "./NotFoundExternalConfig.vue";
-import EmptyExternalConfig from "./EmptyExternalConfig.vue";
+import { computed, Ref, ref } from "@vue/reactivity";
 
 const props = defineProps({
     externalType: {
@@ -16,22 +12,14 @@ const props = defineProps({
     },
 });
 
-const externalConfigTypeDict: { [key: string]: boolean } = {
-    ExternalGitConfig: true,
-    ExternalGiteeConfig: true,
-};
-
 const currentComponent = computed(() => {
     if (props.externalType == "") {
-        return "EmptyExternalConfig";
-    } else if (externalConfigTypeDict[props.externalType]) {
-        return props.externalType;
+        return "external-empty-config";
     } else {
-        return "NotFoundExternalConfig";
+        return `external-${props.externalType}-config`;
     }
 });
 </script>
 <template>
-    <!-- <component :is="currentComponent" :workId="workId"></component> -->
-    <h1>test</h1>
+    <component :is="currentComponent" :work-id="props.workId"></component>
 </template>

@@ -6,8 +6,8 @@ import NotFoundExternalConfig from "./NotFoundExternalConfig.vue";
 import EmptyExternalConfig from "./EmptyExternalConfig.vue";
 
 export function globalInstallExternalConfigComponents(app: App) {
-    app.component("NotFoundExternalConfig", NotFoundExternalConfig);
-    app.component("ExternalGitConfig", GitExternalConfig);
-    app.component("ExternalGiteeConfig", GiteeExternalConfig);
-    app.component("EmptyExternalConfig", EmptyExternalConfig);
+    app.component("not-found-external-config", NotFoundExternalConfig);
+    app.component("external-git-config", GitExternalConfig);
+    app.component("external-gitee-config", GiteeExternalConfig);
+    app.component("external-empty-config", EmptyExternalConfig);
 }

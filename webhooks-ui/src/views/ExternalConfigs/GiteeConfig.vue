@@ -1,14 +1,29 @@
 <script setup lang="ts">
-import { PropType, ref, Ref, watch } from "vue";
-import { GiteeConfigClientProxy } from "../../shared/client-proxy";
+import {
+    onActivated,
+    onBeforeMount,
+    onBeforeUnmount,
+    onBeforeUpdate,
+    onDeactivated,
+    onErrorCaptured,
+    onMounted,
+    onRenderTracked,
+    onRenderTriggered,
+    onUnmounted,
+    onUpdated,
+    ref,
+    Ref,
+} from "vue";
+import { GiteeConfigClientProxy } from "@/shared/client-proxy";
 import {
     GiteeWebHookAuthentication,
     GiteeWebHookConfigDto,
     SaveGiteeWebHookConfigInput,
-} from "../../shared/webapi/client";
+} from "@/shared/webapi/client";
 import { useGlobalMessage } from "@/components/GlobalMessage/GlobalMessageProxy";
 import { useGlobalSpinner } from "@/components/GlobalSpinner/GlobalSpinnerProxy";
 import { BusyMonitor } from "@/components/Monitor/BusyMonitor";
+import ClipboardJS from "clipboard";
 
 const props = defineProps({
     workId: {
@@ -65,10 +80,15 @@ const monitor = new BusyMonitor(globalSpinner);
 
 const giteeConfigClient = new GiteeConfigClientProxy();
 
+/**加载 */
+const load = async () => {
+    config.value = await giteeConfigClient.get(props.workId);
+};
+
 /**保存配置 */
 const saveGiteeConfig = async () => {
     const input = new SaveGiteeWebHookConfigInput();
-    config.value.workId = props.workId;
+
     input.init(config.value);
     monitor.IfBusy("正在保存中");
     await giteeConfigClient
@@ -82,27 +102,47 @@ const saveGiteeConfig = async () => {
         });
 };
 
-const loadGiteeConfig = async (workId: string) => {
-    try {
-    } finally {
+const copyBtnRef = ref();
+const initCopy = () => {
+    if (!copyBtnRef.value) {
+        return;
     }
+
+    const clipboard = new ClipboardJS(copyBtnRef.value, {
+        text: () => {
+            return config.value.webHookUrl ?? "";
+        },
+        action: () => {
+            return "copy";
+        },
+        container: this,
+    });
+
+    clipboard.on("success", () => {
+        globalMessage.notice("复制成功");
+    });
 };
 
-// watch(
-//     () => props.workId,
-//     (v) => {
-//         if (props.workId.length > 0) {
-//             loadGiteeConfig(props.workId);
-//         }
-//     }
-// );
+onMounted(async () => {
+    console.log("gitee mounted", props.workId);
+    await load();
+    initCopy();
+});
+
+onBeforeMount(() => console.log("gitee before mount", props.workId));
+onBeforeUpdate(() => console.log("gitee before update", props.workId));
+onUpdated(() => console.log("gitee update", props.workId));
+onBeforeUnmount(() => console.log("gitee before unmount", props.workId));
+onUnmounted(() => console.log("gitee unmounted", props.workId));
+onErrorCaptured(() => console.log("gitee error captured", props.workId));
+onRenderTracked(() => console.log("gitee render tracked", props.workId));
+onRenderTriggered(() => console.log("gitee render triggered", props.workId));
+onActivated(() => console.log("gitee activated", props.workId));
+onDeactivated(() => console.log("gitee deactivated", props.workId));
 </script>
 <template>
     <div class="row" id="gitee-external-config">
-        <Teleport to="#gitee-external-config">
-            <MaskLayer> <BsSpinner></BsSpinner> </MaskLayer>
-        </Teleport>
-        <div class="col-12">
+        <div class="col-12 mb-3">
             <label for="webHookUrl" class="form-label">
                 WebHook地址
                 <button class="btn btn-sm btn-outline-primary" ref="copyBtnRef">
@@ -116,7 +156,7 @@ const loadGiteeConfig = async (workId: string) => {
                 v-model="config.webHookUrl"
             />
         </div>
-        <div class="mb-3">
+        <div class="col-12 mb-3">
             <label for="authentication"> 密码/签名密钥 </label>
             <select
                 name="authentication"
@@ -130,7 +170,7 @@ const loadGiteeConfig = async (workId: string) => {
                 </option>
             </select>
         </div>
-        <div class="mb-3">
+        <div class="col-12 mb-3">
             <input
                 type="text"
                 class="form-control"
@@ -138,7 +178,7 @@ const loadGiteeConfig = async (workId: string) => {
                 v-model="config.authenticationKey.value"
             />
         </div>
-        <div class="mb-3">
+        <div class="col-12 mb-3">
             <label for="event">触发事件</label>
 
             <div
@@ -158,7 +198,7 @@ const loadGiteeConfig = async (workId: string) => {
                 </label>
             </div>
         </div>
-        <div class="mb-3">
+        <div class="col-12 mb-3">
             <button class="btn btn-primary" @click="saveGiteeConfig()">
                 保存
             </button>

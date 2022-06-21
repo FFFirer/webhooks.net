@@ -9,30 +9,38 @@
 // ReSharper disable InconsistentNaming
 
 export class GitConfigClient {
-    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private http: {
+        fetch(url: RequestInfo, init?: RequestInit): Promise<Response>;
+    };
     private baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined =
+        undefined;
 
-    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
-        this.http = http ? http : window as any;
-        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "https://localhost:7029";
+    constructor(
+        baseUrl?: string,
+        http?: {
+            fetch(url: RequestInfo, init?: RequestInit): Promise<Response>;
+        }
+    ) {
+        this.http = http ? http : (window as any);
+        this.baseUrl =
+            baseUrl !== undefined && baseUrl !== null
+                ? baseUrl
+                : "https://localhost:7029";
     }
 
-    get(workId: string, configId: number): Promise<GitConfigDto> {
-        let url_ = this.baseUrl + "/api/GitConfig/Get/{workId}/{configId}";
+    get(workId: string): Promise<GitConfigDto> {
+        let url_ = this.baseUrl + "/api/GitConfig/Get/{workId}";
         if (workId === undefined || workId === null)
             throw new Error("The parameter 'workId' must be defined.");
         url_ = url_.replace("{workId}", encodeURIComponent("" + workId));
-        if (configId === undefined || configId === null)
-            throw new Error("The parameter 'configId' must be defined.");
-        url_ = url_.replace("{configId}", encodeURIComponent("" + configId));
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
             method: "GET",
             headers: {
-                "Accept": "application/json"
-            }
+                Accept: "application/json",
+            },
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -42,26 +50,40 @@ export class GitConfigClient {
 
     protected processGet(response: Response): Promise<GitConfigDto> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        let _headers: any = {};
+        if (response.headers && response.headers.forEach) {
+            response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+        }
         if (status === 200) {
             return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if(resultData200['__wrapped'])
-            {
-                if(resultData200.success){
-                    resultData200 = resultData200.result;
+                let result200: any = null;
+                let resultData200 =
+                    _responseText === ""
+                        ? null
+                        : JSON.parse(_responseText, this.jsonParseReviver);
+                if (resultData200["__wrapped"]) {
+                    if (resultData200.success) {
+                        resultData200 = resultData200.result;
+                    } else {
+                        throwException(
+                            resultData200.error,
+                            status,
+                            _responseText,
+                            _headers
+                        );
+                    }
                 }
-                else{
-                    throwException(resultData200.error, status, _responseText, _headers)
-                }
-            }
-            result200 = GitConfigDto.fromJS(resultData200);
-            return result200;
+                result200 = GitConfigDto.fromJS(resultData200);
+                return result200;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
-            return throwException("服务器发生意外错误。", status, _responseText, _headers);
+                return throwException(
+                    "服务器发生意外错误。",
+                    status,
+                    _responseText,
+                    _headers
+                );
             });
         }
         return Promise.resolve<GitConfigDto>(null as any);
@@ -78,7 +100,7 @@ export class GitConfigClient {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-            }
+            },
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -88,14 +110,22 @@ export class GitConfigClient {
 
     protected processSave(response: Response): Promise<void> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        let _headers: any = {};
+        if (response.headers && response.headers.forEach) {
+            response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+        }
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+                return;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
-            return throwException("服务器发生意外错误。", status, _responseText, _headers);
+                return throwException(
+                    "服务器发生意外错误。",
+                    status,
+                    _responseText,
+                    _headers
+                );
             });
         }
         return Promise.resolve<void>(null as any);
@@ -103,30 +133,38 @@ export class GitConfigClient {
 }
 
 export class GiteeConfigClient {
-    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private http: {
+        fetch(url: RequestInfo, init?: RequestInit): Promise<Response>;
+    };
     private baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined =
+        undefined;
 
-    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
-        this.http = http ? http : window as any;
-        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "https://localhost:7029";
+    constructor(
+        baseUrl?: string,
+        http?: {
+            fetch(url: RequestInfo, init?: RequestInit): Promise<Response>;
+        }
+    ) {
+        this.http = http ? http : (window as any);
+        this.baseUrl =
+            baseUrl !== undefined && baseUrl !== null
+                ? baseUrl
+                : "https://localhost:7029";
     }
 
-    get(workId: string, configId: string): Promise<GiteeWebHookConfigDto> {
-        let url_ = this.baseUrl + "/api/GiteeConfig/Get/{workId}/{configId}";
+    get(workId: string): Promise<GiteeWebHookConfigDto> {
+        let url_ = this.baseUrl + "/api/GiteeConfig/Get/{workId}";
         if (workId === undefined || workId === null)
             throw new Error("The parameter 'workId' must be defined.");
         url_ = url_.replace("{workId}", encodeURIComponent("" + workId));
-        if (configId === undefined || configId === null)
-            throw new Error("The parameter 'configId' must be defined.");
-        url_ = url_.replace("{configId}", encodeURIComponent("" + configId));
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
             method: "GET",
             headers: {
-                "Accept": "application/json"
-            }
+                Accept: "application/json",
+            },
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -136,26 +174,40 @@ export class GiteeConfigClient {
 
     protected processGet(response: Response): Promise<GiteeWebHookConfigDto> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        let _headers: any = {};
+        if (response.headers && response.headers.forEach) {
+            response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+        }
         if (status === 200) {
             return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if(resultData200['__wrapped'])
-            {
-                if(resultData200.success){
-                    resultData200 = resultData200.result;
+                let result200: any = null;
+                let resultData200 =
+                    _responseText === ""
+                        ? null
+                        : JSON.parse(_responseText, this.jsonParseReviver);
+                if (resultData200["__wrapped"]) {
+                    if (resultData200.success) {
+                        resultData200 = resultData200.result;
+                    } else {
+                        throwException(
+                            resultData200.error,
+                            status,
+                            _responseText,
+                            _headers
+                        );
+                    }
                 }
-                else{
-                    throwException(resultData200.error, status, _responseText, _headers)
-                }
-            }
-            result200 = GiteeWebHookConfigDto.fromJS(resultData200);
-            return result200;
+                result200 = GiteeWebHookConfigDto.fromJS(resultData200);
+                return result200;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
-            return throwException("服务器发生意外错误。", status, _responseText, _headers);
+                return throwException(
+                    "服务器发生意外错误。",
+                    status,
+                    _responseText,
+                    _headers
+                );
             });
         }
         return Promise.resolve<GiteeWebHookConfigDto>(null as any);
@@ -172,7 +224,7 @@ export class GiteeConfigClient {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-            }
+            },
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -182,14 +234,65 @@ export class GiteeConfigClient {
 
     protected processSave(response: Response): Promise<void> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        let _headers: any = {};
+        if (response.headers && response.headers.forEach) {
+            response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+        }
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+                return;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
-            return throwException("服务器发生意外错误。", status, _responseText, _headers);
+                return throwException(
+                    "服务器发生意外错误。",
+                    status,
+                    _responseText,
+                    _headers
+                );
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    remove(workId: string, configId: number): Promise<void> {
+        let url_ = this.baseUrl + "/api/GiteeConfig/Remove/{workId}/{configId}";
+        if (workId === undefined || workId === null)
+            throw new Error("The parameter 'workId' must be defined.");
+        url_ = url_.replace("{workId}", encodeURIComponent("" + workId));
+        if (configId === undefined || configId === null)
+            throw new Error("The parameter 'configId' must be defined.");
+        url_ = url_.replace("{configId}", encodeURIComponent("" + configId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "POST",
+            headers: {},
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processRemove(_response);
+        });
+    }
+
+    protected processRemove(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && response.headers.forEach) {
+            response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+        }
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+                return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+                return throwException(
+                    "服务器发生意外错误。",
+                    status,
+                    _responseText,
+                    _headers
+                );
             });
         }
         return Promise.resolve<void>(null as any);
@@ -197,13 +300,24 @@ export class GiteeConfigClient {
 }
 
 export class GroupClient {
-    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private http: {
+        fetch(url: RequestInfo, init?: RequestInit): Promise<Response>;
+    };
     private baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined =
+        undefined;
 
-    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
-        this.http = http ? http : window as any;
-        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "https://localhost:7029";
+    constructor(
+        baseUrl?: string,
+        http?: {
+            fetch(url: RequestInfo, init?: RequestInit): Promise<Response>;
+        }
+    ) {
+        this.http = http ? http : (window as any);
+        this.baseUrl =
+            baseUrl !== undefined && baseUrl !== null
+                ? baseUrl
+                : "https://localhost:7029";
     }
 
     list(): Promise<GroupDto[]> {
@@ -213,8 +327,8 @@ export class GroupClient {
         let options_: RequestInit = {
             method: "GET",
             headers: {
-                "Accept": "application/json"
-            }
+                Accept: "application/json",
+            },
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -224,33 +338,46 @@ export class GroupClient {
 
     protected processList(response: Response): Promise<GroupDto[]> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        let _headers: any = {};
+        if (response.headers && response.headers.forEach) {
+            response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+        }
         if (status === 200) {
             return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if(resultData200['__wrapped'])
-            {
-                if(resultData200.success){
-                    resultData200 = resultData200.result;
+                let result200: any = null;
+                let resultData200 =
+                    _responseText === ""
+                        ? null
+                        : JSON.parse(_responseText, this.jsonParseReviver);
+                if (resultData200["__wrapped"]) {
+                    if (resultData200.success) {
+                        resultData200 = resultData200.result;
+                    } else {
+                        throwException(
+                            resultData200.error,
+                            status,
+                            _responseText,
+                            _headers
+                        );
+                    }
                 }
-                else{
-                    throwException(resultData200.error, status, _responseText, _headers)
+                if (Array.isArray(resultData200)) {
+                    result200 = [] as any;
+                    for (let item of resultData200)
+                        result200!.push(GroupDto.fromJS(item));
+                } else {
+                    result200 = <any>null;
                 }
-            }
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(GroupDto.fromJS(item));
-            }
-            else {
-                result200 = <any>null;
-            }
-            return result200;
+                return result200;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
-            return throwException("服务器发生意外错误。", status, _responseText, _headers);
+                return throwException(
+                    "服务器发生意外错误。",
+                    status,
+                    _responseText,
+                    _headers
+                );
             });
         }
         return Promise.resolve<GroupDto[]>(null as any);
@@ -267,8 +394,8 @@ export class GroupClient {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Accept": "application/json"
-            }
+                Accept: "application/json",
+            },
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -276,28 +403,44 @@ export class GroupClient {
         });
     }
 
-    protected processQuery(response: Response): Promise<PagingResultOfGroupDto> {
+    protected processQuery(
+        response: Response
+    ): Promise<PagingResultOfGroupDto> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        let _headers: any = {};
+        if (response.headers && response.headers.forEach) {
+            response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+        }
         if (status === 200) {
             return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if(resultData200['__wrapped'])
-            {
-                if(resultData200.success){
-                    resultData200 = resultData200.result;
+                let result200: any = null;
+                let resultData200 =
+                    _responseText === ""
+                        ? null
+                        : JSON.parse(_responseText, this.jsonParseReviver);
+                if (resultData200["__wrapped"]) {
+                    if (resultData200.success) {
+                        resultData200 = resultData200.result;
+                    } else {
+                        throwException(
+                            resultData200.error,
+                            status,
+                            _responseText,
+                            _headers
+                        );
+                    }
                 }
-                else{
-                    throwException(resultData200.error, status, _responseText, _headers)
-                }
-            }
-            result200 = PagingResultOfGroupDto.fromJS(resultData200);
-            return result200;
+                result200 = PagingResultOfGroupDto.fromJS(resultData200);
+                return result200;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
-            return throwException("服务器发生意外错误。", status, _responseText, _headers);
+                return throwException(
+                    "服务器发生意外错误。",
+                    status,
+                    _responseText,
+                    _headers
+                );
             });
         }
         return Promise.resolve<PagingResultOfGroupDto>(null as any);
@@ -314,7 +457,7 @@ export class GroupClient {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-            }
+            },
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -324,14 +467,22 @@ export class GroupClient {
 
     protected processSave(response: Response): Promise<void> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        let _headers: any = {};
+        if (response.headers && response.headers.forEach) {
+            response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+        }
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+                return;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
-            return throwException("服务器发生意外错误。", status, _responseText, _headers);
+                return throwException(
+                    "服务器发生意外错误。",
+                    status,
+                    _responseText,
+                    _headers
+                );
             });
         }
         return Promise.resolve<void>(null as any);
@@ -348,7 +499,7 @@ export class GroupClient {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-            }
+            },
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -358,14 +509,22 @@ export class GroupClient {
 
     protected processRemove(response: Response): Promise<void> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        let _headers: any = {};
+        if (response.headers && response.headers.forEach) {
+            response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+        }
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+                return;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
-            return throwException("服务器发生意外错误。", status, _responseText, _headers);
+                return throwException(
+                    "服务器发生意外错误。",
+                    status,
+                    _responseText,
+                    _headers
+                );
             });
         }
         return Promise.resolve<void>(null as any);
@@ -373,13 +532,24 @@ export class GroupClient {
 }
 
 export class WorkClient {
-    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private http: {
+        fetch(url: RequestInfo, init?: RequestInit): Promise<Response>;
+    };
     private baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined =
+        undefined;
 
-    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
-        this.http = http ? http : window as any;
-        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "https://localhost:7029";
+    constructor(
+        baseUrl?: string,
+        http?: {
+            fetch(url: RequestInfo, init?: RequestInit): Promise<Response>;
+        }
+    ) {
+        this.http = http ? http : (window as any);
+        this.baseUrl =
+            baseUrl !== undefined && baseUrl !== null
+                ? baseUrl
+                : "https://localhost:7029";
     }
 
     query(input: PagingInput): Promise<PagingResultOfWorkDto> {
@@ -393,8 +563,8 @@ export class WorkClient {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Accept": "application/json"
-            }
+                Accept: "application/json",
+            },
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -404,26 +574,40 @@ export class WorkClient {
 
     protected processQuery(response: Response): Promise<PagingResultOfWorkDto> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        let _headers: any = {};
+        if (response.headers && response.headers.forEach) {
+            response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+        }
         if (status === 200) {
             return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if(resultData200['__wrapped'])
-            {
-                if(resultData200.success){
-                    resultData200 = resultData200.result;
+                let result200: any = null;
+                let resultData200 =
+                    _responseText === ""
+                        ? null
+                        : JSON.parse(_responseText, this.jsonParseReviver);
+                if (resultData200["__wrapped"]) {
+                    if (resultData200.success) {
+                        resultData200 = resultData200.result;
+                    } else {
+                        throwException(
+                            resultData200.error,
+                            status,
+                            _responseText,
+                            _headers
+                        );
+                    }
                 }
-                else{
-                    throwException(resultData200.error, status, _responseText, _headers)
-                }
-            }
-            result200 = PagingResultOfWorkDto.fromJS(resultData200);
-            return result200;
+                result200 = PagingResultOfWorkDto.fromJS(resultData200);
+                return result200;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
-            return throwException("服务器发生意外错误。", status, _responseText, _headers);
+                return throwException(
+                    "服务器发生意外错误。",
+                    status,
+                    _responseText,
+                    _headers
+                );
             });
         }
         return Promise.resolve<PagingResultOfWorkDto>(null as any);
@@ -440,7 +624,7 @@ export class WorkClient {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-            }
+            },
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -450,14 +634,22 @@ export class WorkClient {
 
     protected processSave(response: Response): Promise<void> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        let _headers: any = {};
+        if (response.headers && response.headers.forEach) {
+            response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+        }
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+                return;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
-            return throwException("服务器发生意外错误。", status, _responseText, _headers);
+                return throwException(
+                    "服务器发生意外错误。",
+                    status,
+                    _responseText,
+                    _headers
+                );
             });
         }
         return Promise.resolve<void>(null as any);
@@ -474,7 +666,7 @@ export class WorkClient {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-            }
+            },
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -484,14 +676,22 @@ export class WorkClient {
 
     protected processRemove(response: Response): Promise<void> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        let _headers: any = {};
+        if (response.headers && response.headers.forEach) {
+            response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+        }
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+                return;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
-            return throwException("服务器发生意外错误。", status, _responseText, _headers);
+                return throwException(
+                    "服务器发生意外错误。",
+                    status,
+                    _responseText,
+                    _headers
+                );
             });
         }
         return Promise.resolve<void>(null as any);
@@ -507,8 +707,8 @@ export class WorkClient {
         let options_: RequestInit = {
             method: "GET",
             headers: {
-                "Accept": "application/json"
-            }
+                Accept: "application/json",
+            },
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -518,26 +718,40 @@ export class WorkClient {
 
     protected processDetail(response: Response): Promise<WorkDetailDto> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        let _headers: any = {};
+        if (response.headers && response.headers.forEach) {
+            response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+        }
         if (status === 200) {
             return response.text().then((_responseText) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if(resultData200['__wrapped'])
-            {
-                if(resultData200.success){
-                    resultData200 = resultData200.result;
+                let result200: any = null;
+                let resultData200 =
+                    _responseText === ""
+                        ? null
+                        : JSON.parse(_responseText, this.jsonParseReviver);
+                if (resultData200["__wrapped"]) {
+                    if (resultData200.success) {
+                        resultData200 = resultData200.result;
+                    } else {
+                        throwException(
+                            resultData200.error,
+                            status,
+                            _responseText,
+                            _headers
+                        );
+                    }
                 }
-                else{
-                    throwException(resultData200.error, status, _responseText, _headers)
-                }
-            }
-            result200 = WorkDetailDto.fromJS(resultData200);
-            return result200;
+                result200 = WorkDetailDto.fromJS(resultData200);
+                return result200;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
-            return throwException("服务器发生意外错误。", status, _responseText, _headers);
+                return throwException(
+                    "服务器发生意外错误。",
+                    status,
+                    _responseText,
+                    _headers
+                );
             });
         }
         return Promise.resolve<WorkDetailDto>(null as any);
@@ -554,7 +768,7 @@ export class WorkClient {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-            }
+            },
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -564,14 +778,22 @@ export class WorkClient {
 
     protected processSaveDetail(response: Response): Promise<void> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        let _headers: any = {};
+        if (response.headers && response.headers.forEach) {
+            response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+        }
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+                return;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
-            return throwException("服务器发生意外错误。", status, _responseText, _headers);
+                return throwException(
+                    "服务器发生意外错误。",
+                    status,
+                    _responseText,
+                    _headers
+                );
             });
         }
         return Promise.resolve<void>(null as any);
@@ -588,7 +810,7 @@ export class WorkClient {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-            }
+            },
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
@@ -598,14 +820,22 @@ export class WorkClient {
 
     protected processSaveScripts(response: Response): Promise<void> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        let _headers: any = {};
+        if (response.headers && response.headers.forEach) {
+            response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+        }
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+                return;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
-            return throwException("服务器发生意外错误。", status, _responseText, _headers);
+                return throwException(
+                    "服务器发生意外错误。",
+                    status,
+                    _responseText,
+                    _headers
+                );
             });
         }
         return Promise.resolve<void>(null as any);
@@ -631,14 +861,14 @@ export class DtoOfInteger implements IDtoOfInteger {
     }
 
     static fromJS(data: any): DtoOfInteger {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         let result = new DtoOfInteger();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         data["id"] = this.id;
         return data;
     }
@@ -671,14 +901,14 @@ export class GitConfigDto extends DtoOfInteger implements IGitConfigDto {
     }
 
     static fromJS(data: any): GitConfigDto {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         let result = new GitConfigDto();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         data["workId"] = this.workId;
         data["addressType"] = this.addressType;
         data["repositoryAddress"] = this.repositoryAddress;
@@ -711,19 +941,21 @@ export class SaveGitConfigInput implements ISaveGitConfigInput {
 
     init(_data?: any) {
         if (_data) {
-            this.toSave = _data["toSave"] ? GitConfigDto.fromJS(_data["toSave"]) : <any>undefined;
+            this.toSave = _data["toSave"]
+                ? GitConfigDto.fromJS(_data["toSave"])
+                : <any>undefined;
         }
     }
 
     static fromJS(data: any): SaveGitConfigInput {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         let result = new SaveGitConfigInput();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         data["toSave"] = this.toSave ? this.toSave.toJSON() : <any>undefined;
         return data;
     }
@@ -733,7 +965,10 @@ export interface ISaveGitConfigInput {
     toSave?: GitConfigDto | undefined;
 }
 
-export class GiteeWebHookConfigDto extends DtoOfInteger implements IGiteeWebHookConfigDto {
+export class GiteeWebHookConfigDto
+    extends DtoOfInteger
+    implements IGiteeWebHookConfigDto
+{
     workId!: string;
     webHookUrl!: string;
     authentication!: GiteeWebHookAuthentication;
@@ -754,32 +989,34 @@ export class GiteeWebHookConfigDto extends DtoOfInteger implements IGiteeWebHook
             this.workId = _data["workId"];
             this.webHookUrl = _data["webHookUrl"];
             this.authentication = _data["authentication"];
-            this.authenticationKey = _data["authenticationKey"] ? GiteeAuthenticationKey.fromJS(_data["authenticationKey"]) : new GiteeAuthenticationKey();
+            this.authenticationKey = _data["authenticationKey"]
+                ? GiteeAuthenticationKey.fromJS(_data["authenticationKey"])
+                : new GiteeAuthenticationKey();
             if (Array.isArray(_data["events"])) {
                 this.events = [] as any;
-                for (let item of _data["events"])
-                    this.events!.push(item);
+                for (let item of _data["events"]) this.events!.push(item);
             }
         }
     }
 
     static fromJS(data: any): GiteeWebHookConfigDto {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         let result = new GiteeWebHookConfigDto();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         data["workId"] = this.workId;
         data["webHookUrl"] = this.webHookUrl;
         data["authentication"] = this.authentication;
-        data["authenticationKey"] = this.authenticationKey ? this.authenticationKey.toJSON() : <any>undefined;
+        data["authenticationKey"] = this.authenticationKey
+            ? this.authenticationKey.toJSON()
+            : <any>undefined;
         if (Array.isArray(this.events)) {
             data["events"] = [];
-            for (let item of this.events)
-                data["events"].push(item);
+            for (let item of this.events) data["events"].push(item);
         }
         super.toJSON(data);
         return data;
@@ -818,14 +1055,14 @@ export class GiteeAuthenticationKey implements IGiteeAuthenticationKey {
     }
 
     static fromJS(data: any): GiteeAuthenticationKey {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         let result = new GiteeAuthenticationKey();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         data["value"] = this.value;
         return data;
     }
@@ -835,7 +1072,10 @@ export interface IGiteeAuthenticationKey {
     value?: string | undefined;
 }
 
-export class SaveGiteeWebHookConfigInput extends DtoOfInteger implements ISaveGiteeWebHookConfigInput {
+export class SaveGiteeWebHookConfigInput
+    extends DtoOfInteger
+    implements ISaveGiteeWebHookConfigInput
+{
     workId!: string;
     webHookUrl!: string;
     authentication!: GiteeWebHookAuthentication;
@@ -856,32 +1096,34 @@ export class SaveGiteeWebHookConfigInput extends DtoOfInteger implements ISaveGi
             this.workId = _data["workId"];
             this.webHookUrl = _data["webHookUrl"];
             this.authentication = _data["authentication"];
-            this.authenticationKey = _data["authenticationKey"] ? GiteeAuthenticationKey.fromJS(_data["authenticationKey"]) : new GiteeAuthenticationKey();
+            this.authenticationKey = _data["authenticationKey"]
+                ? GiteeAuthenticationKey.fromJS(_data["authenticationKey"])
+                : new GiteeAuthenticationKey();
             if (Array.isArray(_data["events"])) {
                 this.events = [] as any;
-                for (let item of _data["events"])
-                    this.events!.push(item);
+                for (let item of _data["events"]) this.events!.push(item);
             }
         }
     }
 
     static fromJS(data: any): SaveGiteeWebHookConfigInput {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         let result = new SaveGiteeWebHookConfigInput();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         data["workId"] = this.workId;
         data["webHookUrl"] = this.webHookUrl;
         data["authentication"] = this.authentication;
-        data["authenticationKey"] = this.authenticationKey ? this.authenticationKey.toJSON() : <any>undefined;
+        data["authenticationKey"] = this.authenticationKey
+            ? this.authenticationKey.toJSON()
+            : <any>undefined;
         if (Array.isArray(this.events)) {
             data["events"] = [];
-            for (let item of this.events)
-                data["events"].push(item);
+            for (let item of this.events) data["events"].push(item);
         }
         super.toJSON(data);
         return data;
@@ -915,14 +1157,14 @@ export class DtoOfGuid implements IDtoOfGuid {
     }
 
     static fromJS(data: any): DtoOfGuid {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         let result = new DtoOfGuid();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         data["id"] = this.id;
         return data;
     }
@@ -949,14 +1191,14 @@ export class GroupDto extends DtoOfGuid implements IGroupDto {
     }
 
     static fromJS(data: any): GroupDto {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         let result = new GroupDto();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         data["name"] = this.name;
         data["description"] = this.description;
         super.toJSON(data);
@@ -1001,18 +1243,17 @@ export class PagingResultOfGroupDto implements IPagingResultOfGroupDto {
     }
 
     static fromJS(data: any): PagingResultOfGroupDto {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         let result = new PagingResultOfGroupDto();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         if (Array.isArray(this.rows)) {
             data["rows"] = [];
-            for (let item of this.rows)
-                data["rows"].push(item.toJSON());
+            for (let item of this.rows) data["rows"].push(item.toJSON());
         }
         data["total"] = this.total;
         data["page"] = this.page;
@@ -1049,14 +1290,14 @@ export class PageGroupInput implements IPageGroupInput {
     }
 
     static fromJS(data: any): PageGroupInput {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         let result = new PageGroupInput();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         data["page"] = this.page;
         data["pageSize"] = this.pageSize;
         return data;
@@ -1087,14 +1328,14 @@ export class RemoveGroupInput implements IRemoveGroupInput {
     }
 
     static fromJS(data: any): RemoveGroupInput {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         let result = new RemoveGroupInput();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         data["id"] = this.id;
         return data;
     }
@@ -1136,18 +1377,17 @@ export class PagingResultOfWorkDto implements IPagingResultOfWorkDto {
     }
 
     static fromJS(data: any): PagingResultOfWorkDto {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         let result = new PagingResultOfWorkDto();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         if (Array.isArray(this.rows)) {
             data["rows"] = [];
-            for (let item of this.rows)
-                data["rows"].push(item.toJSON());
+            for (let item of this.rows) data["rows"].push(item.toJSON());
         }
         data["total"] = this.total;
         data["page"] = this.page;
@@ -1180,14 +1420,14 @@ export class WorkDto extends DtoOfGuid implements IWorkDto {
     }
 
     static fromJS(data: any): WorkDto {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         let result = new WorkDto();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         data["displayName"] = this.displayName;
         data["externalConfigType"] = this.externalConfigType;
         super.toJSON(data);
@@ -1221,14 +1461,14 @@ export class PagingInput implements IPagingInput {
     }
 
     static fromJS(data: any): PagingInput {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         let result = new PagingInput();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         data["page"] = this.page;
         data["pageSize"] = this.pageSize;
         return data;
@@ -1241,7 +1481,7 @@ export interface IPagingInput {
 }
 
 export class RemoveWorkInput implements IRemoveWorkInput {
-    id!: string;
+    workId!: string;
 
     constructor(data?: IRemoveWorkInput) {
         if (data) {
@@ -1254,26 +1494,26 @@ export class RemoveWorkInput implements IRemoveWorkInput {
 
     init(_data?: any) {
         if (_data) {
-            this.id = _data["id"];
+            this.workId = _data["workId"];
         }
     }
 
     static fromJS(data: any): RemoveWorkInput {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         let result = new RemoveWorkInput();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
+        data = typeof data === "object" ? data : {};
+        data["workId"] = this.workId;
         return data;
     }
 }
 
 export interface IRemoveWorkInput {
-    id: string;
+    workId: string;
 }
 
 export class WorkDetailDto implements IWorkDetailDto {
@@ -1292,21 +1532,27 @@ export class WorkDetailDto implements IWorkDetailDto {
 
     init(_data?: any) {
         if (_data) {
-            this.work = _data["work"] ? WorkDto.fromJS(_data["work"]) : <any>undefined;
-            this.script = _data["script"] ? BuildScript.fromJS(_data["script"]) : <any>undefined;
-            this.config = _data["config"] ? GiteeWebHookConfigDto.fromJS(_data["config"]) : <any>undefined;
+            this.work = _data["work"]
+                ? WorkDto.fromJS(_data["work"])
+                : <any>undefined;
+            this.script = _data["script"]
+                ? BuildScript.fromJS(_data["script"])
+                : <any>undefined;
+            this.config = _data["config"]
+                ? GiteeWebHookConfigDto.fromJS(_data["config"])
+                : <any>undefined;
         }
     }
 
     static fromJS(data: any): WorkDetailDto {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         let result = new WorkDetailDto();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         data["work"] = this.work ? this.work.toJSON() : <any>undefined;
         data["script"] = this.script ? this.script.toJSON() : <any>undefined;
         data["config"] = this.config ? this.config.toJSON() : <any>undefined;
@@ -1337,23 +1583,31 @@ export class EntityOfInteger implements IEntityOfInteger {
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
-            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : <any>undefined;
-            this.modifedAt = _data["modifedAt"] ? new Date(_data["modifedAt"].toString()) : <any>undefined;
+            this.createdAt = _data["createdAt"]
+                ? new Date(_data["createdAt"].toString())
+                : <any>undefined;
+            this.modifedAt = _data["modifedAt"]
+                ? new Date(_data["modifedAt"].toString())
+                : <any>undefined;
         }
     }
 
     static fromJS(data: any): EntityOfInteger {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         let result = new EntityOfInteger();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         data["id"] = this.id;
-        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : <any>undefined;
-        data["modifedAt"] = this.modifedAt ? this.modifedAt.toISOString() : <any>undefined;
+        data["createdAt"] = this.createdAt
+            ? this.createdAt.toISOString()
+            : <any>undefined;
+        data["modifedAt"] = this.modifedAt
+            ? this.modifedAt.toISOString()
+            : <any>undefined;
         return data;
     }
 }
@@ -1383,27 +1637,25 @@ export class BuildScript extends EntityOfInteger implements IBuildScript {
             this.sortNumber = _data["sortNumber"];
             if (Array.isArray(_data["scripts"])) {
                 this.scripts = [] as any;
-                for (let item of _data["scripts"])
-                    this.scripts!.push(item);
+                for (let item of _data["scripts"]) this.scripts!.push(item);
             }
         }
     }
 
     static fromJS(data: any): BuildScript {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         let result = new BuildScript();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         data["workId"] = this.workId;
         data["sortNumber"] = this.sortNumber;
         if (Array.isArray(this.scripts)) {
             data["scripts"] = [];
-            for (let item of this.scripts)
-                data["scripts"].push(item);
+            for (let item of this.scripts) data["scripts"].push(item);
         }
         super.toJSON(data);
         return data;
@@ -1435,27 +1687,25 @@ export class BuildScriptDto extends DtoOfInteger implements IBuildScriptDto {
             this.sortNumber = _data["sortNumber"];
             if (Array.isArray(_data["scripts"])) {
                 this.scripts = [] as any;
-                for (let item of _data["scripts"])
-                    this.scripts!.push(item);
+                for (let item of _data["scripts"]) this.scripts!.push(item);
             }
         }
     }
 
     static fromJS(data: any): BuildScriptDto {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         let result = new BuildScriptDto();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
+        data = typeof data === "object" ? data : {};
         data["workId"] = this.workId;
         data["sortNumber"] = this.sortNumber;
         if (Array.isArray(this.scripts)) {
             data["scripts"] = [];
-            for (let item of this.scripts)
-                data["scripts"].push(item);
+            for (let item of this.scripts) data["scripts"].push(item);
         }
         super.toJSON(data);
         return data;
@@ -1472,10 +1722,16 @@ export class ApiException extends Error {
     message: string;
     status: number;
     response: string;
-    headers: { [key: string]: any; };
+    headers: { [key: string]: any };
     result: any;
 
-    constructor(message: string, status: number, response: string, headers: { [key: string]: any; }, result: any) {
+    constructor(
+        message: string,
+        status: number,
+        response: string,
+        headers: { [key: string]: any },
+        result: any
+    ) {
         super();
 
         this.message = message;
@@ -1492,9 +1748,13 @@ export class ApiException extends Error {
     }
 }
 
-function throwException(message: string, status: number, response: string, headers: { [key: string]: any; }, result?: any): any {
-    if (result !== null && result !== undefined)
-        throw result;
-    else
-        throw new ApiException(message, status, response, headers, null);
+function throwException(
+    message: string,
+    status: number,
+    response: string,
+    headers: { [key: string]: any },
+    result?: any
+): any {
+    if (result !== null && result !== undefined) throw result;
+    else throw new ApiException(message, status, response, headers, null);
 }

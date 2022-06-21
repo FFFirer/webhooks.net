@@ -18,9 +18,10 @@ namespace WebHooks.Service.Git
 
         public async Task<GitConfig?> GetAsync(Guid workId)
         {
-            if (await workRepository.ExistsAsync(workId))
+            if (!(await workRepository.ExistsAsync(workId)))
             {
-                throw new Exception($"no such data, {nameof(workId)}: {workId}");
+                //throw new Exception($"no such data, {nameof(workId)}: {workId}");
+                return null;
             }
 
             return await repository.GetAll().AsNoTracking().Where(a => a.WorkId == workId).FirstOrDefaultAsync();

@@ -49,7 +49,7 @@ const notice = (msg: string, autoClose?: number) => {
 
     autoClose = (autoClose ?? 0) >= 1 ? autoClose : 1;
 
-    showHeader.value = true;
+    showHeader.value = false;
     showClose.value = false;
     showFooter.value = false;
 
