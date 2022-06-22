@@ -42,5 +42,7 @@ namespace WebHooks.Data.DbContexts
         public virtual DbSet<BuildScript> BuildScripts => Set<BuildScript>();
 
         public virtual DbSet<GitConfig> GitConfigs => Set<GitConfig>();
+
+        public virtual DbSet<Setting> Settings => Set<Setting>();
     }
 }

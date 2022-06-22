@@ -24,6 +24,13 @@ namespace WebHooks.API
             if(context.Result is ObjectResult)
             {
                 context.Result = _wrapper.WrapSuccessful(context.Result);
+                return;
+            }
+
+            if(context.Result is EmptyResult)
+            {
+                context.Result = _wrapper.WrapSuccessfulEmpty();
+                return;
             }
         }
 

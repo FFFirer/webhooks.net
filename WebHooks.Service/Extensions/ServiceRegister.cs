@@ -26,6 +26,8 @@ namespace WebHooks.Service.Extensions
 
             services.AddScoped<IGiteeConfigRepository, GiteeConfigRepository>();
             services.AddScoped<IGitConfigRepository, GitConfigRepository>();
+
+            services.AddScoped<ISettingRepository, SettingRepository>();
             return services;
         }
 
@@ -39,6 +41,7 @@ namespace WebHooks.Service.Extensions
 
             services.AddScoped<IGitConfigService, GitConfigService>();
 
+            services.AddScoped<ISettingService, SettingService>();
             return services;
         }
     }

@@ -52,5 +52,17 @@ namespace WebHooks.API.ResultWrapper
 
             return result;
         }
+
+        public IActionResult? WrapSuccessfulEmpty()
+        {
+            var emptyResult = new ApiResult()
+            {
+                Success = true,
+                Error = null,
+                Result = null,
+            };
+
+            return new ObjectResult(emptyResult);
+        }
     }
 }

@@ -4,6 +4,7 @@ import {
     GiteeConfigClient,
     GroupClient,
     GroupDto,
+    SettingClient,
     WorkClient,
 } from "./webapi/client";
 
@@ -53,8 +54,15 @@ export class GitConfigClientProxy extends GitConfigClient {
     }
 }
 
+export class SettingClientProxy extends SettingClient {
+    constructor() {
+        super(API_URL, fetchProxy);
+    }
+}
+
 type ClientType =
     | GroupClient
     | WorkClient
     | GiteeConfigClient
-    | GitConfigClient;
+    | GitConfigClient
+    | SettingClient;

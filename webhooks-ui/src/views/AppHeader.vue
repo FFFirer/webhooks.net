@@ -35,8 +35,10 @@
                             >
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" href="javascript:;"
-                                >设置</a
+                            <router-link
+                                class="nav-link text-dark"
+                                to="/setting"
+                                >设置</router-link
                             >
                         </li>
                     </ul>

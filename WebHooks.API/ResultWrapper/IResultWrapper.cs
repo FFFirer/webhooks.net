@@ -6,6 +6,8 @@ namespace WebHooks.API.ResultWrapper
     {
         IActionResult? WrapSuccessful(IActionResult? result);
 
+        IActionResult? WrapSuccessfulEmpty();
+
         IActionResult WrapFailure(Exception exception);
     }
 }
