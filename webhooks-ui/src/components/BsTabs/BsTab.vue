@@ -7,6 +7,7 @@ import {
     ref,
     Ref,
     useSlots,
+    watch,
 } from "vue";
 import { flatten } from "../../utils/flatten";
 
@@ -17,9 +18,17 @@ import {
 
 import { BsTabInjectionKey } from "./interface";
 
-const props = defineProps();
+const props = defineProps({
+    actived: {
+        type: String,
+        default: "",
+    },
+});
+
+type updateActivedType = "update:actived";
 const emits = defineEmits<{
     (event: BsTabItemActivedEventType, id: string): void;
+    (event: updateActivedType, id: string): void;
 }>();
 
 const slots = useSlots();
@@ -37,6 +46,7 @@ const tabs: Ref<
 const changeTab = (id: string) => {
     active.value = id;
     emits(BsTabItemActivedEmitName, id);
+    emits("update:actived", id);
 };
 
 onMounted(() => {
@@ -62,6 +72,15 @@ onMounted(() => {
 provide(BsTabInjectionKey, {
     active: active,
 });
+
+watch(
+    () => props.actived,
+    (value, old) => {
+        if (value != old && props.actived != active.value) {
+            changeTab(props.actived);
+        }
+    }
+);
 </script>
 
 <template>

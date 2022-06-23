@@ -28,6 +28,9 @@ import {
 } from "../ExternalConfigs/ExternalConfigService";
 import { computed } from "@vue/reactivity";
 
+import { Play16Regular } from "@vicons/fluent";
+import { Icon, IconConfigProvider } from "@vicons/utils";
+
 const props = defineProps(WorkDetailViewProps);
 
 const globalMessage = useGlobalMessage();
@@ -225,8 +228,14 @@ const externalConfigLabel = computed(() => {
     return `${work.value.externalConfigType ?? ""}配置`;
 });
 
-onMounted(() => {
-    loadDetail().then(() => {});
+const activedTab: Ref<string> = ref("");
+
+const run = () => {
+    activedTab.value = LogTab;
+};
+
+onMounted(async () => {
+    await loadDetail();
 });
 </script>
 <template>
@@ -243,7 +252,7 @@ onMounted(() => {
     </div>
     <div class="row">
         <div class="col-12">
-            <bs-tab @tab-actived="handleTabActived">
+            <bs-tab @tab-actived="handleTabActived" :actived="activedTab">
                 <bs-tab-item :id="BasicTab" label="基础信息">
                     <div class="row">
                         <div class="col-12">
@@ -280,12 +289,21 @@ onMounted(() => {
                                 </select>
                             </div>
 
-                            <div class="mb-3">
+                            <div class="mb-3 btn-group">
                                 <button
                                     class="btn btn-primary"
                                     @click="saveWork()"
                                 >
                                     保存
+                                </button>
+                                <button
+                                    @click="run"
+                                    class="btn btn-outline-primary"
+                                >
+                                    <span>运行</span>
+                                    <Icon>
+                                        <Play16Regular />
+                                    </Icon>
                                 </button>
                             </div>
                         </div>

@@ -11,6 +11,9 @@ export default ({ mode }) => {
             https: true,
             port: 13425,
             host: "127.0.0.1",
+            proxy: {
+                "https://127.0.0.1:13425": "https://127.0.0.1:13425",
+            },
         },
         resolve: {
             alias: [
