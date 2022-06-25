@@ -80,6 +80,14 @@ namespace WebHooks.Scripts.PowerShell
                 _powershell.Runspace.Open();
             }
 
+            _powershell.AddStatement()
+                .AddCommand("Set-Location")
+                .AddParameter("Path", _startupInfo.WorkingDirectory);
+
+            await _powershell.InvokeAsync();
+
+            _powershell.Commands.Clear();
+
             _powershell.AddScript(script);
 
             _powershell.Commands.Commands[0].MergeMyResults(PipelineResultTypes.Error, PipelineResultTypes.Output);

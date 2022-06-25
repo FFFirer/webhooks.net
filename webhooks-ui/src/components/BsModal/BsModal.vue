@@ -2,11 +2,22 @@
 import { onMounted, Ref, ref } from "vue";
 import BsModalProps from "./BsModalProps";
 import { BsModalEmits, formatBsModalNativeEventName } from "./BsModalEmits";
+import { computed } from "@vue/reactivity";
 
 const props = defineProps(BsModalProps);
 const emit = defineEmits(BsModalEmits);
 /**模态框HTML引用 */
 const modalRef: Ref<HTMLDivElement | undefined> = ref();
+
+const modalDialogClasses = computed(() => {
+    return {
+        "modal-dialog": true,
+        "modal-dialog-centered": true,
+        "modal-xl": props.size == "xl",
+        "modal-sm": props.size == "sm",
+        "modal-lg": props.size == "lg",
+    };
+});
 
 onMounted(() => {
     if (modalRef.value) {
@@ -38,7 +49,7 @@ onMounted(() => {
         aria-labelledby="modalTitle"
         aria-hidden="true"
     >
-        <div class="modal-dialog modal-dialog-centered">
+        <div :class="modalDialogClasses">
             <div class="modal-content">
                 <div class="modal-header">
                     <slot name="header">
@@ -61,7 +72,7 @@ onMounted(() => {
                             class="btn btn-secondary"
                             data-bs-dismiss="modal"
                         >
-                            Close
+                            关闭
                         </button>
                     </slot>
                 </div>

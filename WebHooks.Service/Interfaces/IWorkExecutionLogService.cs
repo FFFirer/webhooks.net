@@ -4,13 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WebHooks.Data.Entities;
+using WebHooks.Service.Models;
 
 namespace WebHooks.Service.Interfaces
 {
     public interface IWorkExecutionLogService
     {
-        Task<WorkExecutionLog> Create(Guid workId);
+        Task<List<WorkExecutionLogSummary>> GetSummariesAsync(Guid workId);
 
-        Task Update(WorkExecutionLog executionLog);
+        Task<WorkExecutionLog?> GetDetailAsync(Guid workId, long logId);
+
+        Task<WorkExecutionLog> CreateAsync(Guid workId);
+
+        Task UpdateAsync(WorkExecutionLog executionLog);
     }
 }

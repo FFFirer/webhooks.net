@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using WebHooks.Data.Entities;
 using WebHooks.Service.Interfaces;
 using WebHooks.Data.Repositories.Interfaces;
+using WebHooks.Service.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebHooks.Service
 {
@@ -18,7 +20,7 @@ namespace WebHooks.Service
             _repository = repository;
         }
 
-        public async Task<WorkExecutionLog> Create(Guid workId)
+        public async Task<WorkExecutionLog> CreateAsync(Guid workId)
         {
             var log = new WorkExecutionLog()
             {
@@ -29,7 +31,31 @@ namespace WebHooks.Service
             return await _repository.InsertAsync(log);
         }
 
-        public async Task Update(WorkExecutionLog executionLog)
+        public async Task<WorkExecutionLog?> GetDetailAsync(Guid workId, long logId)
+        {
+            return await _repository.GetAsync(logId);
+        }
+
+        public async Task<List<WorkExecutionLogSummary>> GetSummariesAsync(Guid workId)
+        {
+            return await _repository.GetAll()
+                .AsNoTracking()
+                .Where(a => a.WorkId == workId)
+                .OrderByDescending(a => a.CreatedAt)
+                .Select(log => new WorkExecutionLogSummary()
+                                    {
+                                        Id = log.Id,
+                                        WorkId = log.WorkId,
+                                        ExecuteEndAt = log.ExecuteEndAt,
+                                        ExecuteStartAt = log.ExecuteStartAt,
+                                        ElapsedTime = log.ElapsedTime,
+                                        Status = log.Status,
+                                        Success = log.Success,
+                                    })
+                .ToListAsync();
+        }
+
+        public async Task UpdateAsync(WorkExecutionLog executionLog)
         {
             await _repository.UpdateAsync(executionLog);
         }

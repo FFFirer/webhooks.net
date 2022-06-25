@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineAsyncComponent, onMounted, ref, Ref } from "vue";
+import { onMounted, ref, Ref } from "vue";
 import BsTab from "@/components/BsTabs/BsTab.vue";
 import BsTabItem from "@/components/BsTabs/BsTabItem.vue";
 import BsSpinner from "@/components/BsSpinner/BsSpinner.vue";
@@ -8,6 +8,7 @@ import {
     GiteeConfigClientProxy,
     WorkClientProxy,
     WorkRunnerClientProxy,
+    WorkExecutionLogClientProxy,
 } from "@/shared/client-proxy";
 import {
     BuildScript,
@@ -16,6 +17,8 @@ import {
     GiteeWebHookConfigDto,
     SaveGiteeWebHookConfigInput,
     WorkDto,
+    WorkExecutionLog,
+    WorkExecutionLogSummary,
 } from "@/shared/webapi/client";
 import WorkDetailViewProps from "./WorkDetailProps";
 import Clipboard from "clipboard";
@@ -37,6 +40,10 @@ import { Play16Regular } from "@vicons/fluent";
 import { Icon, IconConfigProvider } from "@vicons/utils";
 
 import { alertException } from "@/shared/helpers/ExceptionHelper";
+import { Modal } from "bootstrap";
+import BsModalHelper from "@/components/BsModal/BsModalHelper";
+import BsModal from "@/components/BsModal/BsModal.vue";
+import WorkExecutionLogDetail from "./WorkExecutionLogDetail.vue";
 
 const props = defineProps(WorkDetailViewProps);
 
@@ -117,7 +124,7 @@ const initCodeEditor = async () => {
         aliases: ["pwsh"],
     });
 
-    const code = (script.value?.scripts ?? [])?.join("\n");
+    const code = (script.value?.script ?? [])?.join("\n");
 
     const codeModel = monaco.editor.createModel(code, "powershell");
 
@@ -145,7 +152,7 @@ const saveScripts = () => {
     const value = editor!.getModel()?.getValue() ?? "";
     const dto = new BuildScriptDto();
     dto.init(script.value);
-    dto.scripts = value?.split("\n") ?? [];
+    dto.script = value?.replace("\r", "").split("\n") ?? [];
     dto.workId = work.value.id;
 
     workClient
@@ -239,7 +246,41 @@ const run = async () => {
 
 const running: Ref<boolean> = ref(false);
 
+const workExecutionLogs = new WorkExecutionLogClientProxy();
+const logs: Ref<Array<WorkExecutionLogSummary>> = ref([]);
+const logsQuerying: Ref<boolean> = ref(false);
+const queryLogs = async () => {
+    try {
+        logsQuerying.value = true;
+        logs.value = await workExecutionLogs.getSummaries(work.value.id);
+    } finally {
+        logsQuerying.value = false;
+    }
+};
+const hasLogs = computed(() => {
+    return logs.value.length >= 0;
+});
+const showLogDetailModalTarget = "showLogDetailModalTarget";
+let showLogDetailModal: Modal;
+const logDetail: Ref<WorkExecutionLog> = ref(new WorkExecutionLog());
+const showDetail = async (logId: number) => {
+    try {
+        logsQuerying.value = true;
+        logDetail.value = await workExecutionLogs.getDetail(
+            work.value.id,
+            logId
+        );
+
+        showLogDetailModal.show();
+    } catch (e) {
+        logDetail.value = new WorkExecutionLog();
+    } finally {
+        logsQuerying.value = false;
+    }
+};
+
 onMounted(async () => {
+    showLogDetailModal = BsModalHelper.useModal(showLogDetailModalTarget);
     await loadDetail();
 });
 </script>
@@ -247,8 +288,8 @@ onMounted(async () => {
     <div class="row mb-3">
         <div class="col-12">
             <button
-                type="button"
                 class="btn btn-outline-primary"
+                type="button"
                 @click="backToWorkList"
             >
                 返回列表
@@ -262,27 +303,24 @@ onMounted(async () => {
                     <div class="row">
                         <div class="col-12">
                             <div class="mb-3">
-                                <label for="displayName" class="form-label">
-                                    名称
-                                </label>
-                                <input
+                                <label class="form-label" for="displayName"
+                                    >名称</label
+                                ><input
+                                    class="form-control"
                                     name="displayName"
                                     type="text"
-                                    class="form-control"
                                     v-model="work.displayName"
                                 />
                             </div>
                             <div class="mb-3">
                                 <label
-                                    for="externalConfigType"
                                     class="form-label"
-                                >
-                                    扩展配置
-                                </label>
-                                <select
-                                    name="externalConfigType"
-                                    id="externalConfigType"
+                                    for="externalConfigType"
+                                    >扩展配置</label
+                                ><select
                                     class="form-select"
+                                    id="externalConfigType"
+                                    name="externalConfigType"
                                     v-model="work.externalConfigType"
                                 >
                                     <option
@@ -293,35 +331,31 @@ onMounted(async () => {
                                     </option>
                                 </select>
                             </div>
-
                             <div class="mb-3 btn-group">
                                 <button
                                     class="btn btn-primary"
                                     @click="saveWork()"
                                 >
-                                    保存
-                                </button>
-                                <button
-                                    @click="run"
+                                    保存</button
+                                ><button
                                     class="btn btn-outline-primary"
+                                    @click="run"
                                     :disabled="running"
                                 >
-                                    <span>
-                                        运行
-                                        <Icon v-show="!running">
-                                            <Play16Regular />
-                                        </Icon>
-                                    </span>
-
-                                    <BsSpinner :show="running" size="sm">
-                                    </BsSpinner>
+                                    <span
+                                        >运行<Icon v-show="!running"
+                                            ><Play16Regular></Play16Regular></Icon></span
+                                    ><BsSpinner
+                                        :show="running"
+                                        size="sm"
+                                    ></BsSpinner>
                                 </button>
                             </div>
                         </div>
                     </div>
                 </bs-tab-item>
-                <bs-tab-item :id="ExternalConfigTab" label="扩展配置">
-                    <ExternalConfig
+                <bs-tab-item :id="ExternalConfigTab" label="扩展配置"
+                    ><ExternalConfig
                         :external-type="work.externalConfigType"
                         :work-id="work.id"
                     ></ExternalConfig>
@@ -333,8 +367,8 @@ onMounted(async () => {
                         </div>
                         <div class="col-12 mb-2">
                             <button
-                                type="button"
                                 class="btn btn-primary"
+                                type="button"
                                 @click="saveScripts"
                             >
                                 保存
@@ -345,38 +379,71 @@ onMounted(async () => {
                 <bs-tab-item :id="LogTab" label="执行日志">
                     <div class="row">
                         <div class="col-12">
+                            <button
+                                class="btn btn-primary"
+                                type="button"
+                                @click="queryLogs"
+                            >
+                                查询
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
                             <table class="table">
                                 <thead>
                                     <tr>
+                                        <th style="width: 50px">序号</th>
+                                        <th style="width: 100px">操作</th>
                                         <th>开始时间</th>
+                                        <th>结束时间</th>
                                         <th>耗时</th>
-                                        <th>结果</th>
+                                        <th style="width: 100px">执行状态</th>
+                                        <th style="width: 100px">执行结果</th>
                                     </tr>
                                 </thead>
-                                <tbody></tbody>
+                                <tbody>
+                                    <tr
+                                        v-for="(log, index) in logs"
+                                        :key="index"
+                                    >
+                                        <td>{{ index + 1 }}</td>
+                                        <td>
+                                            <button
+                                                type="button"
+                                                class="btn btn-sm btn-outline-primary"
+                                                @click="showDetail(log.id)"
+                                            >
+                                                查看详情
+                                            </button>
+                                        </td>
+                                        <td>{{ log.executeStartAt }}</td>
+                                        <td>{{ log.executeEndAt }}</td>
+                                        <td>{{ log.elapsedTime }}</td>
+                                        <td>{{ log.status }}</td>
+                                        <td>{{ log.success }}</td>
+                                    </tr>
+                                </tbody>
                             </table>
                         </div>
-                        <div class="col-12 empty-table text-muted" v-if="true">
+                        <div
+                            class="col-12 empty-table text-muted"
+                            v-if="!hasLogs"
+                        >
                             没有数据
                         </div>
                     </div>
                 </bs-tab-item>
-                <!-- <bs-tab-item id="test" label="测试websocket">
-                    <div class="row">
-                        <div class="col-12">
-                            <button
-                                type="button"
-                                class="btn btn-primary"
-                                @click="connectLspServer"
-                            >
-                                测试
-                            </button>
-                        </div>
-                    </div>
-                </bs-tab-item> -->
             </bs-tab>
         </div>
     </div>
+    <BsModal
+        :bs-target="showLogDetailModalTarget"
+        size="xl"
+        title="执行脚本及输出"
+    >
+        <WorkExecutionLogDetail :log="logDetail"></WorkExecutionLogDetail>
+    </BsModal>
 </template>
 <style scoped>
 .code-editor {

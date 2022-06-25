@@ -51,13 +51,13 @@ namespace WebHooks.Service.WorkRunner
 
         public async Task RunAsync(Work work)
         {
-            this.executionLog = await _executionLogs.Create(work.Id);
+            this.executionLog = await _executionLogs.CreateAsync(work.Id);
 
             try
             {
                 this.executionLog.Status = Data.Constants.WebExecutionStatus.Executing;   // 执行中
                 this.executionLog.ExecuteStartAt = DateTime.UtcNow;   // 开始时间
-                await _executionLogs.Update(this.executionLog);
+                await _executionLogs.UpdateAsync(this.executionLog);
 
                 // 内部执行
                 await InternalRun(work);
@@ -83,7 +83,7 @@ namespace WebHooks.Service.WorkRunner
                 this.executionLog.ExecuteEndAt = DateTime.UtcNow; // 结束时间
                 this.executionLog.Status = Data.Constants.WebExecutionStatus.Completed;  // 状态完成
                 this.executionLog.ElapsedTime = this.executionLog.ExecuteEndAt - executionLog.ExecuteStartAt;
-                await _executionLogs.Update(this.executionLog);
+                await _executionLogs.UpdateAsync(this.executionLog);
             }
         }
 
@@ -148,7 +148,7 @@ namespace WebHooks.Service.WorkRunner
                 }
 
                 this.executionLog.Script = script.Script;
-                await _executionLogs.Update(this.executionLog);
+                await _executionLogs.UpdateAsync(this.executionLog);
 
                 // 执行脚本
                 var starupInfo = new WebShellStartupInfo(work.DisplayName ?? "default", work.WorkingDirectory!, new Version(1, 0, 0), WebShellTypes.PowerShell);

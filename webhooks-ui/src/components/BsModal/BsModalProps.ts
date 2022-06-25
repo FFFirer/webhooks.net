@@ -22,6 +22,10 @@ const BsModalProps = {
         type: String,
         default: "",
     },
+    size: {
+        type: String,
+        default: "",
+    },
 };
 
 export default BsModalProps;

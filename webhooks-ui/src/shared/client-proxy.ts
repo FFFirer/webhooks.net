@@ -6,6 +6,7 @@ import {
     GroupDto,
     SettingClient,
     WorkClient,
+    WorkExecutionLogClient,
     WorkRunnerClient,
 } from "./webapi/client";
 
@@ -67,10 +68,17 @@ export class WorkRunnerClientProxy extends WorkRunnerClient {
     }
 }
 
+export class WorkExecutionLogClientProxy extends WorkExecutionLogClient {
+    constructor() {
+        super(API_URL, fetchProxy);
+    }
+}
+
 type ClientType =
     | GroupClient
     | WorkClient
     | GiteeConfigClient
     | GitConfigClient
     | SettingClient
-    | WorkRunnerClient;
+    | WorkRunnerClient
+    | WorkExecutionLogClient;

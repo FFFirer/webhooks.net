@@ -730,6 +730,119 @@ export class WorkClient {
     }
 }
 
+export class WorkExecutionLogClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "https://localhost:7029";
+    }
+
+    getSummaries(workId: string): Promise<WorkExecutionLogSummary[]> {
+        let url_ = this.baseUrl + "/api/WorkExecutionLog/GetSummaries/{workId}";
+        if (workId === undefined || workId === null)
+            throw new Error("The parameter 'workId' must be defined.");
+        url_ = url_.replace("{workId}", encodeURIComponent("" + workId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetSummaries(_response);
+        });
+    }
+
+    protected processGetSummaries(response: Response): Promise<WorkExecutionLogSummary[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if(resultData200['__wrapped'])
+            {
+                if(resultData200.success){
+                    resultData200 = resultData200.result;
+                }
+                else{
+                    throwException(resultData200.error, status, _responseText, _headers)
+                }
+            }
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(WorkExecutionLogSummary.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("服务器发生意外错误。", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<WorkExecutionLogSummary[]>(null as any);
+    }
+
+    getDetail(workId: string, logId: number): Promise<WorkExecutionLog> {
+        let url_ = this.baseUrl + "/api/WorkExecutionLog/GetDetail/{workId}/{logId}";
+        if (workId === undefined || workId === null)
+            throw new Error("The parameter 'workId' must be defined.");
+        url_ = url_.replace("{workId}", encodeURIComponent("" + workId));
+        if (logId === undefined || logId === null)
+            throw new Error("The parameter 'logId' must be defined.");
+        url_ = url_.replace("{logId}", encodeURIComponent("" + logId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetDetail(_response);
+        });
+    }
+
+    protected processGetDetail(response: Response): Promise<WorkExecutionLog> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if(resultData200['__wrapped'])
+            {
+                if(resultData200.success){
+                    resultData200 = resultData200.result;
+                }
+                else{
+                    throwException(resultData200.error, status, _responseText, _headers)
+                }
+            }
+            result200 = WorkExecutionLog.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("服务器发生意外错误。", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<WorkExecutionLog>(null as any);
+    }
+}
+
 export class WorkRunnerClient {
     private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
     private baseUrl: string;
@@ -1565,12 +1678,12 @@ export interface IEntityOfInteger {
 export class BuildScript extends EntityOfInteger implements IBuildScript {
     workId!: string;
     sortNumber!: number;
-    scripts!: string[];
+    script!: string[];
 
     constructor(data?: IBuildScript) {
         super(data);
         if (!data) {
-            this.scripts = [];
+            this.script = [];
         }
     }
 
@@ -1579,10 +1692,10 @@ export class BuildScript extends EntityOfInteger implements IBuildScript {
         if (_data) {
             this.workId = _data["workId"];
             this.sortNumber = _data["sortNumber"];
-            if (Array.isArray(_data["scripts"])) {
-                this.scripts = [] as any;
-                for (let item of _data["scripts"])
-                    this.scripts!.push(item);
+            if (Array.isArray(_data["script"])) {
+                this.script = [] as any;
+                for (let item of _data["script"])
+                    this.script!.push(item);
             }
         }
     }
@@ -1598,10 +1711,10 @@ export class BuildScript extends EntityOfInteger implements IBuildScript {
         data = typeof data === 'object' ? data : {};
         data["workId"] = this.workId;
         data["sortNumber"] = this.sortNumber;
-        if (Array.isArray(this.scripts)) {
-            data["scripts"] = [];
-            for (let item of this.scripts)
-                data["scripts"].push(item);
+        if (Array.isArray(this.script)) {
+            data["script"] = [];
+            for (let item of this.script)
+                data["script"].push(item);
         }
         super.toJSON(data);
         return data;
@@ -1611,18 +1724,18 @@ export class BuildScript extends EntityOfInteger implements IBuildScript {
 export interface IBuildScript extends IEntityOfInteger {
     workId: string;
     sortNumber: number;
-    scripts: string[];
+    script: string[];
 }
 
 export class BuildScriptDto extends DtoOfInteger implements IBuildScriptDto {
     workId!: string;
     sortNumber!: number;
-    scripts!: string[];
+    script!: string[];
 
     constructor(data?: IBuildScriptDto) {
         super(data);
         if (!data) {
-            this.scripts = [];
+            this.script = [];
         }
     }
 
@@ -1631,10 +1744,10 @@ export class BuildScriptDto extends DtoOfInteger implements IBuildScriptDto {
         if (_data) {
             this.workId = _data["workId"];
             this.sortNumber = _data["sortNumber"];
-            if (Array.isArray(_data["scripts"])) {
-                this.scripts = [] as any;
-                for (let item of _data["scripts"])
-                    this.scripts!.push(item);
+            if (Array.isArray(_data["script"])) {
+                this.script = [] as any;
+                for (let item of _data["script"])
+                    this.script!.push(item);
             }
         }
     }
@@ -1650,10 +1763,10 @@ export class BuildScriptDto extends DtoOfInteger implements IBuildScriptDto {
         data = typeof data === 'object' ? data : {};
         data["workId"] = this.workId;
         data["sortNumber"] = this.sortNumber;
-        if (Array.isArray(this.scripts)) {
-            data["scripts"] = [];
-            for (let item of this.scripts)
-                data["scripts"].push(item);
+        if (Array.isArray(this.script)) {
+            data["script"] = [];
+            for (let item of this.script)
+                data["script"].push(item);
         }
         super.toJSON(data);
         return data;
@@ -1663,7 +1776,282 @@ export class BuildScriptDto extends DtoOfInteger implements IBuildScriptDto {
 export interface IBuildScriptDto extends IDtoOfInteger {
     workId: string;
     sortNumber: number;
-    scripts: string[];
+    script: string[];
+}
+
+export class DtoOfLong implements IDtoOfLong {
+    id!: number;
+
+    constructor(data?: IDtoOfLong) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+        }
+    }
+
+    static fromJS(data: any): DtoOfLong {
+        data = typeof data === 'object' ? data : {};
+        let result = new DtoOfLong();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        return data;
+    }
+}
+
+export interface IDtoOfLong {
+    id: number;
+}
+
+export class WorkExecutionLogSummary extends DtoOfLong implements IWorkExecutionLogSummary {
+    workId!: string;
+    executeStartAt?: Date | undefined;
+    executeEndAt?: Date | undefined;
+    elapsedTime?: string | undefined;
+    status!: WebExecutionStatus;
+    success?: boolean | undefined;
+
+    constructor(data?: IWorkExecutionLogSummary) {
+        super(data);
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.workId = _data["workId"];
+            this.executeStartAt = _data["executeStartAt"] ? new Date(_data["executeStartAt"].toString()) : <any>undefined;
+            this.executeEndAt = _data["executeEndAt"] ? new Date(_data["executeEndAt"].toString()) : <any>undefined;
+            this.elapsedTime = _data["elapsedTime"];
+            this.status = _data["status"];
+            this.success = _data["success"];
+        }
+    }
+
+    static fromJS(data: any): WorkExecutionLogSummary {
+        data = typeof data === 'object' ? data : {};
+        let result = new WorkExecutionLogSummary();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["workId"] = this.workId;
+        data["executeStartAt"] = this.executeStartAt ? this.executeStartAt.toISOString() : <any>undefined;
+        data["executeEndAt"] = this.executeEndAt ? this.executeEndAt.toISOString() : <any>undefined;
+        data["elapsedTime"] = this.elapsedTime;
+        data["status"] = this.status;
+        data["success"] = this.success;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IWorkExecutionLogSummary extends IDtoOfLong {
+    workId: string;
+    executeStartAt?: Date | undefined;
+    executeEndAt?: Date | undefined;
+    elapsedTime?: string | undefined;
+    status: WebExecutionStatus;
+    success?: boolean | undefined;
+}
+
+export enum WebExecutionStatus {
+    Ready = 1,
+    Executing = 2,
+    Completed = 3,
+}
+
+export class EntityOfLong implements IEntityOfLong {
+    id!: number;
+    createdAt?: Date | undefined;
+    modifedAt?: Date | undefined;
+
+    constructor(data?: IEntityOfLong) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.createdAt = _data["createdAt"] ? new Date(_data["createdAt"].toString()) : <any>undefined;
+            this.modifedAt = _data["modifedAt"] ? new Date(_data["modifedAt"].toString()) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): EntityOfLong {
+        data = typeof data === 'object' ? data : {};
+        let result = new EntityOfLong();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["createdAt"] = this.createdAt ? this.createdAt.toISOString() : <any>undefined;
+        data["modifedAt"] = this.modifedAt ? this.modifedAt.toISOString() : <any>undefined;
+        return data;
+    }
+}
+
+export interface IEntityOfLong {
+    id: number;
+    createdAt?: Date | undefined;
+    modifedAt?: Date | undefined;
+}
+
+export class WorkExecutionLog extends EntityOfLong implements IWorkExecutionLog {
+    workId!: string;
+    executeStartAt?: Date | undefined;
+    executeEndAt?: Date | undefined;
+    elapsedTime?: string | undefined;
+    status!: WebExecutionStatus;
+    success?: boolean | undefined;
+    exception?: string | undefined;
+    script?: string[] | undefined;
+    results?: ShellExecutedResultLine[] | undefined;
+
+    constructor(data?: IWorkExecutionLog) {
+        super(data);
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.workId = _data["workId"];
+            this.executeStartAt = _data["executeStartAt"] ? new Date(_data["executeStartAt"].toString()) : <any>undefined;
+            this.executeEndAt = _data["executeEndAt"] ? new Date(_data["executeEndAt"].toString()) : <any>undefined;
+            this.elapsedTime = _data["elapsedTime"];
+            this.status = _data["status"];
+            this.success = _data["success"];
+            this.exception = _data["exception"];
+            if (Array.isArray(_data["script"])) {
+                this.script = [] as any;
+                for (let item of _data["script"])
+                    this.script!.push(item);
+            }
+            if (Array.isArray(_data["results"])) {
+                this.results = [] as any;
+                for (let item of _data["results"])
+                    this.results!.push(ShellExecutedResultLine.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): WorkExecutionLog {
+        data = typeof data === 'object' ? data : {};
+        let result = new WorkExecutionLog();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["workId"] = this.workId;
+        data["executeStartAt"] = this.executeStartAt ? this.executeStartAt.toISOString() : <any>undefined;
+        data["executeEndAt"] = this.executeEndAt ? this.executeEndAt.toISOString() : <any>undefined;
+        data["elapsedTime"] = this.elapsedTime;
+        data["status"] = this.status;
+        data["success"] = this.success;
+        data["exception"] = this.exception;
+        if (Array.isArray(this.script)) {
+            data["script"] = [];
+            for (let item of this.script)
+                data["script"].push(item);
+        }
+        if (Array.isArray(this.results)) {
+            data["results"] = [];
+            for (let item of this.results)
+                data["results"].push(item.toJSON());
+        }
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export interface IWorkExecutionLog extends IEntityOfLong {
+    workId: string;
+    executeStartAt?: Date | undefined;
+    executeEndAt?: Date | undefined;
+    elapsedTime?: string | undefined;
+    status: WebExecutionStatus;
+    success?: boolean | undefined;
+    exception?: string | undefined;
+    script?: string[] | undefined;
+    results?: ShellExecutedResultLine[] | undefined;
+}
+
+export class ShellExecutedResultLine implements IShellExecutedResultLine {
+    level!: ResultLineLevel;
+    message!: string;
+    stackTrace?: string | undefined;
+    exception?: string | undefined;
+
+    constructor(data?: IShellExecutedResultLine) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.level = _data["level"];
+            this.message = _data["message"];
+            this.stackTrace = _data["stackTrace"];
+            this.exception = _data["exception"];
+        }
+    }
+
+    static fromJS(data: any): ShellExecutedResultLine {
+        data = typeof data === 'object' ? data : {};
+        let result = new ShellExecutedResultLine();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["level"] = this.level;
+        data["message"] = this.message;
+        data["stackTrace"] = this.stackTrace;
+        data["exception"] = this.exception;
+        return data;
+    }
+}
+
+export interface IShellExecutedResultLine {
+    level: ResultLineLevel;
+    message: string;
+    stackTrace?: string | undefined;
+    exception?: string | undefined;
+}
+
+export enum ResultLineLevel {
+    Debug = 1,
+    Info = 2,
+    Warning = 3,
+    Error = 4,
 }
 
 export class ApiException extends Error {
