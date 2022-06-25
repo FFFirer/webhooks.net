@@ -1,8 +1,12 @@
 using WebHooks.API;
 using WebHooks.API.Filters;
 using WebHooks.API.ResultWrapper;
+using WebHooks.Data.AdditionalWork.Git;
 using WebHooks.Data.Extensions;
+using WebHooks.Module;
+using WebHooks.Service;
 using WebHooks.Service.Extensions;
+using WebHooks.Service.Modules;
 
 var DefaultCorsPolicyName = "default";
 var builder = WebApplication.CreateBuilder(args);
@@ -30,6 +34,9 @@ builder.Services.AddPgsqlDataContext(connectionString);
 builder.Services.AddScoped<ApiExceptionFilter>();
 builder.Services.AddScoped<ResultWrapperFilter>();
 builder.Services.AddScoped<IResultWrapper, CustomResultWrapper>();
+
+builder.Services.InstallModule<WorkRunnerModule>();
+builder.Services.InstallModule<ExternalRunnerModule>();   // ∞≤◊∞¿©’π≈‰÷√ƒ£øÈ
 
 // øÁ”Ú≈‰÷√
 var allowOrigins = new List<string>();

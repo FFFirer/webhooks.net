@@ -2,8 +2,13 @@
 import { defineAsyncComponent, onMounted, ref, Ref } from "vue";
 import BsTab from "@/components/BsTabs/BsTab.vue";
 import BsTabItem from "@/components/BsTabs/BsTabItem.vue";
+import BsSpinner from "@/components/BsSpinner/BsSpinner.vue";
 import { useGlobalMessage } from "@/components/GlobalMessage/GlobalMessageProxy";
-import { GiteeConfigClientProxy, WorkClientProxy } from "@/shared/client-proxy";
+import {
+    GiteeConfigClientProxy,
+    WorkClientProxy,
+    WorkRunnerClientProxy,
+} from "@/shared/client-proxy";
 import {
     BuildScript,
     BuildScriptDto,
@@ -30,6 +35,8 @@ import { computed } from "@vue/reactivity";
 
 import { Play16Regular } from "@vicons/fluent";
 import { Icon, IconConfigProvider } from "@vicons/utils";
+
+import { alertException } from "@/shared/helpers/ExceptionHelper";
 
 const props = defineProps(WorkDetailViewProps);
 
@@ -58,6 +65,7 @@ const handleTabActived = (id: string) => {
 
 const workClient = new WorkClientProxy();
 const giteeConfigClient = new GiteeConfigClientProxy();
+const workRunner = new WorkRunnerClientProxy();
 
 const work: Ref<WorkDto> = ref(new WorkDto());
 
@@ -187,20 +195,6 @@ const giteeWebHookEvents: Array<{ value: string; label: string }> = [
     },
 ];
 
-// const connectLspServer = () => {
-//     const ws = new WebSocket("ws://127.0.0.1:3341/lsp");
-//     rpc.listen({
-//         webSocket: ws,
-//         onConnection: (connection: rpc.MessageConnection) => {
-//             const notification = new rpc.NotificationType<string, void>(
-//                 "Test Notification"
-//             );
-//             connection.listen();
-//             connection.sendNotification(notification, "hello world");
-//         },
-//     });
-// };
-
 const externalConfigTypes: Array<{ label: string; value: string }> = [
     {
         label: "无",
@@ -230,9 +224,20 @@ const externalConfigLabel = computed(() => {
 
 const activedTab: Ref<string> = ref("");
 
-const run = () => {
-    activedTab.value = LogTab;
+const run = async () => {
+    try {
+        running.value = true;
+        await workRunner.run(work.value.id);
+    } catch (e) {
+        alertException(e, (msg) => {
+            globalMessage.show(msg);
+        });
+    } finally {
+        running.value = false;
+    }
 };
+
+const running: Ref<boolean> = ref(false);
 
 onMounted(async () => {
     await loadDetail();
@@ -299,11 +304,17 @@ onMounted(async () => {
                                 <button
                                     @click="run"
                                     class="btn btn-outline-primary"
+                                    :disabled="running"
                                 >
-                                    <span>运行</span>
-                                    <Icon>
-                                        <Play16Regular />
-                                    </Icon>
+                                    <span>
+                                        运行
+                                        <Icon v-show="!running">
+                                            <Play16Regular />
+                                        </Icon>
+                                    </span>
+
+                                    <BsSpinner :show="running" size="sm">
+                                    </BsSpinner>
                                 </button>
                             </div>
                         </div>

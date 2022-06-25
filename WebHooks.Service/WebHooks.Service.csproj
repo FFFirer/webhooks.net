@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\WebHooks.Data\WebHooks.Data.csproj" />
+    <ProjectReference Include="..\WebHooks.Module\WebHooks.Module.csproj" />
     <ProjectReference Include="..\WebHooks.Shared\WebHooks.Shared.csproj" />
   </ItemGroup>
 
@@ -16,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="LibGit2Sharp" Version="0.27.0-preview-0182" />
     <PackageReference Include="Mapster" Version="7.4.0-pre02" />
   </ItemGroup>
 

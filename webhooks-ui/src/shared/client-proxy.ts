@@ -6,6 +6,7 @@ import {
     GroupDto,
     SettingClient,
     WorkClient,
+    WorkRunnerClient,
 } from "./webapi/client";
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -60,9 +61,16 @@ export class SettingClientProxy extends SettingClient {
     }
 }
 
+export class WorkRunnerClientProxy extends WorkRunnerClient {
+    constructor() {
+        super(API_URL, fetchProxy);
+    }
+}
+
 type ClientType =
     | GroupClient
     | WorkClient
     | GiteeConfigClient
     | GitConfigClient
-    | SettingClient;
+    | SettingClient
+    | WorkRunnerClient;

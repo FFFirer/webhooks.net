@@ -114,7 +114,7 @@ const edit = (work: WorkDto) => {
 /**移除 */
 const remove = async (work: WorkDto) => {
     const input = new RemoveWorkInput({
-        id: work.id,
+        workId: work.id,
     });
 
     await workClient.remove(input);

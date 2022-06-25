@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using WebHooks.Data.Entities;
 using WebHooks.Data.Repositories.Interfaces;
 using WebHooks.Service.Dtos;
+using WebHooks.Service.Exceptions;
 using WebHooks.Service.Interfaces;
 using WebHooks.Shared.Paging;
 
@@ -16,10 +17,12 @@ namespace WebHooks.Service
     public class WorkService : IWorkService
     {
         private readonly IWorkRepository workRepo;
+        private readonly ISettingService _settings;
 
-        public WorkService(IWorkRepository workRepository)
+        public WorkService(IWorkRepository workRepository, ISettingService settingService)
         {
             this.workRepo = workRepository;
+            this._settings = settingService;
         }
 
         public async Task<WorkDto?> GetAsync(Guid id)
@@ -77,6 +80,16 @@ namespace WebHooks.Service
             if (work == null)
             {
                 return;
+            }
+
+            if (string.IsNullOrEmpty(work.WorkingDirectory))
+            {
+                var baseSetting = await _settings.GetBasicSettingAsync();
+
+                if(baseSetting.BaseWorkDirectory == null)
+                {
+                    throw new WorkRunningException($"请设置基础的工作目录");
+                }
             }
 
             if (work.Id == Guid.Empty)

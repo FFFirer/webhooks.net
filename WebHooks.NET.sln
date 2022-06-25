@@ -35,7 +35,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebHooks.EntityFrameworkCor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebHooks.API", "WebHooks.API\WebHooks.API.csproj", "{A7742BB7-8416-437F-8D04-C8F60D786037}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gitee.WebHooks", "Gitee.WebHooks\Gitee.WebHooks.csproj", "{F89D3785-E314-4FD5-A37A-9557345A6839}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gitee.WebHooks", "Gitee.WebHooks\Gitee.WebHooks.csproj", "{F89D3785-E314-4FD5-A37A-9557345A6839}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebHooks.Module", "WebHooks.Module\WebHooks.Module.csproj", "{1DF68F09-54B0-4B53-B4CF-CD84D10736E1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -107,6 +109,10 @@ Global
 		{F89D3785-E314-4FD5-A37A-9557345A6839}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F89D3785-E314-4FD5-A37A-9557345A6839}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F89D3785-E314-4FD5-A37A-9557345A6839}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1DF68F09-54B0-4B53-B4CF-CD84D10736E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DF68F09-54B0-4B53-B4CF-CD84D10736E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DF68F09-54B0-4B53-B4CF-CD84D10736E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DF68F09-54B0-4B53-B4CF-CD84D10736E1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -118,6 +124,7 @@ Global
 		{8B2366E3-CCDF-428E-8B94-96859E413900} = {F1AADCB8-690A-48C0-938B-8FD832A5E902}
 		{A7742BB7-8416-437F-8D04-C8F60D786037} = {F1AADCB8-690A-48C0-938B-8FD832A5E902}
 		{F89D3785-E314-4FD5-A37A-9557345A6839} = {F1AADCB8-690A-48C0-938B-8FD832A5E902}
+		{1DF68F09-54B0-4B53-B4CF-CD84D10736E1} = {F1AADCB8-690A-48C0-938B-8FD832A5E902}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {09193658-FCCE-403F-B81C-B7CDE8C8B4F9}
