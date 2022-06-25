@@ -32,7 +32,14 @@ namespace WebHooks.Data.DbContexts
 
             modelBuilder.Entity<BuildScript>(builder =>
             {
-                builder.Property(a => a.Scripts).HasJsonConversion();
+                builder.Property(a => a.Script).HasJsonConversion();
+            });
+
+            modelBuilder.Entity<WorkExecutionLog>(builder =>
+            {
+                builder.Property(a => a.Script).HasJsonConversion();
+                builder.Property(a => a.Results).HasJsonConversion();
+                builder.Property(a => a.Status).HasConversion<string>();
             });
         }
 
@@ -40,9 +47,8 @@ namespace WebHooks.Data.DbContexts
         public virtual DbSet<Work> Works => Set<Work>();
         public virtual DbSet<GiteeWebhookConfig> GiteeConfigs => Set<GiteeWebhookConfig>();
         public virtual DbSet<BuildScript> BuildScripts => Set<BuildScript>();
-
         public virtual DbSet<GitConfig> GitConfigs => Set<GitConfig>();
-
         public virtual DbSet<Setting> Settings => Set<Setting>();
+        public virtual DbSet<WorkExecutionLog> WorkExecutionLogs => Set<WorkExecutionLog>();
     }
 }

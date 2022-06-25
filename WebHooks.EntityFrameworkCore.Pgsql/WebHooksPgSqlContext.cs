@@ -28,7 +28,7 @@ namespace WebHooks.EntityFrameworkCore.Pgsql
         {
             if (!File.Exists(projectFilePath))
             {
-                throw new Exception($"未在[{projectFilePath}]找到项目文件");
+                throw new FileNotFoundException($"未在[{projectFilePath}]找到项目文件");
             }
 
             var builder = new ConfigurationBuilder();
@@ -44,7 +44,7 @@ namespace WebHooks.EntityFrameworkCore.Pgsql
 
                 if(value == null)
                 {
-                    throw new Exception("没有在项目文件中找到用户机密配置节点");
+                    throw new FileNotFoundException("没有在项目文件中找到用户机密配置节点");
                 }
 
                 userSecretId = value.InnerText

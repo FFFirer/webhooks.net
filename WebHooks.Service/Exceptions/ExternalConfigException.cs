@@ -13,6 +13,7 @@ namespace WebHooks.Service.Exceptions
     [Serializable]
     public class ExternalConfigException : Exception
     {
+
         public ExternalConfigException(string message):base(message)
         {
 

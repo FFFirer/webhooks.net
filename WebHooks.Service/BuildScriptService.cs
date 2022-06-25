@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Runtime.CompilerServices;
 using WebHooks.Data.Entities;
 using WebHooks.Data.Repositories.Interfaces;
 using WebHooks.Service.Interfaces;

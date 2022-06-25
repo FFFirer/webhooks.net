@@ -4,6 +4,7 @@ using WebHooks.API.ResultWrapper;
 using WebHooks.Data.AdditionalWork.Git;
 using WebHooks.Data.Extensions;
 using WebHooks.Module;
+using WebHooks.Scripts;
 using WebHooks.Service;
 using WebHooks.Service.Extensions;
 using WebHooks.Service.Modules;

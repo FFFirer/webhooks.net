@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\WebHooks.Data\WebHooks.Data.csproj" />
     <ProjectReference Include="..\WebHooks.Module\WebHooks.Module.csproj" />
+    <ProjectReference Include="..\WebHooks.Scripts\WebHooks.Scripts.csproj" />
     <ProjectReference Include="..\WebHooks.Shared\WebHooks.Shared.csproj" />
   </ItemGroup>
 

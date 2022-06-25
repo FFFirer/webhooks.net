@@ -1,11 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WebHooks.Module;
 using WebHooks.Service.WorkRunner;
+using WebHooks.Service.Extensions;
+using WebHooks.Scripts;
 
 namespace WebHooks.Service
 {
@@ -14,6 +11,7 @@ namespace WebHooks.Service
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IWorkRunner, WorkRunner.WorkRunner>();
+            services.InstallModule<WebShellModule>();
         }
     }
 }

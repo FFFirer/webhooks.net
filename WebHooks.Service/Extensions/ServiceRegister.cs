@@ -28,6 +28,8 @@ namespace WebHooks.Service.Extensions
             services.AddScoped<IGitConfigRepository, GitConfigRepository>();
 
             services.AddScoped<ISettingRepository, SettingRepository>();
+
+            services.AddScoped<IWorkExecutionLogRepository, WorkExecutionLogRepository>();
             return services;
         }
 
@@ -42,6 +44,8 @@ namespace WebHooks.Service.Extensions
             services.AddScoped<IGitConfigService, GitConfigService>();
 
             services.AddScoped<ISettingService, SettingService>();
+
+            services.AddScoped<IWorkExecutionLogService, WorkExecutionLogService>();
             return services;
         }
     }

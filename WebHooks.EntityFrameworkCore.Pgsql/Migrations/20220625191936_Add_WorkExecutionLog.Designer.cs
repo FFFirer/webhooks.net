@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WebHooks.EntityFrameworkCore.Pgsql;
@@ -11,9 +12,10 @@ using WebHooks.EntityFrameworkCore.Pgsql;
 namespace WebHooks.EntityFrameworkCore.Pgsql.Migrations
 {
     [DbContext(typeof(WebHooksPgSqlContext))]
-    partial class WebHooksPgSqlContextModelSnapshot : ModelSnapshot
+    [Migration("20220625191936_Add_WorkExecutionLog")]
+    partial class Add_WorkExecutionLog
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -70,7 +72,7 @@ namespace WebHooks.EntityFrameworkCore.Pgsql.Migrations
                     b.Property<DateTime?>("ModifedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Script")
+                    b.Property<string>("Scripts")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -184,9 +186,6 @@ namespace WebHooks.EntityFrameworkCore.Pgsql.Migrations
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<TimeSpan?>("ElapsedTime")
-                        .HasColumnType("interval");
-
                     b.Property<string>("Exception")
                         .HasColumnType("text");
 
@@ -200,9 +199,6 @@ namespace WebHooks.EntityFrameworkCore.Pgsql.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Results")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Script")
                         .HasColumnType("text");
 
                     b.Property<string>("Status")
