@@ -44,6 +44,7 @@ import { Modal } from "bootstrap";
 import BsModalHelper from "@/components/BsModal/BsModalHelper";
 import BsModal from "@/components/BsModal/BsModal.vue";
 import WorkExecutionLogDetail from "./WorkExecutionLogDetail.vue";
+import { externalConfigTypes } from "./WorkBasic";
 
 const props = defineProps(WorkDetailViewProps);
 
@@ -202,23 +203,6 @@ const giteeWebHookEvents: Array<{ value: string; label: string }> = [
     },
 ];
 
-import { externalConfigTypes } from "./WorkBasic";
-
-// const externalConfigTypes: Array<{ label: string; value: string }> = [
-//     {
-//         label: "无",
-//         value: "",
-//     },
-//     {
-//         label: "Git",
-//         value: "git",
-//     },
-//     {
-//         label: "Gitee",
-//         value: "gitee",
-//     },
-// ];
-
 const router = useRouter();
 const backToWorkList = () => {
     router.push({
@@ -346,23 +330,25 @@ onMounted(async () => {
                                     @click="run"
                                     :disabled="running"
                                 >
-                                    <span
-                                        >运行<Icon v-show="!running"
-                                            ><Play16Regular></Play16Regular></Icon></span
-                                    ><BsSpinner
-                                        :show="running"
-                                        size="sm"
-                                    ></BsSpinner>
+                                    <span>
+                                        运行
+                                        <Icon v-show="!running">
+                                            <Play16Regular> </Play16Regular>
+                                        </Icon>
+                                    </span>
+                                    <BsSpinner :show="running" size="sm">
+                                    </BsSpinner>
                                 </button>
                             </div>
                         </div>
                     </div>
                 </bs-tab-item>
-                <bs-tab-item :id="ExternalConfigTab" label="扩展配置"
-                    ><ExternalConfig
+                <bs-tab-item :id="ExternalConfigTab" label="扩展配置">
+                    <ExternalConfig
                         :external-type="work.externalConfigType"
                         :work-id="work.id"
-                    ></ExternalConfig>
+                    >
+                    </ExternalConfig>
                 </bs-tab-item>
                 <bs-tab-item :id="ScriptsTab" label="脚本设置">
                     <div class="row">
@@ -426,6 +412,11 @@ onMounted(async () => {
                                         <td>{{ log.elapsedTime }}</td>
                                         <td>{{ log.status }}</td>
                                         <td>{{ log.success }}</td>
+                                    </tr>
+                                    <tr v-if="logs.length == 0">
+                                        <td class="text-center" colspan="7">
+                                            没有数据
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
