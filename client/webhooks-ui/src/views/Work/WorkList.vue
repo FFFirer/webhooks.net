@@ -40,6 +40,7 @@ const pageSize: Ref<number> = ref(20);
 const total: Ref<number> = ref(0);
 
 const isQuerying: Ref<boolean> = ref(false);
+
 /**
  * 查询
  * @param page 页码
@@ -135,6 +136,8 @@ const showDetail = (id: string) => {
     });
 };
 
+import { externalConfigTypes } from "./WorkBasic";
+
 onMounted(async () => {
     editWorkModal = BsModalHelper.useModal(editWorkModalTarget);
 
@@ -228,7 +231,7 @@ onMounted(async () => {
         </template>
         <div class="row">
             <div class="col">
-                <div class="form-group">
+                <div class="form-group mb-3">
                     <label for="name" class="form-label">名称</label>
                     <input
                         type="text"
@@ -236,6 +239,24 @@ onMounted(async () => {
                         placeholder="请输入..."
                         v-model="editingWork.displayName"
                     />
+                </div>
+                <div class="form-group">
+                    <label for="externalConfigType" class="form-label">
+                        工作项类型
+                    </label>
+                    <select
+                        class="form-select"
+                        id="externalConfigType"
+                        name="externalConfigType"
+                        v-model="editingWork.externalConfigType"
+                    >
+                        <option
+                            v-for="t in externalConfigTypes"
+                            :value="t.value"
+                        >
+                            {{ t.label }}
+                        </option>
+                    </select>
                 </div>
             </div>
         </div>

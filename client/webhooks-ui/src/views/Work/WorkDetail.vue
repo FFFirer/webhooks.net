@@ -202,20 +202,22 @@ const giteeWebHookEvents: Array<{ value: string; label: string }> = [
     },
 ];
 
-const externalConfigTypes: Array<{ label: string; value: string }> = [
-    {
-        label: "无",
-        value: "",
-    },
-    {
-        label: "Git",
-        value: "git",
-    },
-    {
-        label: "Gitee",
-        value: "gitee",
-    },
-];
+import { externalConfigTypes } from "./WorkBasic";
+
+// const externalConfigTypes: Array<{ label: string; value: string }> = [
+//     {
+//         label: "无",
+//         value: "",
+//     },
+//     {
+//         label: "Git",
+//         value: "git",
+//     },
+//     {
+//         label: "Gitee",
+//         value: "gitee",
+//     },
+// ];
 
 const router = useRouter();
 const backToWorkList = () => {
@@ -316,8 +318,10 @@ onMounted(async () => {
                                 <label
                                     class="form-label"
                                     for="externalConfigType"
-                                    >扩展配置</label
-                                ><select
+                                >
+                                    扩展配置
+                                </label>
+                                <select
                                     class="form-select"
                                     id="externalConfigType"
                                     name="externalConfigType"
