@@ -7,13 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebHooks.Gitee", "WebHooks.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebHooks.Models", "WebHooks.Models\WebHooks.Models.csproj", "{B072B1E7-D292-4CAD-BD42-9A1858D839F4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebHooks.GiteeTests", "WebHooks.GiteeTests\WebHooks.GiteeTests.csproj", "{3441975A-6F9B-42EC-B64A-C032467982BB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebHooks.GiteeTests", "test\WebHooks.GiteeTests\WebHooks.GiteeTests.csproj", "{3441975A-6F9B-42EC-B64A-C032467982BB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebHooks.Core", "WebHooks.Core\WebHooks.Core.csproj", "{9CDAE60F-0969-42F6-9D02-F26F7335F27B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PowershellPreSearch", "PowershellPreSearch\PowershellPreSearch.csproj", "{810E904E-7BBB-43F4-A27F-BD5FE715B58C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebHooks.CoreTests", "WebHooks.CoreTests\WebHooks.CoreTests.csproj", "{A04DDDDC-EC3B-4CAB-A212-4BE7319FDBF6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebHooks.CoreTests", "test\WebHooks.CoreTests\WebHooks.CoreTests.csproj", "{A04DDDDC-EC3B-4CAB-A212-4BE7319FDBF6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo01", "Demo01\Demo01.csproj", "{6E5819FA-F39E-4155-8BBC-6926D8A70C68}"
 EndProject
@@ -21,27 +21,27 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebHooks.PowerShell", "WebH
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebHooks.PowerShell.CommandLine", "WebHooks.PowerShell.CommandLine\WebHooks.PowerShell.CommandLine.csproj", "{9F89D85D-8C0D-41D2-B96E-018C5BA9AD73}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebHooks.EntityFrameworkCore.Pgsql", "WebHooks.EntityFrameworkCore.Pgsql\WebHooks.EntityFrameworkCore.Pgsql.csproj", "{B9526366-F6F1-4402-A891-99FF742D947F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebHooks.EntityFrameworkCore.Pgsql", "src\WebHooks.EntityFrameworkCore.Pgsql\WebHooks.EntityFrameworkCore.Pgsql.csproj", "{B9526366-F6F1-4402-A891-99FF742D947F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F1AADCB8-690A-48C0-938B-8FD832A5E902}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebHooks.Service", "WebHooks.Service\WebHooks.Service.csproj", "{6A038682-8639-465D-A9EC-3C95EB3B87E2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebHooks.Service", "src\WebHooks.Service\WebHooks.Service.csproj", "{6A038682-8639-465D-A9EC-3C95EB3B87E2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebHooks.Data", "WebHooks.Data\WebHooks.Data.csproj", "{A66B2086-A34E-4E30-B31E-1BDB1FC11A2A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebHooks.Data", "src\WebHooks.Data\WebHooks.Data.csproj", "{A66B2086-A34E-4E30-B31E-1BDB1FC11A2A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebHooks.Shared", "WebHooks.Shared\WebHooks.Shared.csproj", "{8B2366E3-CCDF-428E-8B94-96859E413900}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebHooks.Shared", "src\WebHooks.Shared\WebHooks.Shared.csproj", "{8B2366E3-CCDF-428E-8B94-96859E413900}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebHooks.EntityFrameworkCore.PgsqlTests", "WebHooks.EntityFrameworkCore.PgsqlTests\WebHooks.EntityFrameworkCore.PgsqlTests.csproj", "{3EDABD1D-655A-4D8A-90FA-01DD65486BEA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebHooks.EntityFrameworkCore.PgsqlTests", "test\WebHooks.EntityFrameworkCore.PgsqlTests\WebHooks.EntityFrameworkCore.PgsqlTests.csproj", "{3EDABD1D-655A-4D8A-90FA-01DD65486BEA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebHooks.API", "WebHooks.API\WebHooks.API.csproj", "{A7742BB7-8416-437F-8D04-C8F60D786037}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebHooks.API", "src\WebHooks.API\WebHooks.API.csproj", "{A7742BB7-8416-437F-8D04-C8F60D786037}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gitee.WebHooks", "Gitee.WebHooks\Gitee.WebHooks.csproj", "{F89D3785-E314-4FD5-A37A-9557345A6839}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gitee.WebHooks", "src\Gitee.WebHooks\Gitee.WebHooks.csproj", "{F89D3785-E314-4FD5-A37A-9557345A6839}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebHooks.Module", "WebHooks.Module\WebHooks.Module.csproj", "{1DF68F09-54B0-4B53-B4CF-CD84D10736E1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebHooks.Module", "src\WebHooks.Module\WebHooks.Module.csproj", "{1DF68F09-54B0-4B53-B4CF-CD84D10736E1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{F12892CE-150A-419C-B45E-952D28383B7A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebHooks.Scripts", "WebHooks.Scripts\WebHooks.Scripts.csproj", "{DC41776F-9CEC-4E85-8A7F-D723B1550609}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebHooks.Scripts", "src\WebHooks.Scripts\WebHooks.Scripts.csproj", "{DC41776F-9CEC-4E85-8A7F-D723B1550609}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

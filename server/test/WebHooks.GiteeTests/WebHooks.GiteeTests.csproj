@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WebHooks.Gitee\WebHooks.Gitee.csproj" />
+    <ProjectReference Include="..\..\WebHooks.Gitee\WebHooks.Gitee.csproj" />
   </ItemGroup>
 
 </Project>
