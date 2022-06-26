@@ -45,6 +45,11 @@ import BsModalHelper from "@/components/BsModal/BsModalHelper";
 import BsModal from "@/components/BsModal/BsModal.vue";
 import WorkExecutionLogDetail from "./WorkExecutionLogDetail.vue";
 import { externalConfigTypes } from "./WorkBasic";
+import { formatStandardDateTime, formatElapsedTime } from "@/utils/datetime";
+import {
+    formatWorkExecutionStatus,
+    formatWorkExecutionResult,
+} from "@/utils/work";
 
 const props = defineProps(WorkDetailViewProps);
 
@@ -407,11 +412,46 @@ onMounted(async () => {
                                                 查看详情
                                             </button>
                                         </td>
-                                        <td>{{ log.executeStartAt }}</td>
-                                        <td>{{ log.executeEndAt }}</td>
-                                        <td>{{ log.elapsedTime }}</td>
-                                        <td>{{ log.status }}</td>
-                                        <td>{{ log.success }}</td>
+                                        <td>
+                                            {{
+                                                formatStandardDateTime(
+                                                    log.executeStartAt
+                                                )
+                                            }}
+                                        </td>
+                                        <td>
+                                            {{
+                                                formatStandardDateTime(
+                                                    log.executeEndAt
+                                                )
+                                            }}
+                                        </td>
+                                        <td>
+                                            {{
+                                                formatElapsedTime(
+                                                    log.elapsedTime
+                                                )
+                                            }}
+                                        </td>
+                                        <td>
+                                            {{
+                                                formatWorkExecutionStatus(
+                                                    log.status
+                                                )
+                                            }}
+                                        </td>
+                                        <td
+                                            :class="{
+                                                'bg-danger': !log.success,
+                                                'text-light': !log.success,
+                                            }"
+                                        >
+                                            {{
+                                                formatWorkExecutionResult(
+                                                    log.success
+                                                )
+                                            }}
+                                        </td>
                                     </tr>
                                     <tr v-if="logs.length == 0">
                                         <td class="text-center" colspan="7">

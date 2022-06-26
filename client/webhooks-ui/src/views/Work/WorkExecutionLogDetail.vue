@@ -8,6 +8,11 @@ import {
 import BsTab from "@/components/BsTabs/BsTab.vue";
 import BsTabItem from "@/components/BsTabs/BsTabItem.vue";
 import WorkExecutionLogResultLine from "./WorkExecutionLogResultLine.vue";
+import { formatStandardDateTime, formatElapsedTime } from "@/utils/datetime";
+import {
+    formatWorkExecutionStatus,
+    formatWorkExecutionResult,
+} from "@/utils/work";
 
 const basicInfoTabId = "basicInfoTab";
 const resultsTabId = "resultsTab";
@@ -42,7 +47,7 @@ const exceptionLines = computed(() => {
                             开始执行时间
                         </div>
                         <div class="col-10">
-                            {{ log.executeStartAt }}
+                            {{ formatStandardDateTime(log.executeStartAt) }}
                         </div>
                     </div>
                     <div class="row">
@@ -50,25 +55,31 @@ const exceptionLines = computed(() => {
                             结束执行时间
                         </label>
                         <div class="col-10">
-                            {{ log.executeEndAt }}
+                            {{ formatStandardDateTime(log.executeEndAt) }}
                         </div>
                     </div>
                     <div class="row">
                         <label for="elapsedTime" class="col-2"> 耗时 </label>
                         <div class="col-10">
-                            {{ log.elapsedTime }}
+                            {{ formatElapsedTime(log.elapsedTime) }}
                         </div>
                     </div>
                     <div class="row">
                         <label for="status" class="col-2"> 状态 </label>
                         <div class="col-10">
-                            {{ log.status }}
+                            {{ formatWorkExecutionStatus(log.status) }}
                         </div>
                     </div>
                     <div class="row">
                         <label for="success" class="col-2"> 结果 </label>
-                        <div class="col-10">
-                            {{ log.success }}
+                        <div
+                            class="col-10"
+                            :class="{
+                                'bg-danger': !log.success,
+                                'text-light': !log.success,
+                            }"
+                        >
+                            {{ formatWorkExecutionResult(log.success) }}
                         </div>
                     </div>
                     <div class="row">
