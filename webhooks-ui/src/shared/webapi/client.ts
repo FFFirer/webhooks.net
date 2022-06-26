@@ -1820,7 +1820,7 @@ export class WorkExecutionLogSummary extends DtoOfLong implements IWorkExecution
     executeStartAt?: Date | undefined;
     executeEndAt?: Date | undefined;
     elapsedTime?: string | undefined;
-    status!: WebExecutionStatus;
+    status!: WorkExecutionStatus;
     success?: boolean | undefined;
 
     constructor(data?: IWorkExecutionLogSummary) {
@@ -1864,11 +1864,11 @@ export interface IWorkExecutionLogSummary extends IDtoOfLong {
     executeStartAt?: Date | undefined;
     executeEndAt?: Date | undefined;
     elapsedTime?: string | undefined;
-    status: WebExecutionStatus;
+    status: WorkExecutionStatus;
     success?: boolean | undefined;
 }
 
-export enum WebExecutionStatus {
+export enum WorkExecutionStatus {
     Ready = 1,
     Executing = 2,
     Completed = 3,
@@ -1923,7 +1923,7 @@ export class WorkExecutionLog extends EntityOfLong implements IWorkExecutionLog 
     executeStartAt?: Date | undefined;
     executeEndAt?: Date | undefined;
     elapsedTime?: string | undefined;
-    status!: WebExecutionStatus;
+    status!: WorkExecutionStatus;
     success?: boolean | undefined;
     exception?: string | undefined;
     script?: string[] | undefined;
@@ -1992,7 +1992,7 @@ export interface IWorkExecutionLog extends IEntityOfLong {
     executeStartAt?: Date | undefined;
     executeEndAt?: Date | undefined;
     elapsedTime?: string | undefined;
-    status: WebExecutionStatus;
+    status: WorkExecutionStatus;
     success?: boolean | undefined;
     exception?: string | undefined;
     script?: string[] | undefined;

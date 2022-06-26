@@ -32,7 +32,7 @@ namespace WebHooks.Data.Entities
         /// <summary>
         /// 执行状态
         /// </summary>
-        public WebExecutionStatus Status { get; set; }
+        public WorkExecutionStatus Status { get; set; }
 
         /// <summary>
         /// 执行成功

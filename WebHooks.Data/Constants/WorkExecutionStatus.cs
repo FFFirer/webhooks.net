@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WebHooks.Data.Constants
 {
-    public enum WebExecutionStatus
+    public enum WorkExecutionStatus
     {
         Ready = 1,
         Executing = 2,

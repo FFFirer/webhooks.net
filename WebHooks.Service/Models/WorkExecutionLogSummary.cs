@@ -34,7 +34,7 @@ namespace WebHooks.Service.Models
         /// <summary>
         /// 执行状态
         /// </summary>
-        public WebExecutionStatus Status { get; set; }
+        public WorkExecutionStatus Status { get; set; }
 
         /// <summary>
         /// 执行成功

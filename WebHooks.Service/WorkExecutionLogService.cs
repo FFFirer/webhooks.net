@@ -25,7 +25,7 @@ namespace WebHooks.Service
             var log = new WorkExecutionLog()
             {
                 WorkId = workId,
-                Status = Data.Constants.WebExecutionStatus.Ready
+                Status = Data.Constants.WorkExecutionStatus.Ready
             };
 
             return await _repository.InsertAsync(log);

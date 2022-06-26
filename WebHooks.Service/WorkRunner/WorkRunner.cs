@@ -1,12 +1,5 @@
-﻿using LibGit2Sharp;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Microsoft.Extensions.Options;
 using System.Management.Automation;
-using System.Text;
-using System.Threading.Tasks;
 using WebHooks.Data.Entities;
 using WebHooks.Data.Repositories.Interfaces;
 using WebHooks.Scripts;
@@ -23,7 +16,7 @@ namespace WebHooks.Service.WorkRunner
     public class WorkRunner : IWorkRunner
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly IOptionsMonitor<ExternalWorkRunnerBuildOption> _options;
+        private readonly IOptionsMonitor<ExternalWorkRunnerBuildOption> _externalWorkRunnerBuildOptions;
         private readonly ISettingService _settings;
         private readonly IBuildScriptService _scripts;
         private readonly IWorkRepository _works;
@@ -41,7 +34,7 @@ namespace WebHooks.Service.WorkRunner
             IWorkExecutionLogService executionLogService)
         {
             this._serviceProvider = serviceProvider;
-            this._options = options;
+            this._externalWorkRunnerBuildOptions = options;
             this._settings = settingService;
             this._scripts = scriptService;
             this._works = workService;
@@ -55,7 +48,7 @@ namespace WebHooks.Service.WorkRunner
 
             try
             {
-                this.executionLog.Status = Data.Constants.WebExecutionStatus.Executing;   // 执行中
+                this.executionLog.Status = Data.Constants.WorkExecutionStatus.Executing;  // 执行中
                 this.executionLog.ExecuteStartAt = DateTime.UtcNow;   // 开始时间
                 await _executionLogs.UpdateAsync(this.executionLog);
 
@@ -81,7 +74,7 @@ namespace WebHooks.Service.WorkRunner
             finally
             {
                 this.executionLog.ExecuteEndAt = DateTime.UtcNow; // 结束时间
-                this.executionLog.Status = Data.Constants.WebExecutionStatus.Completed;  // 状态完成
+                this.executionLog.Status = Data.Constants.WorkExecutionStatus.Completed;  // 状态完成
                 this.executionLog.ElapsedTime = this.executionLog.ExecuteEndAt - executionLog.ExecuteStartAt;
                 await _executionLogs.UpdateAsync(this.executionLog);
             }
@@ -226,7 +219,7 @@ namespace WebHooks.Service.WorkRunner
         /// <exception cref="WorkRunningException"></exception>
         protected virtual IExternalWorkRunner GetExternalWorkRunner(Work work)
         {
-            var externalWorkRunnerOption = _options.Get(work.ExternalConfigType);
+            var externalWorkRunnerOption = _externalWorkRunnerBuildOptions.Get(work.ExternalConfigType);
 
             if (externalWorkRunnerOption == null)
             {
