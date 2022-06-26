@@ -22,6 +22,16 @@ const errorLine = computed(() => {
     return props.line.level == ResultLineLevel.Error;
 });
 
+const scriptStackTraceLines = computed(() => {
+    return props.line?.stackTrace?.split("\r\n") ?? [];
+});
+
+const scriptStackTraceLineClasses = (line: string) => {
+    return {
+        "script-stack-trace-line": true,
+    };
+};
+
 const exceptionLines = computed(() => {
     return props.line?.exception?.split("\r\n") ?? [];
 });
@@ -38,8 +48,14 @@ const exceptionLineClasses = (line: string) => {
     <div :class="lineClasses">
         <p>{{ line.message }}</p>
         <div v-if="errorLine" class="script-stack-trace text-border mb-1">
-            <div class="badge bg-info">出错位置</div>
-            {{ line.stackTrace }}
+            <div class="badge bg-info">异常调用堆栈</div>
+            <p
+                v-for="(stackTraceLine, index) in scriptStackTraceLines"
+                :key="index"
+                :class="scriptStackTraceLineClasses(stackTraceLine)"
+            >
+                {{ stackTraceLine }}
+            </p>
         </div>
 
         <div v-if="errorLine" class="script-exception text-danger">
@@ -74,8 +90,8 @@ const exceptionLineClasses = (line: string) => {
     padding: 0;
 }
 
-.result-line .script-stack-trace {
-    text-indent: 4;
+.result-line .script-stack-trace .script-stack-trace-line {
+    text-indent: 30px;
 }
 
 .result-line .script-exception {
