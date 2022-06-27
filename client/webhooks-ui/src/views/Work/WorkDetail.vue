@@ -19,6 +19,7 @@ import {
     WorkDto,
     WorkExecutionLog,
     WorkExecutionLogSummary,
+    WorkExecutionStatus,
 } from "@/shared/webapi/client";
 import WorkDetailViewProps from "./WorkDetailProps";
 import Clipboard from "clipboard";
@@ -442,7 +443,10 @@ onMounted(async () => {
                                         </td>
                                         <td
                                             :class="{
-                                                'bg-danger': !log.success,
+                                                'bg-danger':
+                                                    log.status ==
+                                                        WorkExecutionStatus.Completed &&
+                                                    !log.success,
                                                 'text-light': !log.success,
                                             }"
                                         >

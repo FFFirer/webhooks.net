@@ -74,6 +74,14 @@ namespace WebHooks.Scripts.PowerShell
 
         public async Task<(int, PSDataCollection<PSObject>)> ExecuteAsync(string script)
         {
+            var handledScript = $@"
+try{{
+{script}
+}}
+finally{{
+Write-Output $LASTEXITCODE              
+}}
+";
 
             if (_powershell.Runspace.RunspaceStateInfo.State != RunspaceState.Opened)
             {
@@ -88,13 +96,26 @@ namespace WebHooks.Scripts.PowerShell
 
             _powershell.Commands.Clear();
 
-            _powershell.AddScript(script);
+            _powershell.AddScript(handledScript);
 
             _powershell.Commands.Commands[0].MergeMyResults(PipelineResultTypes.Error, PipelineResultTypes.Output);
 
             var results = await _powershell.InvokeAsync();
 
-            return (this.ExitCode, results);
+            int exitcode = 0;
+
+            if (results.Count > 0)
+            {
+                var lastLine = results.Last().BaseObject;
+
+                if (lastLine is int _code)
+                {
+                    exitcode = _code;
+                    results = new PSDataCollection<PSObject>(results.Take(results.Count - 1));
+                }
+            }
+
+            return (exitcode, results);
         }
 
         public async Task<(int, IEnumerable<string>)> ExecuteScriptAsync(string script)

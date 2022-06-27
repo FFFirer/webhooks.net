@@ -929,6 +929,9 @@ export class GitConfigDto extends DtoOfInteger implements IGitConfigDto {
     repositoryAddress?: string | undefined;
     branch?: string | undefined;
     tag?: string | undefined;
+    userName?: string | undefined;
+    email?: string | undefined;
+    password?: string | undefined;
 
     constructor(data?: IGitConfigDto) {
         super(data);
@@ -942,6 +945,9 @@ export class GitConfigDto extends DtoOfInteger implements IGitConfigDto {
             this.repositoryAddress = _data["repositoryAddress"];
             this.branch = _data["branch"];
             this.tag = _data["tag"];
+            this.userName = _data["userName"];
+            this.email = _data["email"];
+            this.password = _data["password"];
         }
     }
 
@@ -959,6 +965,9 @@ export class GitConfigDto extends DtoOfInteger implements IGitConfigDto {
         data["repositoryAddress"] = this.repositoryAddress;
         data["branch"] = this.branch;
         data["tag"] = this.tag;
+        data["userName"] = this.userName;
+        data["email"] = this.email;
+        data["password"] = this.password;
         super.toJSON(data);
         return data;
     }
@@ -970,6 +979,9 @@ export interface IGitConfigDto extends IDtoOfInteger {
     repositoryAddress?: string | undefined;
     branch?: string | undefined;
     tag?: string | undefined;
+    userName?: string | undefined;
+    email?: string | undefined;
+    password?: string | undefined;
 }
 
 export class SaveGitConfigInput implements ISaveGitConfigInput {
@@ -1872,6 +1884,7 @@ export enum WorkExecutionStatus {
     Ready = 1,
     Executing = 2,
     Completed = 3,
+    Interrupeted = 4,
 }
 
 export class EntityOfLong implements IEntityOfLong {

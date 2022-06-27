@@ -8,6 +8,7 @@ using WebHooks.Service.Interfaces;
 using WebHooks.Data.Repositories.Interfaces;
 using WebHooks.Service.Models;
 using Microsoft.EntityFrameworkCore;
+using WebHooks.Data.Constants;
 
 namespace WebHooks.Service
 {
@@ -18,6 +19,30 @@ namespace WebHooks.Service
         public WorkExecutionLogService(IWorkExecutionLogRepository repository)
         {
             _repository = repository;
+        }
+
+        /// <summary>
+        /// 将在此之前的所有非完成状态的都设置为被中止，并修改被修改时间
+        /// </summary>
+        /// <param name="deadline"></param>
+        /// <param name="saveImmediately"></param>
+        /// <returns></returns>
+        public async Task CleanTimeoutAsync(Guid workId, DateTime deadline, bool saveImmediately = true)
+        {
+            var timeouts = _repository.GetAll()
+                .Where(a =>
+                        a.WorkId == workId 
+                    && (a.Status != WorkExecutionStatus.Completed && a.Status != WorkExecutionStatus.Interrupeted) 
+                    && a.ExecuteStartAt < deadline);
+
+            await timeouts.ForEachAsync(a =>
+            {
+                a.Status = WorkExecutionStatus.Interrupeted;
+                a.ModifedAt = DateTime.UtcNow;
+                a.Success = false;
+            });
+
+            await _repository.SaveChangesAsync();
         }
 
         public async Task<WorkExecutionLog> CreateAsync(Guid workId)
@@ -43,15 +68,15 @@ namespace WebHooks.Service
                 .Where(a => a.WorkId == workId)
                 .OrderByDescending(a => a.CreatedAt)
                 .Select(log => new WorkExecutionLogSummary()
-                                    {
-                                        Id = log.Id,
-                                        WorkId = log.WorkId,
-                                        ExecuteEndAt = log.ExecuteEndAt,
-                                        ExecuteStartAt = log.ExecuteStartAt,
-                                        ElapsedTime = log.ElapsedTime,
-                                        Status = log.Status,
-                                        Success = log.Success,
-                                    })
+                {
+                    Id = log.Id,
+                    WorkId = log.WorkId,
+                    ExecuteEndAt = log.ExecuteEndAt,
+                    ExecuteStartAt = log.ExecuteStartAt,
+                    ElapsedTime = log.ElapsedTime,
+                    Status = log.Status,
+                    Success = log.Success,
+                })
                 .ToListAsync();
         }
 

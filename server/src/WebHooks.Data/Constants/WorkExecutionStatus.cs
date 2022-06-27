@@ -11,5 +11,6 @@ namespace WebHooks.Data.Constants
         Ready = 1,
         Executing = 2,
         Completed = 3,
+        Interrupeted = 4,   // 被中断
     }
 }

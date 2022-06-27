@@ -127,6 +127,33 @@ onDeactivated(() => console.log("git deactivated", props.workId));
             />
         </div>
         <div class="col-12 mb-3">
+            <label for="username" class="form-label"> 用户名 </label>
+            <input
+                type="text"
+                name="username"
+                class="form-control"
+                v-model="config.userName"
+            />
+        </div>
+        <div class="col-12 mb-3">
+            <label for="email" class="form-label">邮件</label>
+            <input
+                type="text"
+                name="email"
+                class="form-control"
+                v-model="config.email"
+            />
+        </div>
+        <div class="col-12 mb-3">
+            <label for="password" class="form-label">密码</label>
+            <input
+                type="password"
+                name="password"
+                class="form-control"
+                v-model="config.password"
+            />
+        </div>
+        <div class="col-12 mb-3">
             <button class="btn btn-primary" @click="save">保存</button>
         </div>
     </div>

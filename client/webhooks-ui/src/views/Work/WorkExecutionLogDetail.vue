@@ -79,7 +79,12 @@ const exceptionLines = computed(() => {
                                 'text-light': !log.success,
                             }"
                         >
-                            {{ formatWorkExecutionResult(log.success) }}
+                            {{
+                                formatWorkExecutionResult(
+                                    log.status,
+                                    log.success
+                                )
+                            }}
                         </div>
                     </div>
                     <div class="row">

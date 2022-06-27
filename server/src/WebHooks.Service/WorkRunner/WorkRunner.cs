@@ -61,10 +61,15 @@ namespace WebHooks.Service.WorkRunner
                 await externalWorkRunner.Run(externalWorkRunningContext);
 
                 // 执行脚本
-                var results = await RunScripts(work);
+                var (exitcode, results) = await RunScripts(work);
 
                 this.executionLog.Results = results;  // 结果
                 this.executionLog.Success = true; // 成功
+
+                if (exitcode != 0)
+                {
+                    throw new WorkRunningException($"脚本执行失败, 退出码: {exitcode}");
+                }
             }
             catch (Exception ex)
             {
@@ -77,6 +82,7 @@ namespace WebHooks.Service.WorkRunner
                 this.executionLog.Status = Data.Constants.WorkExecutionStatus.Completed;  // 状态完成
                 this.executionLog.ElapsedTime = this.executionLog.ExecuteEndAt - executionLog.ExecuteStartAt;
                 await _executionLogs.UpdateAsync(this.executionLog);
+                await _executionLogs.CleanTimeoutAsync(work.Id, executionLog.ExecuteStartAt!.Value);    // 清空超时的任务
             }
         }
 
@@ -128,7 +134,7 @@ namespace WebHooks.Service.WorkRunner
         /// </summary>
         /// <param name="work"></param>
         /// <returns></returns>
-        protected virtual async Task<List<ShellExecutedResultLine>> RunScripts(Work work)
+        protected virtual async Task<(int, List<ShellExecutedResultLine>)> RunScripts(Work work)
         {
             var script = await _scripts.GetAsync(work.Id);
 
@@ -145,15 +151,21 @@ namespace WebHooks.Service.WorkRunner
 
                 // 执行脚本
                 var starupInfo = new WebShellStartupInfo(work.DisplayName ?? "default", work.WorkingDirectory!, new Version(1, 0, 0), WebShellTypes.PowerShell);
+
+
+                
                 using (var shell = _webshells.Create(starupInfo))
                 {
                     var (exitCode, results) = await shell.ExecuteAsync(script.ToString()!);
 
-                    return GetFriendlyResult(results).ToList();
+                    var friendlyResults = GetFriendlyResult(results).ToList();
+
+                    return (exitCode, friendlyResults);
+
                 }
             }
 
-            return new List<ShellExecutedResultLine>();
+            return (0, new List<ShellExecutedResultLine>());
         }
 
         protected virtual IEnumerable<ShellExecutedResultLine> GetFriendlyResult(PSDataCollection<PSObject> results)

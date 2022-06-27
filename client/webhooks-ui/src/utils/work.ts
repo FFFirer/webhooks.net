@@ -16,6 +16,10 @@ const workExecutionStatusMappings: Array<{
         value: WorkExecutionStatus.Executing,
         text: "执行中",
     },
+    {
+        value: WorkExecutionStatus.Interrupeted,
+        text: "被中止",
+    },
 ];
 
 export const formatWorkExecutionStatus = (
@@ -32,9 +36,11 @@ export const formatWorkExecutionStatus = (
 export const formatWorkExecutionResult = (
     success: boolean | undefined
 ): string => {
-    if (success) {
+    if (success == true) {
         return "成功";
-    } else {
+    } else if (success == false) {
         return "失败";
+    } else {
+        return "";
     }
 };

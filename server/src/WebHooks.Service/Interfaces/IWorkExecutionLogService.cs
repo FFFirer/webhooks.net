@@ -17,5 +17,7 @@ namespace WebHooks.Service.Interfaces
         Task<WorkExecutionLog> CreateAsync(Guid workId);
 
         Task UpdateAsync(WorkExecutionLog executionLog);
+
+        Task CleanTimeoutAsync(Guid workId, DateTime deadline, bool saveImmediately = true);
     }
 }

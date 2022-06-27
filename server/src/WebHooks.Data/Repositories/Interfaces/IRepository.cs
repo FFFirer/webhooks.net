@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using System.Linq.Expressions;
 using WebHooks.Data.Entities;
 
@@ -6,6 +7,8 @@ namespace WebHooks.Data.Repositories.Interfaces
 {
     public interface IRepository<TEntity, TPrimaryKey> where TEntity : Entity<TPrimaryKey>
     {
+        DatabaseFacade Database { get; }
+
         DbSet<TEntity> Set();
 
         /// <summary>
