@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
+import "@/assets/font.css";
 import AppHeader from "./views/AppHeader.vue";
 import AppFooter from "./views/AppFooter.vue";
 import GlobalMessage from "./components/GlobalMessage/GlobalMessage.vue";

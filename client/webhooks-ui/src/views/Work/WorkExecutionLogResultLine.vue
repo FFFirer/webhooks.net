@@ -4,11 +4,20 @@ import {
     ShellExecutedResultLine,
     ResultLineLevel,
 } from "@/shared/webapi/client";
+import AnsiUp from "ansi_up";
 import { computed, defineProps, PropType } from "vue";
+import WorkExecutionLogResultLineExceptionContainer from "./WorkExecutionLogResultLineExceptionContainer.vue";
+
+const ansiUp = new AnsiUp();
+
 const props = defineProps({
     line: {
         type: Object as PropType<ShellExecutedResultLine>,
         default: {},
+    },
+    showWarningDetail: {
+        type: Boolean,
+        default: false,
     },
 });
 
@@ -42,32 +51,20 @@ const exceptionLineClasses = (line: string) => {
         "script-exception-line": line.indexOf(" ") > 0,
     };
 };
+
+const convertAnsiToHtml = (content: string) => {
+    return ansiUp.ansi_to_html(content);
+};
 </script>
 
 <template>
     <div :class="lineClasses">
-        <p>{{ line.message }}</p>
-        <div v-if="errorLine" class="script-stack-trace text-border mb-1">
-            <div class="badge bg-info">异常调用堆栈</div>
-            <p
-                v-for="(stackTraceLine, index) in scriptStackTraceLines"
-                :key="index"
-                :class="scriptStackTraceLineClasses(stackTraceLine)"
-            >
-                {{ stackTraceLine }}
-            </p>
-        </div>
-
-        <div v-if="errorLine" class="script-exception text-danger">
-            <div class="badge bg-danger">异常详细信息</div>
-            <p
-                v-for="(exceptionLine, index) in exceptionLines"
-                :key="index"
-                :class="exceptionLineClasses(exceptionLine)"
-            >
-                {{ exceptionLine }}
-            </p>
-        </div>
+        <p class="xrow" v-html="convertAnsiToHtml(line.message)"></p>
+        <WorkExecutionLogResultLineExceptionContainer
+            v-if="errorLine && showWarningDetail"
+            :line="line"
+        >
+        </WorkExecutionLogResultLineExceptionContainer>
     </div>
 </template>
 
@@ -88,30 +85,5 @@ const exceptionLineClasses = (line: string) => {
 .result-line p {
     margin: 0;
     padding: 0;
-}
-
-.result-line .script-stack-trace .script-stack-trace-line {
-    text-indent: 30px;
-}
-
-.result-line .script-exception {
-    border: 1px solid black;
-    border-radius: 5px;
-    padding: 5px;
-    overflow: auto;
-}
-
-.result-line .script-exception .script-exception-line-at {
-    text-indent: 50px;
-}
-
-.result-line .script-exception .script-exception-line {
-    text-indent: 30px;
-}
-
-.result-line .text-border {
-    border: 1px solid black;
-    border-radius: 5px;
-    padding: 5px;
 }
 </style>

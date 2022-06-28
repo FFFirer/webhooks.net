@@ -17,4 +17,8 @@
 		<ProjectReference Include="..\WebHooks.Service\WebHooks.Service.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="新文件夹\" />
+	</ItemGroup>
+
 </Project>

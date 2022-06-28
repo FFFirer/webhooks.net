@@ -79,12 +79,7 @@ const exceptionLines = computed(() => {
                                 'text-light': !log.success,
                             }"
                         >
-                            {{
-                                formatWorkExecutionResult(
-                                    log.status,
-                                    log.success
-                                )
-                            }}
+                            {{ formatWorkExecutionResult(log.success) }}
                         </div>
                     </div>
                     <div class="row">
@@ -102,22 +97,17 @@ const exceptionLines = computed(() => {
                     </div>
                 </BsTabItem>
                 <BsTabItem :id="resultsTabId" label="脚本执行输出">
-                    <table class="table table-bordered">
-                        <tbody>
-                            <tr
-                                v-for="(lineResult, index) in log?.results"
-                                :key="index"
-                                :class="rowClasses(lineResult)"
-                            >
-                                <td style="width: 100px">行 {{ index + 1 }}</td>
-                                <td>
-                                    <WorkExecutionLogResultLine
-                                        :line="lineResult"
-                                    ></WorkExecutionLogResultLine>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="table-responsive">
+                        <div
+                            v-for="(lineResult, index) in log?.results"
+                            :key="index"
+                        >
+                            <WorkExecutionLogResultLine
+                                class="dashed-bottom-border"
+                                :line="lineResult"
+                            ></WorkExecutionLogResultLine>
+                        </div>
+                    </div>
                 </BsTabItem>
                 <BsTabItem :id="scriptTabId" label="执行脚本">
                     <table class="table table-striped table-bordered">
@@ -151,5 +141,10 @@ const exceptionLines = computed(() => {
 
 .exception-line:first-child {
     text-indent: 0;
+}
+
+.dashed-bottom-border {
+    border-bottom: 1px dashed black;
+    min-height: 24px;
 }
 </style>

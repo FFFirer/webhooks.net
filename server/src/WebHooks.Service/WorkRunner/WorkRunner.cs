@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System.Management.Automation;
 using WebHooks.Data.Entities;
 using WebHooks.Data.Repositories.Interfaces;
@@ -22,6 +23,7 @@ namespace WebHooks.Service.WorkRunner
         private readonly IWorkRepository _works;
         private readonly IWebShellFactory _webshells;
         private readonly IWorkExecutionLogService _executionLogs;
+        private readonly ILogger _logger;
 
         private WorkExecutionLog? executionLog { get; set; }
 
@@ -31,7 +33,8 @@ namespace WebHooks.Service.WorkRunner
             IBuildScriptService scriptService,
             IWorkRepository workService,
             IWebShellFactory webShellFactory,
-            IWorkExecutionLogService executionLogService)
+            IWorkExecutionLogService executionLogService,
+            ILogger<WorkRunner> logger)
         {
             this._serviceProvider = serviceProvider;
             this._externalWorkRunnerBuildOptions = options;
@@ -40,6 +43,7 @@ namespace WebHooks.Service.WorkRunner
             this._works = workService;
             this._webshells = webShellFactory;
             this._executionLogs = executionLogService;
+            this._logger = logger;
         }
 
         public async Task RunAsync(Work work)
@@ -101,7 +105,7 @@ namespace WebHooks.Service.WorkRunner
 
             if (!Path.IsPathRooted(basicSetting.BaseWorkDirectory))
             {
-                basicSetting.BaseWorkDirectory = Path.Combine(Environment.CurrentDirectory, basicSetting.BaseWorkDirectory);
+                basicSetting.BaseWorkDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, basicSetting.BaseWorkDirectory);
             }
 
             if (string.IsNullOrEmpty(work.WorkingDirectory))
@@ -161,7 +165,6 @@ namespace WebHooks.Service.WorkRunner
                     var friendlyResults = GetFriendlyResult(results).ToList();
 
                     return (exitCode, friendlyResults);
-
                 }
             }
 
@@ -172,9 +175,13 @@ namespace WebHooks.Service.WorkRunner
         {
             foreach (var line in results.ReadAll())
             {
-                if (line.BaseObject is ErrorRecord errorRecord)
+                if( line == null)
                 {
-                    var errorResult = new ShellExecutedResultLine(Data.Constants.ResultLineLevel.Error, errorRecord.ToString())
+                    yield return new ShellExecutedResultLine(Data.Constants.ResultLineLevel.Info, "<输出为null>");
+                }
+                else if (line.BaseObject is ErrorRecord errorRecord)
+                {
+                    var errorResult = new ShellExecutedResultLine(Data.Constants.ResultLineLevel.Error, errorRecord.Exception.Message)
                     {
                         Exception = errorRecord.Exception.ToString(),
                         StackTrace = errorRecord.ScriptStackTrace.ToString()
@@ -209,7 +216,14 @@ namespace WebHooks.Service.WorkRunner
         {
             if (Directory.Exists(work.WorkingDirectory))
             {
-                Directory.Delete(work.WorkingDirectory, true);
+                try
+                {
+                    Directory.Delete(work.WorkingDirectory, true);
+                }
+                catch (Exception ex)
+                {
+                    this._logger.LogWarning(ex, $"目录[{work.WorkingDirectory}]删除失败");
+                }
             }
         }
 

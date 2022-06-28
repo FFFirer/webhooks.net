@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@rollup/plugin-inject": "^4.0.4",
+    "ansi_up": "^5.1.0",
     "bootstrap": "5",
     "buffer": "^6.0.3",
     "clipboard": "^2.0.11",

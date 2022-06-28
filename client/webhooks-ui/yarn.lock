@@ -223,6 +223,11 @@
   dependencies:
     css-render "^0.13.2"
 
+ansi_up@^5.1.0:
+  version "5.1.0"
+  resolved "https://registry.npmmirror.com/ansi_up/-/ansi_up-5.1.0.tgz#9cf10e6d359bb434bdcfab5ae4c3abfe1617b6db"
+  integrity sha512-3wwu+nJCKBVBwOCurm0uv91lMoVkhFB+3qZQz3U11AmAdDJ4tkw1sNPWJQcVxMVYwe0pGEALOjSBOxdxNc+pNQ==
+
 available-typed-arrays@^1.0.5:
   version "1.0.5"
   resolved "https://registry.npmmirror.com/available-typed-arrays/-/available-typed-arrays-1.0.5.tgz#92f95616501069d07d10edb2fc37d3e1c65123b7"

@@ -1,0 +1,13 @@
+@font-face {
+    font-family: "Caskavdia Cove Nerd Font";
+    src: url("fonts/Caskaydia Cove Nerd Font Complete.ttf") format("truetype");
+    font-stretch: normal;
+    font-style: normal;
+    font-weight: 300;
+}
+
+.xrow {
+    font-family: "Caskavdia Cove Nerd Font", consolas;
+    text-rendering: optimizeLegibility;
+    font-variant-ligatures: normal;
+}
