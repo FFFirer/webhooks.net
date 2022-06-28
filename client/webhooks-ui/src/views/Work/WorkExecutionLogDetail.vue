@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PropType, computed } from "vue";
+import { PropType, computed, Ref, ref } from "vue";
 import {
     ResultLineLevel,
     ShellExecutedResultLine,
@@ -35,6 +35,18 @@ const rowClasses = (
 
 const exceptionLines = computed(() => {
     return props.log.exception?.split("\r\n") ?? ["无异常"];
+});
+
+const showErrorLine: Ref<boolean> = ref(false);
+const switchShowErrorLine = () => {
+    showErrorLine.value = !showErrorLine.value;
+};
+const switchShowErrorLineDisplay = computed(() => {
+    if (showErrorLine.value) {
+        return "隐藏异常";
+    } else {
+        return "显示异常";
+    }
 });
 </script>
 <template>
@@ -97,7 +109,14 @@ const exceptionLines = computed(() => {
                     </div>
                 </BsTabItem>
                 <BsTabItem :id="resultsTabId" label="脚本执行输出">
-                    <div class="table-responsive">
+                    <div>
+                        <button
+                            type="button"
+                            class="btn btn-sm badge btn-primary mb-1"
+                            @click="switchShowErrorLine"
+                        >
+                            {{ switchShowErrorLineDisplay }}
+                        </button>
                         <div
                             v-for="(lineResult, index) in log?.results"
                             :key="index"
@@ -105,6 +124,7 @@ const exceptionLines = computed(() => {
                             <WorkExecutionLogResultLine
                                 class="dashed-bottom-border"
                                 :line="lineResult"
+                                :showWarningDetail="showErrorLine"
                             ></WorkExecutionLogResultLine>
                         </div>
                     </div>

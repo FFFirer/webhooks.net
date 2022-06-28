@@ -25,7 +25,7 @@ const exceptionLines = computed(() => {
 const exceptionLineClasses = (line: string) => {
     return {
         "script-exception-line-at": line.indexOf(" ") == 0,
-        "script-exception-line": line.indexOf(" ") > 0,
+        "script-exception-line": true,
     };
 };
 
@@ -68,6 +68,12 @@ const switchShowStatus = () => {
 <style>
 .result-line .script-stack-trace .script-stack-trace-line {
     text-indent: 30px;
+    margin: 0;
+    border-bottom: 1px dashed black;
+}
+
+.result-line .script-stack-trace .script-stack-trace-line:last-child {
+    border-bottom: 0;
 }
 
 .result-line .script-exception {
@@ -83,6 +89,11 @@ const switchShowStatus = () => {
 
 .result-line .script-exception .script-exception-line {
     text-indent: 30px;
+    border-bottom: 1px dashed black;
+}
+
+.result-line .script-exception .script-exception-line:last-child {
+    border-bottom: 0;
 }
 
 .text-border {
