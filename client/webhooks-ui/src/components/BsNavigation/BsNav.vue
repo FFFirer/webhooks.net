@@ -7,7 +7,6 @@
 import { computed } from "@vue/reactivity";
 import { reactive } from "vue";
 import BsNavProps from "./BsNavProps";
-import BsNa
 
 const props = defineProps(BsNavProps);
 const navClasses = computed(() => {

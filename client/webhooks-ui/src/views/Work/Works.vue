@@ -1,4 +1,4 @@
 <template>
     <router-view></router-view>
 </template>
-<script lang="ts"></script>
+<script setup lang="ts"></script>

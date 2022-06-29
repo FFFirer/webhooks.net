@@ -2,13 +2,13 @@
 import { Modal } from "bootstrap";
 import { onMounted, Ref, ref } from "vue";
 import { useRouter } from "vue-router";
-import { WorkClientProxy } from "../../shared/client-proxy";
+import { WorkClientProxy } from "@/shared/client-proxy";
 import {
     ApiException,
     PagingInput,
     RemoveWorkInput,
     WorkDto,
-} from "../../shared/webapi/client";
+} from "@/shared/webapi/client";
 import BsModal from "@/components/BsModal/BsModal.vue";
 import BsModalHelper from "@/components/BsModal/BsModalHelper";
 import BsPagination from "@/components/BsPagination/BsPagination.vue";
@@ -17,8 +17,8 @@ import {
     GlobalSpinnerProxy,
     useGlobalSpinner,
 } from "@/components/GlobalSpinner/GlobalSpinnerProxy";
-import { BusyMonitor } from "@/components/Monitor/BusyMonitor";
 import BsSpinner from "@/components/BsSpinner/BsSpinner.vue";
+import { externalConfigTypes } from "./WorkBasic";
 
 const modalTitle = ref("");
 const workClient = new WorkClientProxy();
@@ -135,8 +135,6 @@ const showDetail = (id: string) => {
         },
     });
 };
-
-import { externalConfigTypes } from "./WorkBasic";
 
 onMounted(async () => {
     editWorkModal = BsModalHelper.useModal(editWorkModalTarget);
