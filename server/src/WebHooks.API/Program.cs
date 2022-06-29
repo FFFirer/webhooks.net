@@ -1,6 +1,8 @@
+using Microsoft.EntityFrameworkCore;
 using WebHooks.API;
 using WebHooks.API.Filters;
 using WebHooks.API.ResultWrapper;
+using WebHooks.Data.DbContexts;
 using WebHooks.Data.Extensions;
 using WebHooks.Service;
 using WebHooks.Service.Extensions;
@@ -9,10 +11,10 @@ using WebHooks.Service.Modules;
 var DefaultCorsPolicyName = "default";
 var builder = WebApplication.CreateBuilder(args);
 
-// Êı¾İ¿âÁ¬½Ó×Ö·û´®
+// æ•°æ®åº“è¿æ¥å­—ç¬¦ä¸²
 var connectionString = builder.Configuration.GetConnectionString("Default");
 
-// Ìí¼ÓAPI¿ØÖÆÆ÷
+// æ·»åŠ APIæ§åˆ¶å™¨
 builder.Services.AddControllers(config =>
 {
     config.Filters.AddService<ApiExceptionFilter>();
@@ -24,19 +26,19 @@ builder.Services.AddEndpointsApiExplorer();
 // NSwag
 builder.Services.AddSwaggerDocument();
 
-// ×¢²á»ù´¡·şÎñ
+// æ³¨å†ŒåŸºç¡€æœåŠ¡
 builder.Services.AddWebHooksBasicService();
 
-// ×¢²áÊı¾İ¿â·ÃÎÊÉÏÏÂÎÄ
+// æ³¨å†Œæ•°æ®åº“è®¿é—®ä¸Šä¸‹æ–‡
 builder.Services.AddPgsqlDataContext(connectionString);
 builder.Services.AddScoped<ApiExceptionFilter>();
 builder.Services.AddScoped<ResultWrapperFilter>();
 builder.Services.AddScoped<IResultWrapper, CustomResultWrapper>();
 
 builder.Services.InstallModule<WorkRunnerModule>();
-builder.Services.InstallModule<ExternalRunnerModule>();   // °²×°À©Õ¹ÅäÖÃÄ£¿é
+builder.Services.InstallModule<ExternalRunnerModule>();   // å®‰è£…æ‰©å±•é…ç½®æ¨¡å—
 
-// ¿çÓòÅäÖÃ
+// è·¨åŸŸé…ç½®
 var allowOrigins = new List<string>();
 builder.Configuration.GetSection("AllowOrigins").Bind(allowOrigins);
 builder.Services.AddCors(setup =>
@@ -51,6 +53,40 @@ builder.Services.AddCors(setup =>
 });
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    var logger = services.GetRequiredService<ILogger<WebApplication>>();
+
+    try
+    {
+        var context = services.GetRequiredService<WebHooksDataContext>();
+        var env = services.GetRequiredService<IWebHostEnvironment>();
+
+        logger.LogError($"å½“å‰ç¯å¢ƒæ˜¯{env.EnvironmentName}");
+
+        if (!env.IsDevelopment())
+        {
+            context.Database.Migrate();
+            logger.LogError("æ•°æ®åº“è¿ç§»å®Œæˆ");
+        }
+
+        if (context.Database.EnsureCreated())
+        {
+            logger.LogError("æ•°æ®åº“å·²åˆ›å»º");
+        }
+        else
+        {
+            logger.LogError("æ•°æ®åº“æœªåˆ›å»º");
+        }
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, $"æ•°æ®åº“ç¡®è®¤å¤±è´¥");
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

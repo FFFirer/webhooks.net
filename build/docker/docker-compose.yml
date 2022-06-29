@@ -1,0 +1,27 @@
+version: '3.7'
+services:
+  webhooks.postgres:
+    image: postgres:13
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=123456
+      - POSTGRES_USERNAME=postgres
+
+  webhooks.api:
+    image: webhooks.api:latest
+    restart: always
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__Default=Host=127.0.0.1;Database=webhooks;Username=postgres;Password=123456;Encoding=UTF8;
+    ports:
+      - "7198:80"
+    depends_on:
+      - webhooks.postgres
+  
+  webhooks.ui:
+    image: webhooks.ui:latest
+    ports:
+      - "7199:80"
+    volumes:
+      - "./nginx.conf:/etc/nginx/nginx.conf:ro"
