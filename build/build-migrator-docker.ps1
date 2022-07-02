@@ -16,14 +16,14 @@ param (
     $NoBuild    
 )
 
-Write-Debug "[Migrator Docker]==================START================="
-Write-Debug "[Migrator Docker][输入参数] ImageName  : $($ImageName)"
-Write-Debug "[Migrator Docker][输入参数] Version    : $($Version)"
-Write-Debug "[Migrator Docker][输入参数] NoBuild    : $($NoBuild)"
+Write-Debug "[build-migrator-docker.ps1]==================START================="
+Write-Debug "[build-migrator-docker.ps1][输入参数] ImageName  : $($ImageName)"
+Write-Debug "[build-migrator-docker.ps1][输入参数] Version    : $($Version)"
+Write-Debug "[build-migrator-docker.ps1][输入参数] NoBuild    : $($NoBuild)"
 
 $CurrentLocation = $PWD.Path
 
-Write-Debug "[Migrator Docker][当前目录] $($CurrentLocation)"
+Write-Debug "[build-migrator-docker.ps1][当前目录] $($CurrentLocation)"
 
 if (-not $NoBuild) {
     ./build-migrator.ps1
@@ -39,20 +39,20 @@ try {
 
     Copy-Item $Dockerfile (Join-Path $CurrentLocation "./outputs/migrator")
 
-    Write-Debug "[Migrator Docker][复制Dockerfile] $((Get-Item $Dockerfile -Verbose).FullName) -> $(Join-Path $CurrentLocation "./outputs/migrator")"
+    Write-Debug "[build-migrator-docker.ps1][复制Dockerfile] $((Get-Item $Dockerfile -Verbose).FullName) -> $(Join-Path $CurrentLocation "./outputs/migrator")"
 
     Set-Location (Join-Path $CurrentLocation "./outputs/migrator")
 
     $MigratorImageName = "$($ImageName).migrator:$($Version)"
     $LatestMigratorImageName = "$($ImageName).migrator:latest"
 
-    Write-Debug "[Migrator Docker][生成镜像] $($MigratorImageName)"
+    Write-Debug "[build-migrator-docker.ps1][生成镜像] $($MigratorImageName)"
 
     docker rmi $MigratorImageName -f
     docker build -t $MigratorImageName .
     docker tag $MigratorImageName $LatestMigratorImageName
 }
 finally {
-    Write-Debug "[Migrator Docker]==================END================="
+    Write-Debug "[build-migrator-docker.ps1]==================END================="
     Set-Location $CurrentLocation
 }

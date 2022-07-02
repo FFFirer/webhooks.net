@@ -6,13 +6,13 @@ param (
 )
 
 
-Write-Debug "[Build]=====================START====================="
+Write-Debug "[build.ps1]=====================START====================="
 
-Write-Debug "[Build][输入参数] ApiUrl : $($ApiUrl)"
+Write-Debug "[build.ps1][输入参数] ApiUrl : $($ApiUrl)"
 
 $CurrentLocation = (Get-Item ./ -Verbose).FullName;
 
-Write-Debug "[Build][当前目录] $((Get-Item $CurrentLocation -Verbose).FullName)"
+Write-Debug "[build.ps1][当前目录] $((Get-Item $CurrentLocation -Verbose).FullName)"
 
 $Outputs = Join-Path $CurrentLocation "outputs"
 
@@ -32,7 +32,7 @@ try {
     Set-Location (Join-Path $CurrentLocation "../server/src/WebHooks.API")
 
     dotnet publish "./WebHooks.API.csproj" -c Release -o $ServerOutputs
-    Write-Debug "[Build][WebHooks.API][发布结束] -> $((Get-Item $ServerOutputs -Verbose).FullName)"
+    Write-Debug "[build.ps1][WebHooks.API][发布结束] -> $((Get-Item $ServerOutputs -Verbose).FullName)"
 
     # 发布Client
     Set-Location (Join-Path $CurrentLocation "../client/webhooks-ui")
@@ -54,15 +54,15 @@ try {
 
     Copy-Item (Join-Path $CurrentLocation "../client/webhooks-ui/dist/*") $ClientOutputs -Recurse
 
-    Write-Debug "[Build][webhooks-ui][发布结束] -> $((Get-Item $ClientOutputs -Verbose).FullName)"
+    Write-Debug "[build.ps1][webhooks-ui][发布结束] -> $((Get-Item $ClientOutputs -Verbose).FullName)"
 
     # 构建Migrator
     Set-Location $CurrentLocation
-    Write-Debug "[Build][当前目录] $($CurrentLocation)"
+    Write-Debug "[build.ps1][当前目录] $($CurrentLocation)"
     ./build-migrator.ps1
 }
 finally {
     
-    Write-Debug "[Build]=====================END====================="
+    Write-Debug "[build.ps1]=====================END====================="
     Set-Location $CurrentLocation
 }

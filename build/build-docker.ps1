@@ -22,14 +22,14 @@ param (
     $NoBuild
 )
 
-Write-Debug "[Build docker]=====================START========================"
-Write-Debug "[Build docker][输入参数] BaseUrl       : $($BaseUrl)"
-Write-Debug "[Build docker][输入参数] ImageName     : $($ImageName)"
-Write-Debug "[Build docker][输入参数] Version       : $($Version)"
-Write-Debug "[Build docker][输入参数] NoBuild       : $($NoBuild)"
+Write-Debug "[build-docker.ps1]=====================START========================"
+Write-Debug "[build-docker.ps1][输入参数] BaseUrl       : $($BaseUrl)"
+Write-Debug "[build-docker.ps1][输入参数] ImageName     : $($ImageName)"
+Write-Debug "[build-docker.ps1][输入参数] Version       : $($Version)"
+Write-Debug "[build-docker.ps1][输入参数] NoBuild       : $($NoBuild)"
 
 $CurrentDirectory = $PWD.Path
-Write-Debug "[Build docker][当前目录] ${$CurrentDirectory}"
+Write-Debug "[build-docker.ps1][当前目录] ${$CurrentDirectory}"
 
 if (-not $NoBuild) {
     ./build.ps1 -ApiUrl $BaseUrl
@@ -44,13 +44,13 @@ if (-not ($? -eq $true)) {
 try {
     $ClientDockerfile = Join-Path $CurrentDirectory "./client/Dockerfile"
     
-    Write-Debug "[Build docker][客户端Dockerfile] $($ClientDockerfile)"
+    Write-Debug "[build-docker.ps1][客户端Dockerfile] $($ClientDockerfile)"
 
     Copy-Item $ClientDockerfile (Join-Path $CurrentDirectory "outputs/client")
 
     $ServerDockerfile = Join-Path $CurrentDirectory "./server/Dockerfile"
 
-    Write-Debug "[Build docker][服务器端Dockerfile] $($ServerDockerfile)"
+    Write-Debug "[build-docker.ps1][服务器端Dockerfile] $($ServerDockerfile)"
 
     Copy-Item $ServerDockerfile (Join-Path $CurrentDirectory "outputs/server")
 
@@ -59,32 +59,32 @@ try {
 
     $ServerImageTag = "$($ImageName).api:$($Version)"
 
-    Write-Debug "[Build docker][服务器端镜像名称] $($ServerImageTag)"
+    Write-Debug "[build-docker.ps1][服务器端镜像名称] $($ServerImageTag)"
 
     docker rmi $ServerImageTag -f
     docker build -t $ServerImageTag .
     docker tag $ServerImageTag "$($ImageName).api:latest"
 
-    Write-Debug "[Build docker][服务器端] 镜像构建完成"
+    Write-Debug "[build-docker.ps1][服务器端] 镜像构建完成"
 
     # 构建前端镜像
     Set-Location (Join-Path $CurrentDirectory "outputs/client")
 
     $ClientImageTag = "$($ImageName).ui:$($Version)"
-    Write-Debug "[Build docker][客户端镜像名称] $($ClientImageTag)"
+    Write-Debug "[build-docker.ps1][客户端镜像名称] $($ClientImageTag)"
 
     docker rmi $ClientImageTag -f
     docker build -t $ClientImageTag .
     docker tag $ClientImageTag "$($ImageName).ui:latest"
 
-    Write-Debug "[Build docker][客户端] 镜像构建完成"
-    Write-Debug "[Build docker][准备构建Migrator]"
+    Write-Debug "[build-docker.ps1][客户端] 镜像构建完成"
+    Write-Debug "[build-docker.ps1][准备构建Migrator]"
 
     # 构建Migrator镜像，已构建，无需构建
     Set-Location $CurrentDirectory
     ./build-migrator-docker.ps1 -ImageName $ImageName -Version $Version -NoBuild
 }
 finally {
-    Write-Debug "[Build docker]=====================END========================"
+    Write-Debug "[build-docker.ps1]=====================END========================"
     Set-Location $CurrentDirectory
 }
