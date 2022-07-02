@@ -14,8 +14,7 @@ services:
     deploy: 
       restart_policy:
         condition: "on-failure"
-        delay: 5s
-        max_attempts: 5
+        max_attempts: 10
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ConnectionStrings__Default=Host=webhooks.postgres;Database=webhooks;Username=postgres;Password=123456;Encoding=UTF8;
