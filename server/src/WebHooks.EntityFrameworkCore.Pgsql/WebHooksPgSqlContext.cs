@@ -19,9 +19,16 @@ namespace WebHooks.EntityFrameworkCore.Pgsql
 
             var projectFolder = Path.Combine(Environment.CurrentDirectory, "WebHooks.EntityFrameworkCore.Pgsql.csproj");
 
-            var connectionString = GetConnectionString(projectFolder);
+            if (File.Exists(projectFolder))
+            {
+                var connectionString = GetConnectionString(projectFolder);
 
-            optionsBuilder.UseNpgsql(connectionString);
+                optionsBuilder.UseNpgsql(connectionString);
+            }
+            else
+            {
+                throw new FileNotFoundException($"项目文件[{projectFolder}]不存在");
+            }
         }
 
         public static string GetConnectionString(string projectFilePath)
