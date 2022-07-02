@@ -6,6 +6,16 @@ services:
     environment:
       - POSTGRES_PASSWORD=123456
       - POSTGRES_USERNAME=postgres
+  
+  webhooks.migrator:
+    image: webhooks.migrator:latest
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__Default=Host=webhooks.postgres;Database=webhooks;Username=postgres;Password=123456;Encoding=UTF8;
+    links:
+      - webhooks.postgres
+    depends_on:
+      - webhooks.postgres
 
   webhooks.api:
     image: webhooks.api:latest
@@ -13,7 +23,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:80
-      - ConnectionStrings__Default=Host=127.0.0.1;Database=webhooks;Username=postgres;Password=123456;Encoding=UTF8;
+      - ConnectionStrings__Default=Host=webhooks.postgres;Database=webhooks;Username=postgres;Password=123456;Encoding=UTF8;
     ports:
       - "7198:80"
     depends_on:
