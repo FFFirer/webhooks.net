@@ -2,6 +2,7 @@ version: '3.7'
 services:
   webhooks.postgres:
     image: postgres:13
+    container_name: webhooks.postgres
     restart: always
     environment:
       - POSTGRES_PASSWORD=123456
@@ -9,6 +10,12 @@ services:
   
   webhooks.migrator:
     image: webhooks.migrator:latest
+    container_name: webhooks.migrator
+    deploy: 
+      restart_policy:
+        condition: "on-failure"
+        delay: 5s
+        max_attempts: 5
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ConnectionStrings__Default=Host=webhooks.postgres;Database=webhooks;Username=postgres;Password=123456;Encoding=UTF8;
@@ -19,6 +26,7 @@ services:
 
   webhooks.api:
     image: webhooks.api:latest
+    container_name: webhooks.api
     restart: always
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
@@ -28,9 +36,11 @@ services:
       - "7198:80"
     depends_on:
       - webhooks.postgres
+      - webhooks.migrator
   
   webhooks.ui:
     image: webhooks.ui:latest
+    container_name: webhooks.ui
     ports:
       - "7199:80"
     volumes:
