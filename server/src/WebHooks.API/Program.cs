@@ -54,40 +54,6 @@ builder.Services.AddCors(setup =>
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-
-    var logger = services.GetRequiredService<ILogger<WebApplication>>();
-
-    try
-    {
-        var context = services.GetRequiredService<WebHooksDataContext>();
-        var env = services.GetRequiredService<IWebHostEnvironment>();
-
-        logger.LogError($"当前环境是{env.EnvironmentName}");
-
-        if (!env.IsDevelopment())
-        {
-            context.Database.Migrate();
-            logger.LogError("数据库迁移完成");
-        }
-
-        if (context.Database.EnsureCreated())
-        {
-            logger.LogError("数据库已创建");
-        }
-        else
-        {
-            logger.LogError("数据库未创建");
-        }
-    }
-    catch (Exception ex)
-    {
-        logger.LogError(ex, $"数据库确认失败");
-    }
-}
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
