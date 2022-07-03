@@ -32,6 +32,12 @@ try {
     Set-Location (Join-Path $CurrentLocation "../server/src/WebHooks.API")
 
     dotnet publish "./WebHooks.API.csproj" -c Release -o $ServerOutputs
+
+    if (-not ($? -eq $true)) {
+        Write-Output "[build.ps1][client] 构建失败"
+        Exit $LASTEXITCODE
+    }
+
     Write-Debug "[build.ps1][WebHooks.API][发布结束] -> $((Get-Item $ServerOutputs -Verbose).FullName)"
 
     # 发布Client
@@ -39,7 +45,7 @@ try {
 
     $EnvProdLocalFile = Join-Path $CurrentLocation "../client/webhooks-ui/.env.prod.local"
 
-    Remove-Item -Path $EnvProdLocalFile -ErrorAction Ignore
+    Remove-Item -Path $EnvProdLocalFile -Force -ErrorAction Ignore
 
     New-Item -Path $EnvProdLocalFile -ItemType File
 
@@ -53,6 +59,11 @@ try {
     yarn run build-prod
 
     Copy-Item (Join-Path $CurrentLocation "../client/webhooks-ui/dist/*") $ClientOutputs -Recurse
+
+    if (-not ($? -eq $true)) {
+        Write-Output "[build.ps1][client] 构建失败"
+        Exit $LASTEXITCODE
+    }
 
     Write-Debug "[build.ps1][webhooks-ui][发布结束] -> $((Get-Item $ClientOutputs -Verbose).FullName)"
 
