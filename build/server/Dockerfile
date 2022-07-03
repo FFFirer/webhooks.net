@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS BASE
+FROM webhooks-server-environment AS BASE
 
 WORKDIR /app
 COPY . .

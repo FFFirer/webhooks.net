@@ -42,6 +42,14 @@ if (-not ($? -eq $true)) {
 
 # 构建docker镜像
 try {
+    # 检查构建环境
+    ./check-build-environment.ps1
+
+    if (-not ($? -eq $true)) {
+        Write-Output "[build-docker.ps1][检查docker镜像构建环境] 检查失败"
+        Exit $LASTEXITCODE
+    }
+
     $ClientDockerfile = Join-Path $CurrentDirectory "./client/Dockerfile"
     
     Write-Debug "[build-docker.ps1][客户端Dockerfile] $($ClientDockerfile)"
@@ -65,6 +73,11 @@ try {
     docker build -t $ServerImageTag .
     docker tag $ServerImageTag "$($ImageName).api:latest"
 
+    if (-not ($? -eq $true)) {
+        Write-Output "[build-docker.ps1][server image 构建失败]"
+        Exit $LASTEXITCODE
+    }
+
     Write-Debug "[build-docker.ps1][服务器端] 镜像构建完成"
 
     # 构建前端镜像
@@ -76,6 +89,11 @@ try {
     docker rmi $ClientImageTag -f
     docker build -t $ClientImageTag .
     docker tag $ClientImageTag "$($ImageName).ui:latest"
+
+    if (-not ($? -eq $true)) {
+        Write-Output "[build-docker.ps1][client image 构建失败]"
+        Exit $LASTEXITCODE
+    }
 
     Write-Debug "[build-docker.ps1][客户端] 镜像构建完成"
     Write-Debug "[build-docker.ps1][准备构建Migrator]"
