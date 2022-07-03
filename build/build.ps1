@@ -56,6 +56,9 @@ try {
 
     Set-Content -Path $EnvProdLocalFile -Value $EnvProdLocalFileContent -Encoding utf8
 
+    # 还原
+    yarn
+
     yarn run build-prod
 
     Copy-Item (Join-Path $CurrentLocation "../client/webhooks-ui/dist/*") $ClientOutputs -Recurse
