@@ -113,6 +113,13 @@ Write-Output $LASTEXITCODE
                     exitcode = _code;
                     results = new PSDataCollection<PSObject>(results.Take(results.Count - 1));
                 }
+                else if (lastLine is ErrorRecord errorRecord)
+                {
+                    if(errorRecord.Exception is CommandNotFoundException)
+                    {
+                        exitcode = errorRecord.Exception.HResult;
+                    }
+                }
             }
 
             return (exitcode, results);
