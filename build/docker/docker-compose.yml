@@ -4,6 +4,8 @@ services:
     image: postgres:13
     container_name: webhooks.postgres
     restart: always
+    volumes:
+      - ./postgres/data:/home/data
     environment:
       - POSTGRES_PASSWORD=123456
       - POSTGRES_USERNAME=postgres
