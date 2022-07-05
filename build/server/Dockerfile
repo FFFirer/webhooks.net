@@ -1,4 +1,4 @@
-FROM webhooks-server-environment AS BASE
+FROM webhooks-env:6.0-alpine AS BASE
 
 WORKDIR /app
 COPY . .

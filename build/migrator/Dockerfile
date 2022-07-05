@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/runtime:6.0 AS BASE
+FROM mcr.microsoft.com/dotnet/runtime:6.0-alpine AS BASE
 
 WORKDIR /app
 COPY . .
